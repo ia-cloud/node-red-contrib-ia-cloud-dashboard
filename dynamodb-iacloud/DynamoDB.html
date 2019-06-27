@@ -1,0 +1,158 @@
+<script type="text/javascript">
+	RED.nodes.registerType('DynamoDB',{
+		category: 'iaCloud dashboard',
+		color:"#ffd700",
+		defaults: {
+			// aws: {type:"amazon config",required:true},
+			name: {value: ""},
+			tableName: {value: "", required:true},
+			// userID: {value: "", required:true},
+			// password: {value: "", required:true},
+			operation: {value: "Query" },
+			objectKey: {value: "", required:true},
+			stime: {value: ""},
+			etime: {value: ""},
+			limit: {value: "", required:true},
+			sort: {value: "true"},
+			Item: { value: ""}
+		},
+		credentials: {
+			userID: {type:"text"},
+            password: {type: "password"}
+		},
+		inputs:1,
+		outputs:1,
+		icon: "ia-cloud.png",
+		align: "right",
+		label: function() {
+			return this.name || "DynamoDB " + this.operation;
+		},
+		oneditprepare: function () {
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="DynamoDB">
+		<style scoped>
+				.hiddenAttrs {display:none;}
+				.visibleAttrs {display:block;}
+		</style>
+
+	<!-- AWSアカウント情報 
+	<div class="form-row">
+		<label for="node-input-aws"><i class="fa fa-user"></i> AWS</label>
+		<input type="text" id="node-input-aws">
+	</div>
+	<hr/>
+	-->
+
+	<!-- ノード名 -->
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-user"></i> ノード名</label>
+		<input type="text" id="node-input-name" placeholder="Name"></input>
+	</div>
+	<hr/>
+
+	<!-- ユーザID -->
+	<div class="form-row">
+		<label for="node-input-userID"><i class="fa fa-tag"></i> 接続用ID<span style="color: #ff0000;">*</span></label>
+		<input type="text" id="node-input-userID" placeholder="userID"></input>
+	</div>
+
+	<!-- パスワード -->
+	<div class="form-row">
+		<label for="node-input-password"><i class="fa fa-key"></i> パスワード<span style="color: #ff0000;">*</span></label>
+		<input type="password" id="node-input-password" placeholder="password"></input>
+	</div>
+	<hr/>
+
+	<!-- テーブル名 -->
+	<div class="form-row">
+		<label for="node-input-tableName"><i class="fa fa-tag"></i> テーブル名<span style="color: #ff0000;">*</span></label>
+		<input type="text" id="node-input-tableName" placeholder="tableName"></input>
+	</div>
+
+	<!-- 機能 -->
+	<div class="form-row">
+		<label for="node-input-operation"><i class="fa fa-search"></i> 機能</label>
+		<select type="text" id="node-input-operation">
+			<option value="Query">Query</option>
+			<option value="Scan">Scan</option>
+			<option value="PutItem">PutItem</option>
+		</select>
+	</div>
+
+	<!-- オブジェクトキー -->
+	<div class="form-row">
+		<label for="node-input-objectKey"><i class="fa fa-key"></i> オブジェクトキー<span style="color: #ff0000;">*</span></label>
+		<input type="text" id="node-input-objectKey" placeholder="objectKey"></input>
+	</div>
+
+	<!-- 期間 -->
+	<div class="form-row">
+		<label for="node-input-time"><i class="fa fa-calendar"></i> 期間</label>
+		<input type="date" style="width:150px;" id="node-input-stime" placeholder="2018-01-01"></input>
+		～
+		<input type="date" style="width:150px;" id="node-input-etime" placeholder="2018-01-03"></input>
+	</div>
+
+	<!-- ソート -->
+	<div class="form-row">
+		<label for="node-input-sort"><i class="fa fa-sort"></i> 並び順</label>
+		<select type="text" style="width:80px;" id="node-input-sort">
+			<option value="true">昇順</option>
+			<option value="false">降順</option>
+		</select>
+	</div>
+
+	<!-- データ件数 -->
+	<div class="form-row">
+		<label for="node-input-limit"><i class="fa fa-clone"></i> データ件数<span style="color: #ff0000;">*</span></label>
+		<input type="text" style="width:130px;" id="node-input-limit" placeholder="100"></input>
+	</div>
+
+	<!-- Item設定 -->
+	<div id="AttrHolder">
+		<div class="form-row" id='itemAttr' class='hiddenAttrs'>
+			<label for="node-input-item"><i class="fa fa-tag"></i>item</label>
+			<input type="text" id="node-input-item" placeholder="item"></input>
+		</div> 
+	</div> 
+
+ <script>
+	  var nodeOps={
+
+				Query:[
+					'#tableName'
+					],
+				Scan:[
+					'#tableName'
+					],
+				PutItem:[
+					'#tableName','#itemAttr'
+					]
+		};
+		$('#node-input-operation').on('change',function(){
+			$('#AttrHolder').children().addClass('hiddenAttrs').removeClass('visibleAttrs');
+				if (nodeOps[this.value])
+					$(nodeOps[this.value].join()).addClass('visibleAttrs').removeClass('hiddenAttrs');
+		 });
+
+</script>
+
+<script type="text/x-red" data-help-name="DynamoDB">
+	<p>AWS-SDKでDynamoDB関数をラップするノードのセット。
+	このノードはscan, query, put関数のみを使用できます。</p>
+	<h3>出力メッセージ</h3>
+	<dl class="message-properties">
+		<dt>payload <span class="property-type">object</span></dt>
+		<dd>各操作によって取得したオブジェクト。配列Itemsに格納された状態で返却されます。</dd>
+	</dl>
+	<h3>詳細説明</h3>
+	<p>本ノードはJavascript APIをラップしたものです。より詳細に知るには、<a href="https://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html">APIドキュメント</a>を参照してください。</p>
+	<p><b>注</b>:使用しているAWS IAMユーザが使用する機能に十分な権限を持っていることを確認してください。
+		十分な権限を権限を持っていない場合、エラーメッセージが表示されます。</p>
+</script>
+
+
+

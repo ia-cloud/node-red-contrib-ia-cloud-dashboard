@@ -1,0 +1,372 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ui_oprstatus',{
+        category: 'iaCloud dashboard',
+        color: 'rgb(119, 198, 204)',
+        defaults: {
+            // configSel: {value:"inchartSet", required:true},
+            confsel: {value:"inchartSet"},
+            group: {type: 'ui_group', required:false},
+            label: {value: ''},
+            name: {value: ''},
+            order: {value: 0},
+            width: {value: 0,
+                    validate: function(v) {
+                        var valid = true
+                        var width = v||0;
+                        var currentGroup = $('#node-input-group').val()|| this.group;
+                        var groupNode = RED.nodes.node(currentGroup);
+                        valid = !groupNode || +width <= +groupNode.width;
+                        $("#node-input-size").toggleClass("input-error",!valid);
+                        return valid;
+                }},
+            height: {value: 0},
+            item: {value: ""},
+            storeOutMessages: {value: true},
+            fwdInMessages: {value: true},
+            templateScope: {value: 'local'},
+            statusObject:{value:"", required: true }
+        },
+        inputs:1,
+        outputs:0,
+        align: "right",
+        icon: "ia-cloud.png",
+        paletteLabel: 'oprStatus',
+        label: function() { return this.name || 'oprStatus'; },
+        oneditprepare: function() {
+
+            var that = this;
+            $("#node-input-size").elementSizer({
+                width: "#node-input-width",
+                height: "#node-input-height",
+                group: "#node-input-group"
+            });
+
+        /*
+            if (typeof this.storeOutMessages === 'undefined') {
+                this.storeOutMessages = true;
+                $('#node-input-storeOutMessages').prop('checked', true);
+            }
+
+            if (typeof this.fwdInMessages === 'undefined') {
+                this.fwdInMessages = true;
+                $('#node-input-fwdInMessages').prop('checked', true);
+            }
+        */
+
+
+            $('input[name="configSel"]:radio').change(function() {
+                if ($("#node-input-configSel1").is(":checked")) {
+                    // $("#node-row-item").hide();
+                    $('#node-input-confsel').val("inchartSet");
+                } else {
+                    // $("#node-row-item").show();
+                    $('#node-input-confsel').val("formatSet");
+                }
+            });
+            
+            if($("#node-input-confsel").val() == "inchartSet"){
+                $('#node-input-configSel1').prop('checked', true);
+            } else {
+                $('#node-input-configSel2').prop('checked', true);
+            }
+            $('input[name="configSel"]:radio').change();
+
+            var frm_cnt = 0;
+            
+            //あれば設定データを取り出して、formに展開する。
+            var conf = $("#node-input-statusObject").val();
+            if (conf) {
+            var dItems = {};
+            try { dItems = JSON.parse(conf); }
+            catch(e) { conf = "";}
+            }
+            if(conf != ""){
+            //設定データがあった
+            var dItems = JSON.parse(conf);
+            //フォームを一つ保存
+            var original = $('#form_block\\[0\\]');
+            //一旦フォームオブジェクトをすべて削除
+            $(".form-block[id^='form_block']")
+                .each(function(index, formObj) {$(formObj).remove();});
+            dItems.forEach(function(value, idx){
+                original
+                .clone()
+                .hide()
+                .appendTo("#blocks")
+                .attr('id', 'form_block[' + idx + ']') // クローンのid属性を変更。
+                .end() // 一度適用する
+                .find('div, input, textarea, select, label').each(function(index, obj) {
+                    if ($(obj).attr('id') != null) {
+                        if($(obj).attr("id").substr(0,5) == "dItem"){
+                            $(obj).val("" + (idx + 1));
+                        }
+                        $(obj).attr({
+                        id: $(obj).attr('id').replace(/\[[0-9]+\]$/, '[' + idx + ']')
+                        });
+                    }
+                    if ($(obj).attr('name') != null) {
+                        $(obj).attr({
+                            name: $(obj).attr('name').replace(/\[[0-9]+\]$/, '[' + idx + ']')
+                        });
+                    }
+                    if ($(obj).attr('for') != null) {
+                        $(obj).attr({
+                            for: $(obj).attr('for').replace(/\[[0-9]+\]$/, '[' + idx + ']')
+                        });
+                    }
+                });
+
+                $("#statusColor\\[" + idx + "\\]").val(value.statusColor);
+                $("#statusValue\\[" + idx + "\\]").val(value.statusValue);
+                $("#statusLabel\\[" + idx + "\\]").val(value.statusLabel);
+
+                var block = $('#form_block\\[' + idx + '\\]');
+                if (idx != 0) block.find('input[name="del_btn"]').show();
+                block.slideDown('slow');
+                frm_cnt = idx;
+            });
+        }
+
+
+        //追加ボタンが押されたら
+        $("#form_add").off("click");
+        $("#form_add").on("click", function() {
+          var original = $('#form_block\\[' + frm_cnt + '\\]');
+          frm_cnt++;
+          original
+          .clone()
+          .hide()
+          .insertAfter(original)
+          .attr('id', 'form_block[' + frm_cnt + ']'); // クローンのid属性を変更。
+          var clone = $('#form_block\\[' + frm_cnt + '\\]');
+          clone.find('div, input, textarea, select, label').each(function(idx, obj) {
+            if ($(obj).attr('id') != null) {
+              if($(obj).attr("id").substr(0,5) == "dItem"){
+                  $(obj).val("" + (frm_cnt + 1));
+              }
+              $(obj).attr({
+                id: $(obj).attr('id').replace(/\[[0-9]+\]$/, '[' + frm_cnt + ']')
+              });
+            }
+            if ($(obj).attr('name') != null) {
+              $(obj).attr({
+                name: $(obj).attr('name').replace(/\[[0-9]+\]$/, '[' + frm_cnt + ']')
+               });
+            }
+            if ($(obj).attr('for') != null) {
+              $(obj).attr({
+                for: $(obj).attr('for').replace(/\[[0-9]+\]$/, '[' + frm_cnt + ']')
+              });
+            }
+          });
+          clone.find('input[name="del_btn"]').show();
+          clone.slideDown('fast');
+        });
+
+        //削除ボタンが押されたら
+        $("#blocks").off('click', 'input[name="del_btn"]');
+        $("#blocks").on('click', 'input[name="del_btn"]', function() {
+          var removeObj = $(this).parents(".form-block");
+          removeObj.fadeOut('fast', function() {
+            removeObj.remove();
+            // 番号振り直し
+            frm_cnt = 0;
+            $(".form-block[id^='form_block']").each(function(index, formObj) {
+              if ($(formObj).attr('id') != 'form_block[0]') {
+                frm_cnt++;
+                $(formObj)
+                  .attr('id', 'form_block[' + frm_cnt + ']') // id属性を変更。
+                  .find('div, input, textarea, select, label').each(function(idx, obj) {
+                   if ($(obj).attr('id') != null) {
+                      if($(obj).attr("id").substr(0,5) == "dItem"){
+                            $(obj).val("" + (frm_cnt + 1));
+                      }
+                      $(obj).attr({
+                        id: $(obj).attr('id').replace(/\[[0-9]+\]$/,'['+frm_cnt+']')
+                      });
+                    }
+                    if ($(obj).attr('name') != null) {
+                      $(obj).attr({
+                        name: $(obj).attr('name').replace(/\[[0-9]+\]$/,'['+frm_cnt+']')
+                      });
+                    }
+                    if ($(obj).attr('for') != null) {
+                      $(obj).attr({
+                        for: $(obj).attr('for').replace(/\[[0-9]+\]$/,'['+frm_cnt+']')
+                      });
+                    }
+                  });
+              }
+            });
+          });
+        });
+
+
+
+        },
+        oneditsave: function() {
+
+            var dItems = [];
+
+            $(".form-block[id^='form_block']").each(function(idx, obj){
+                // var item ={commonName: "Alarm&Event", dataValue: {}, options:{}};
+                var item = {};
+
+                item.statusColor = $("#statusColor\\[" + idx + "\\]").val();
+                item.statusValue = $("#statusValue\\[" + idx + "\\]").val();
+                item.statusLabel = $("#statusLabel\\[" + idx + "\\]").val();
+                
+                dItems[idx]=item;
+            });
+
+            //フォームの各要素をobjectに記述し、JSON文字列に変換する。
+            try {$("#node-input-statusObject").val(JSON.stringify(dItems));}
+            catch(e) {$("#node-input-statusObject").val("")}
+
+        }
+
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ui_oprstatus">
+
+    <!-- 入力値設定 -->
+    <label style="width: 100%;" for="node-input-setMode" ><i class="fa fa-list"></i>  入力値</label>
+    <div class="form-row">
+        <input type="text" style="display: none;" id="node-input-confsel" valie="inchartSet">
+        <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
+              name="configSel" id="node-input-configSel1"
+              value="inchartSet" checked="checked">
+        <label style="width: 40%;" for="node-input-configSel1"> json2inchartからの出力</label>
+        <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
+              name="configSel" id="node-input-configSel2" value="formatSet">
+        <label style="width: 40%;" for="node-input-configSel2"> 基本フォーマットデータ</label>
+    </div>
+
+    <!-- グループ -->
+	<div class="form-row" id="template-row-group">
+        <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+        <input type="text" id="node-input-group">
+    </div>
+
+    <!-- 表示サイズ -->
+    <div class="form-row" id="template-row-size">
+        <label><i class="fa fa-object-group"></i> サイズ</label>
+        <input type="hidden" id="node-input-width">
+        <input type="hidden" id="node-input-height">
+        <button class="editor-button" id="node-input-size"></button>
+    </div>
+
+    <!-- ラベル -->
+    <div class="form-row">
+        <label for="node-input-label"><i class="fa fa-i-cursor"></i> ラベル</label>
+        <input type="text" id="node-input-label">
+    </div>
+
+    <!-- 入力・出力オプション -->
+    <!--
+    <div id="template-pass-store">
+        <div class="form-row" style="margin-bottom:0px;">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-fwdInMessages" style="display:inline-block; width:auto; vertical-align:top;">
+            <label for="node-input-fwdInMessages" style="width:70%;"> 入力からメッセージを渡す </label>
+        </div>
+        <div class="form-row" style="margin-bottom:0px;">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-storeOutMessages" style="display:inline-block; width:auto; vertical-align:top;">
+            <label for="node-input-storeOutMessages" style="width:70%;"> 保存された状態に出力メッセージを追加 </label>
+        </div>
+    </div>
+    -->
+
+    <!-- 項目名 -->
+    <div class="form-row" id="node-row-item" style="width:300px;">
+        <div class="form-row">
+            <label for="node-input-item"><i class="fa fa-list"></i> 項目名</label>
+            <input type="text" id="node-input-item">
+        </div>
+    </div>
+
+
+    <!-- 状態詳細設定 -->
+    <div class="form-row hidden">
+        <input type="text" id="node-input-statusObject">
+    </div>
+    <div id="blocks">
+        <div class="form-block" id="form_block[0]">
+            <div class="form-row">
+                <div class="form-inline" id="from_del[0]" >
+                    <span style="border-bottom:solid 2px;"><i class="fa fa-list"></i> 項目番号</label></span>
+                    <input type="text" id="dItem[0]" style="width: 30px;" value="1"
+                        disabled="disabled">
+                    <input type="button" name="del_btn" value="削除"
+                        style="margin-left: 30px; width: 70px; display: none;">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-inline" style="vertical-align: middle;">
+                    <label for="node-input-statusColor"><i class="fa fa-angle-right"></i> 表示色</label>
+                    <!-- 
+                    <select id="statusColor[0]" name="statusColor" style="width: 100px;">
+                        <option selected="selected" value="gray">gray</option>
+                        <option value="green">green</option>
+                        <option value="blue"style="background:grey;color:blue;font-size:200%">■</option>
+                        <option value="red">red</option>
+                        <option value="green">green</option>
+                        <option value="blue">blue</option>
+                        <option value="red">red</option>
+                    </select>
+                    -->
+                    <input type="color" id="statusColor[0]" style="width: 75px;">
+                </div>
+            </div>
+            <div class="form-row">
+                <label for="node-input-statusValue"><i class="fa fa-angle-right"></i> 指定値</label>
+                <input type="text" style="width: 75px;" id="statusValue[0]">
+            </div>
+            <div class="form-row">
+                <label for="node-input-statusLabel"><i class="fa fa-angle-right"></i> 状態名</label>
+                <input type="text" style="width: 150px;" id="statusLabel[0]">
+            </div>
+            <br>
+        </div>
+    </div>
+
+    <!-- Addボタン -->
+    <div class="form-block">
+        <input type="button" id="form_add" name="add_btn" value="追加">
+    </div>
+
+    <!-- ノード名 -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> ノード名</label>
+        <input type="text" id="node-input-name">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="ui_oprstatus">
+    <p>ダッシュボードに稼動状態グラフを表示します。「ノード：<a herf="https://github.com/node-red/node-red-dashboard">node-red-contrib-dashboard</a>」内のウィジェット追加方法
+        [<a herf="https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets">Creating New Dashboard Widgets</a>]を参考に実装したノードです。</p>
+    <h3>入力メッセージ</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>「ノード：<a href="https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/json2inchart-iacloud">node-red-contrib-json2inchart-iacloud</a>」からの出力結果　または
+            「ノード：<a herf="https://github.com/node-red/node-red-dashboard">node-red-contrib-dashboard</a>」 - chartと同様のフォーマット。詳しくは<a herf="https://github.com/node-red/node-red-dashboard/blob/master/Charts.md">本ドキュメント</a>を参照</dd>
+    </dl>
+    <h3>詳細説明</h3>
+    <p>このノードは「ノード：<a href="https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/json2inchart-iacloud">node-red-contrib-json2inchart-iacloud</a>」
+        からの出力を直接本ノードに入力して使用することができます。
+    <p>出力するデータに応じてプロパティを設定する必要があります。</p>
+    <ul>
+        <li><code>項目名</code> - (文字列)表示する稼働状況グラフのサブタイトル</li>
+        <li><code>各項目詳細設定</code></li>
+        <ul>
+        <li><code>表示色</code> - (文字列)グラフ上に表示する際の色を指定</li>
+        <li><code>指定値</code> - (文字列)グラフ上に表示する値の値の指定</li>
+        <li><code>状態名</code> - (文字列)グラフ上のに表示する凡例を記入</li>
+        </ul>
+    </ul>
+    <p><b>注</b>:各項目詳細設定に記載のない値が入力された場合、該当部分のグラフは描画されません。</p>
+
+</script>

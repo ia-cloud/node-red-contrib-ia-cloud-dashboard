@@ -1,0 +1,84 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard",
+        "spec": "git+https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:ia-cloud/node-red-contrib-ia-cloud-dashboard.git",
+          "sshUrl": "git+ssh://git@github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git",
+          "httpsUrl": "git+https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git",
+          "gitUrl": "git://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git",
+          "shortcut": "github:ia-cloud/node-red-contrib-ia-cloud-dashboard",
+          "directUrl": "https://raw.githubusercontent.com/ia-cloud/node-red-contrib-ia-cloud-dashboard/master/package.json"
+        }
+      },
+      "C:\\Users\\sg00565\\.node-red"
+    ]
+  ],
+  "_from": "git+https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git",
+  "_id": "node-red-contrib-ia-cloud-dashboard@0.0.1",
+  "_inBundle": false,
+  "_inCache": true,
+  "_integrity": "",
+  "_location": "/node-red-contrib-ia-cloud-dashboard",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard",
+    "rawSpec": "https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard",
+    "saveSpec": "git+https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git",
+    "fetchSpec": "https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git",
+    "gitCommittish": null
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git#63aefc7c7c235bc1d41d61fe6c3c3db40ffecdb2",
+  "_shasum": "6589cebcde5251f170b63d81304370c669ff7aee",
+  "_shrinkwrap": null,
+  "_spec": "https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard",
+  "_where": "C:\\Users\\sg00565\\.node-red",
+  "author": {
+    "name": "ia-cloud project menbers"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "json2csv": "4.3.5",
+    "moment": "2.24.0",
+    "node-red-dashboard": "2.14.0",
+    "request": "2.88.0",
+    "serve-static": "~1.13.2",
+    "socket.io": "^2.2.0"
+  },
+  "deprecated": false,
+  "description": "ia-cloud Node-RED nodes",
+  "devDependencies": {},
+  "gitHead": "9a393f07060d79f00a990670ddc456adbf4d0e89",
+  "license": "ISC",
+  "main": "dynamodb-iacloud/dynamoDB.js",
+  "name": "node-red-contrib-ia-cloud-dashboard",
+  "node-red": {
+    "nodes": {
+      "dynamodb-iacloud": "dynamodb-iacloud/dynamoDB.js",
+      "json2csv-iacloud": "json2csv-iacloud/json2csv.js",
+      "json2inchart-iacloud": "json2inchart-iacloud/json2inchart.js",
+      "json2inwidget-iacloud": "json2inwidget-iacloud/json2inwidget.js",
+      "ui-table": "ui-table/ui_table.js",
+      "ui-oprstatus": "ui-oprstatus/ui_oprstatus.js",
+      "ui-spreadsheet": "ui_spreadsheet/ui_spreadsheet.js"
+    }
+  },
+  "optionalDependencies": {},
+  "scripts": {
+    "test": "iacloudtest"
+  },
+  "version": "0.0.1"
+}

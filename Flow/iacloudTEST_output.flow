@@ -1,0 +1,1251 @@
+[
+    {
+        "id": "8402dca1.64d5f",
+        "type": "tab",
+        "label": "iacloud-dashboard　デモ",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "a7c39573.a12598",
+        "type": "inject",
+        "z": "8402dca1.64d5f",
+        "name": "JSON",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 110,
+        "y": 80,
+        "wires": [
+            [
+                "24c5cb3a.96e7b4",
+                "c4a19fcb.d863d"
+            ]
+        ]
+    },
+    {
+        "id": "86b4904d.bc485",
+        "type": "json2inchart",
+        "z": "8402dca1.64d5f",
+        "name": "結果変換",
+        "series": "timeStamp,CT-M01ct1",
+        "x": 460,
+        "y": 80,
+        "wires": [
+            [
+                "5d8df580.2a485c"
+            ]
+        ]
+    },
+    {
+        "id": "d97d56af.5263a8",
+        "type": "comment",
+        "z": "8402dca1.64d5f",
+        "name": "機番M01_温度・電流",
+        "info": "",
+        "x": 120,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "5d8df580.2a485c",
+        "type": "ui_chart",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "8d37288b.8b95c8",
+        "order": 2,
+        "width": "3",
+        "height": "2",
+        "label": "機番M01　電流",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "30",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 640,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c1e012b1.5ebcd",
+        "type": "json2inchart",
+        "z": "8402dca1.64d5f",
+        "name": "結果変換",
+        "series": "timeStamp,TEMP-M01temp1,TEMP-M01temp2,TEMP-M01temp3,TEMP-M01temp4",
+        "x": 460,
+        "y": 120,
+        "wires": [
+            [
+                "7aa7070d.165848"
+            ]
+        ]
+    },
+    {
+        "id": "7aa7070d.165848",
+        "type": "ui_chart",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "8d37288b.8b95c8",
+        "order": 1,
+        "width": "3",
+        "height": "2",
+        "label": "機番M01　温度",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "30",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 640,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c4a19fcb.d863d",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "温度取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.enocean.TEMP-M01",
+        "stime": "",
+        "etime": "",
+        "limit": "50",
+        "sort": "true",
+        "Item": "",
+        "x": 280,
+        "y": 120,
+        "wires": [
+            [
+                "c1e012b1.5ebcd"
+            ]
+        ]
+    },
+    {
+        "id": "24c5cb3a.96e7b4",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "電流取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.enocean.CT-M01",
+        "stime": "",
+        "etime": "",
+        "limit": "50",
+        "sort": "true",
+        "Item": "",
+        "x": 280,
+        "y": 80,
+        "wires": [
+            [
+                "86b4904d.bc485"
+            ]
+        ]
+    },
+    {
+        "id": "481d89cf.8f9e18",
+        "type": "inject",
+        "z": "8402dca1.64d5f",
+        "name": "JSON",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 110,
+        "y": 180,
+        "wires": [
+            [
+                "cac72dd1.610a5",
+                "1aed06.bda9b2fa"
+            ]
+        ]
+    },
+    {
+        "id": "6a4f5df0.03e514",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "TEMP-M01temp1取得",
+        "series": "TEMP-M01temp1",
+        "x": 500,
+        "y": 180,
+        "wires": [
+            [
+                "3ba22537.1868ca"
+            ]
+        ]
+    },
+    {
+        "id": "cac72dd1.610a5",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "M01温度取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.enocean.TEMP-M01",
+        "stime": "",
+        "etime": "",
+        "limit": "1",
+        "sort": "false",
+        "Item": "",
+        "x": 290,
+        "y": 180,
+        "wires": [
+            [
+                "6a4f5df0.03e514",
+                "3491cf8c.b4edd",
+                "19f3e42e.661e1c",
+                "ac48f302.a9533"
+            ]
+        ]
+    },
+    {
+        "id": "3ba22537.1868ca",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "8d37288b.8b95c8",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M01temp1",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "40",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "20",
+        "seg2": "25",
+        "x": 710,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "3491cf8c.b4edd",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "TEMP-M01temp2取得",
+        "series": "TEMP-M01temp2",
+        "x": 500,
+        "y": 220,
+        "wires": [
+            [
+                "cedde2f6.fe807"
+            ]
+        ]
+    },
+    {
+        "id": "19f3e42e.661e1c",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "TEMP-M01temp3取得",
+        "series": "TEMP-M01temp3",
+        "x": 500,
+        "y": 260,
+        "wires": [
+            [
+                "22a0de81.495b32"
+            ]
+        ]
+    },
+    {
+        "id": "ac48f302.a9533",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "TEMP-M01temp4取得",
+        "series": "TEMP-M01temp4",
+        "x": 500,
+        "y": 300,
+        "wires": [
+            [
+                "a0649098.93512"
+            ]
+        ]
+    },
+    {
+        "id": "cedde2f6.fe807",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "8d37288b.8b95c8",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M01temp2",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "40",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "20",
+        "seg2": "25",
+        "x": 710,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "22a0de81.495b32",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "8d37288b.8b95c8",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M01temp3",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "40",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "20",
+        "seg2": "25",
+        "x": 710,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "a0649098.93512",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "8d37288b.8b95c8",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M01temp4",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "40",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "20",
+        "seg2": "25",
+        "x": 710,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "1aed06.bda9b2fa",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "M01電流取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.enocean.CT-M01",
+        "stime": "",
+        "etime": "",
+        "limit": "1",
+        "sort": "false",
+        "Item": "",
+        "x": 290,
+        "y": 340,
+        "wires": [
+            [
+                "f6461c86.92cfe"
+            ]
+        ]
+    },
+    {
+        "id": "b518202b.1702f",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "8d37288b.8b95c8",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M01ct1",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "0.5",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "0.25",
+        "seg2": "0.3",
+        "x": 700,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "f6461c86.92cfe",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "CT-M01ct1取得",
+        "series": "CT-M01ct1",
+        "x": 480,
+        "y": 340,
+        "wires": [
+            [
+                "b518202b.1702f"
+            ]
+        ]
+    },
+    {
+        "id": "f77cf04b.722cd",
+        "type": "inject",
+        "z": "8402dca1.64d5f",
+        "name": "JSON",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 110,
+        "y": 460,
+        "wires": [
+            [
+                "97869878.5a4248",
+                "1664a2ee.27906d"
+            ]
+        ]
+    },
+    {
+        "id": "97869878.5a4248",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "電流取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.enocean.CT-M02",
+        "stime": "",
+        "etime": "",
+        "limit": "50",
+        "sort": "true",
+        "Item": "",
+        "x": 280,
+        "y": 460,
+        "wires": [
+            [
+                "2a072b58.a09b44"
+            ]
+        ]
+    },
+    {
+        "id": "1664a2ee.27906d",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "温度取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.enocean.TEMP-M02",
+        "stime": "",
+        "etime": "",
+        "limit": "50",
+        "sort": "true",
+        "Item": "",
+        "x": 280,
+        "y": 500,
+        "wires": [
+            [
+                "a60f7935.33cde8"
+            ]
+        ]
+    },
+    {
+        "id": "2a072b58.a09b44",
+        "type": "json2inchart",
+        "z": "8402dca1.64d5f",
+        "name": "結果変換",
+        "series": "timeStamp,CT-M02ct1",
+        "x": 460,
+        "y": 460,
+        "wires": [
+            [
+                "2d3b1743.38caf8"
+            ]
+        ]
+    },
+    {
+        "id": "a60f7935.33cde8",
+        "type": "json2inchart",
+        "z": "8402dca1.64d5f",
+        "name": "結果変換",
+        "series": "timeStamp,TEMP-M02temp1,TEMP-M02temp2,TEMP-M02temp3,TEMP-M02temp4",
+        "x": 460,
+        "y": 500,
+        "wires": [
+            [
+                "2cb19d4f.debbb2"
+            ]
+        ]
+    },
+    {
+        "id": "2d3b1743.38caf8",
+        "type": "ui_chart",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "ca01cf8a.e0266",
+        "order": 2,
+        "width": "3",
+        "height": "2",
+        "label": "機番M02　電流",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "30",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 660,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2cb19d4f.debbb2",
+        "type": "ui_chart",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "ca01cf8a.e0266",
+        "order": 1,
+        "width": "3",
+        "height": "2",
+        "label": "機番M02　温度",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "30",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 660,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "67c3c10.e6f154",
+        "type": "comment",
+        "z": "8402dca1.64d5f",
+        "name": "機番M02_温度・電流",
+        "info": "",
+        "x": 120,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "16569124.88964f",
+        "type": "inject",
+        "z": "8402dca1.64d5f",
+        "name": "JSON",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 110,
+        "y": 600,
+        "wires": [
+            [
+                "960188c6.711658",
+                "398192c0.8b1c2e"
+            ]
+        ]
+    },
+    {
+        "id": "e354e8aa.388418",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "TEMP-M02temp1取得",
+        "series": "TEMP-M02temp1",
+        "x": 500,
+        "y": 600,
+        "wires": [
+            [
+                "54107443.364ccc"
+            ]
+        ]
+    },
+    {
+        "id": "960188c6.711658",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "M02温度取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.enocean.TEMP-M02",
+        "stime": "",
+        "etime": "",
+        "limit": "1",
+        "sort": "false",
+        "Item": "",
+        "x": 290,
+        "y": 600,
+        "wires": [
+            [
+                "e354e8aa.388418",
+                "c99f1017.537c",
+                "5786c394.bc4b9c",
+                "f378c6da.cf3bb8"
+            ]
+        ]
+    },
+    {
+        "id": "54107443.364ccc",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "ca01cf8a.e0266",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M02temp1",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "40",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "20",
+        "seg2": "25",
+        "x": 710,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "c99f1017.537c",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "TEMP-M02temp2取得",
+        "series": "TEMP-M02temp2",
+        "x": 500,
+        "y": 640,
+        "wires": [
+            [
+                "5110ffec.8c40c"
+            ]
+        ]
+    },
+    {
+        "id": "5786c394.bc4b9c",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "TEMP-M02temp3取得",
+        "series": "TEMP-M02temp3",
+        "x": 500,
+        "y": 680,
+        "wires": [
+            [
+                "2a950112.d03cfe"
+            ]
+        ]
+    },
+    {
+        "id": "f378c6da.cf3bb8",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "TEMP-M02temp4取得",
+        "series": "TEMP-M02temp4",
+        "x": 500,
+        "y": 720,
+        "wires": [
+            [
+                "4cf6ee6f.9963c"
+            ]
+        ]
+    },
+    {
+        "id": "5110ffec.8c40c",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "ca01cf8a.e0266",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M02temp2",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "40",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "20",
+        "seg2": "25",
+        "x": 710,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "2a950112.d03cfe",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "ca01cf8a.e0266",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M02temp3",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "40",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "20",
+        "seg2": "25",
+        "x": 710,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "4cf6ee6f.9963c",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "ca01cf8a.e0266",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M02temp4",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "40",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "20",
+        "seg2": "25",
+        "x": 710,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "398192c0.8b1c2e",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "M01電流取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.enocean.CT-M02",
+        "stime": "",
+        "etime": "",
+        "limit": "1",
+        "sort": "false",
+        "Item": "",
+        "x": 290,
+        "y": 760,
+        "wires": [
+            [
+                "2f8e8eb6.c40312"
+            ]
+        ]
+    },
+    {
+        "id": "2f8e8eb6.c40312",
+        "type": "json2inwidget",
+        "z": "8402dca1.64d5f",
+        "name": "CT-M02ct1取得",
+        "series": "CT-M02ct1",
+        "x": 480,
+        "y": 760,
+        "wires": [
+            [
+                "ac16c174.87962"
+            ]
+        ]
+    },
+    {
+        "id": "ac16c174.87962",
+        "type": "ui_gauge",
+        "z": "8402dca1.64d5f",
+        "name": "",
+        "group": "ca01cf8a.e0266",
+        "order": 2,
+        "width": "1",
+        "height": "1",
+        "gtype": "gage",
+        "title": "M01ct1",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "0.5",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "0.25",
+        "seg2": "0.3",
+        "x": 700,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "f0d0af9d.25945",
+        "type": "ui_oprstatus",
+        "z": "8402dca1.64d5f",
+        "confsel": "formatSet",
+        "group": "440af51b.6d5e5c",
+        "label": "制御盤XXX",
+        "name": "稼働状況",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "item": "稼働状況",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "statusObject": "[{\"statusColor\":\"#c0c0c0\",\"statusValue\":\"0\",\"statusLabel\":\"正常停止\"},{\"statusColor\":\"#008000\",\"statusValue\":\"1\",\"statusLabel\":\"正常稼働\"},{\"statusColor\":\"#0080ff\",\"statusValue\":\"2\",\"statusLabel\":\"エコ停止\"},{\"statusColor\":\"#ff0000\",\"statusValue\":\"9\",\"statusLabel\":\"異常停止\"}]",
+        "x": 260,
+        "y": 1140,
+        "wires": []
+    },
+    {
+        "id": "56da832c.b744fc",
+        "type": "inject",
+        "z": "8402dca1.64d5f",
+        "name": "JSON",
+        "topic": "",
+        "payload": "[[\"2017-10-16T08:10:00+09:00\",0],[\"2017-10-16T08:11:00+09:00\",0],[\"2017-10-16T08:12:00+09:00\",1],[\"2017-10-16T08:13:00+09:00\",1],[\"2017-10-16T08:14:00+09:00\",1],[\"2017-10-16T08:15:00+09:00\",2],[\"2017-10-16T08:16:00+09:00\",2],[\"2017-10-16T08:17:00+09:00\",1],[\"2017-10-16T08:18:00+09:00\",9],[\"2017-10-16T08:19:00+09:00\",9],[\"2017-10-16T08:20:00+09:00\",9],[\"2017-10-16T08:21:00+09:00\",9],[\"2017-10-16T08:22:00+09:00\",9],[\"2017-10-16T08:23:00+09:00\",1],[\"2017-10-16T08:24:00+09:00\",0]]",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 110,
+        "y": 1140,
+        "wires": [
+            [
+                "f0d0af9d.25945"
+            ]
+        ]
+    },
+    {
+        "id": "d4757ae5.299508",
+        "type": "comment",
+        "z": "8402dca1.64d5f",
+        "name": "制御盤XXX　稼働状況グラフ",
+        "info": "",
+        "x": 140,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "7ed4b7f9.7749e8",
+        "type": "inject",
+        "z": "8402dca1.64d5f",
+        "name": "JSON",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 110,
+        "y": 880,
+        "wires": [
+            [
+                "c62616ee.a36da8",
+                "4c8f87e5.6046b8"
+            ]
+        ]
+    },
+    {
+        "id": "99605067.ea301",
+        "type": "json2inchart",
+        "z": "8402dca1.64d5f",
+        "name": "結果変換",
+        "series": "CP-xxxop-signal",
+        "x": 500,
+        "y": 880,
+        "wires": [
+            [
+                "c9ed22e8.4d6f6"
+            ]
+        ]
+    },
+    {
+        "id": "f90c1d1.391a9e",
+        "type": "comment",
+        "z": "8402dca1.64d5f",
+        "name": "制御盤CP-xxx_稼働・エラー信号",
+        "info": "",
+        "x": 150,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "a6762c61.67772",
+        "type": "json2inchart",
+        "z": "8402dca1.64d5f",
+        "name": "結果変換",
+        "series": "CP-xxxerr-signal",
+        "x": 500,
+        "y": 920,
+        "wires": [
+            [
+                "78ffa574.c923ec"
+            ]
+        ]
+    },
+    {
+        "id": "258b0519.b5edda",
+        "type": "comment",
+        "z": "8402dca1.64d5f",
+        "name": "アラーム情報",
+        "info": "",
+        "x": 90,
+        "y": 980,
+        "wires": []
+    },
+    {
+        "id": "3a7ae173.d4990e",
+        "type": "inject",
+        "z": "8402dca1.64d5f",
+        "name": "JSON",
+        "topic": "",
+        "payload": "{}",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 110,
+        "y": 1020,
+        "wires": [
+            [
+                "10bf1535.1cc3db"
+            ]
+        ]
+    },
+    {
+        "id": "b6d52552.92c868",
+        "type": "json2inchart",
+        "z": "8402dca1.64d5f",
+        "name": "結果変換",
+        "series": "timeStamp,メッセージ",
+        "x": 460,
+        "y": 1020,
+        "wires": [
+            [
+                "b33f710.2db6a9"
+            ]
+        ]
+    },
+    {
+        "id": "b33f710.2db6a9",
+        "type": "ui_table",
+        "z": "8402dca1.64d5f",
+        "confsel": "inchartSet",
+        "group": "9bd366d2.616c58",
+        "name": "アラーム情報一覧",
+        "label": "アラーム一覧",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "item": "",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "x": 650,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "c9ed22e8.4d6f6",
+        "type": "ui_oprstatus",
+        "z": "8402dca1.64d5f",
+        "confsel": "inchartSet",
+        "group": "4b940581.2bc96c",
+        "label": "制御盤CP-xxx",
+        "name": "制御盤CP-xxx　稼働信号",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "item": "稼働信号",
+        "storeOutMessages": false,
+        "fwdInMessages": false,
+        "templateScope": "local",
+        "statusObject": "[{\"statusColor\":\"#008000\",\"statusValue\":\"true\",\"statusLabel\":\"稼動中\"},{\"statusColor\":\"#c0c0c0\",\"statusValue\":\"false\",\"statusLabel\":\"停止中\"}]",
+        "x": 710,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "78ffa574.c923ec",
+        "type": "ui_oprstatus",
+        "z": "8402dca1.64d5f",
+        "confsel": "inchartSet",
+        "group": "4b940581.2bc96c",
+        "label": "",
+        "name": "制御盤CP-xxx　エラー発生状況",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "item": "エラー発生状況",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "statusObject": "[{\"statusColor\":\"#ff0000\",\"statusValue\":\"true\",\"statusLabel\":\"エラー発生中\"},{\"statusColor\":\"#c0c0c0\",\"statusValue\":\"false\",\"statusLabel\":\"通常稼動中\"}]",
+        "x": 710,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "c62616ee.a36da8",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "稼働信号取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.CP-xxx:op-signal",
+        "stime": "",
+        "etime": "",
+        "limit": "50",
+        "sort": "true",
+        "Item": "",
+        "x": 300,
+        "y": 880,
+        "wires": [
+            [
+                "99605067.ea301"
+            ]
+        ]
+    },
+    {
+        "id": "4c8f87e5.6046b8",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "エラー信号取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.CP-xxx:err-signal",
+        "stime": "",
+        "etime": "",
+        "limit": "50",
+        "sort": "true",
+        "Item": "",
+        "x": 300,
+        "y": 920,
+        "wires": [
+            [
+                "a6762c61.67772"
+            ]
+        ]
+    },
+    {
+        "id": "10bf1535.1cc3db",
+        "type": "DynamoDB",
+        "z": "8402dca1.64d5f",
+        "name": "アラーム情報取得",
+        "tableName": "HackathonUser_1",
+        "operation": "Query",
+        "objectKey": "jp.co.iacloud.alarm",
+        "stime": "",
+        "etime": "",
+        "limit": "50",
+        "sort": "true",
+        "Item": "",
+        "x": 290,
+        "y": 1020,
+        "wires": [
+            [
+                "b6d52552.92c868"
+            ]
+        ]
+    },
+    {
+        "id": "8d37288b.8b95c8",
+        "type": "ui_group",
+        "z": "",
+        "name": "iaCloudダッシュボード　M01温度・電流",
+        "tab": "9df7a8f1.b2d958",
+        "order": 1,
+        "disp": false,
+        "width": "5",
+        "collapse": false
+    },
+    {
+        "id": "ca01cf8a.e0266",
+        "type": "ui_group",
+        "z": "",
+        "name": "iaCloudダッシュボード　M02温度・電流",
+        "tab": "9df7a8f1.b2d958",
+        "order": 2,
+        "disp": false,
+        "width": "5",
+        "collapse": false
+    },
+    {
+        "id": "440af51b.6d5e5c",
+        "type": "ui_group",
+        "z": "",
+        "name": "iaCloudダッシュボード　稼働状況",
+        "tab": "9df7a8f1.b2d958",
+        "order": 4,
+        "disp": false,
+        "width": "5",
+        "collapse": false
+    },
+    {
+        "id": "9bd366d2.616c58",
+        "type": "ui_group",
+        "z": "",
+        "name": "iaCloudダッシュボード　アラーム情報",
+        "tab": "9df7a8f1.b2d958",
+        "order": 5,
+        "disp": false,
+        "width": "4",
+        "collapse": false
+    },
+    {
+        "id": "4b940581.2bc96c",
+        "type": "ui_group",
+        "z": "",
+        "name": "iaCloudダッシュボード　稼働・エラー信号",
+        "tab": "9df7a8f1.b2d958",
+        "order": 3,
+        "disp": false,
+        "width": "5",
+        "collapse": false
+    },
+    {
+        "id": "9df7a8f1.b2d958",
+        "type": "ui_tab",
+        "z": "",
+        "name": "[デモ3]iaCloudダッシュボード",
+        "icon": "dashboard",
+        "order": 6,
+        "disabled": false,
+        "hidden": false
+    }
+]

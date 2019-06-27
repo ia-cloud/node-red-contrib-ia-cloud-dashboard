@@ -1,0 +1,56 @@
+<script type="text/javascript">
+    RED.nodes.registerType('json2inchart',{
+        category: "iaCloud dashboard",
+        color: "#ffd700",
+        defaults: {
+            name: {value:""},
+            series: {value: "", required:true}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "ia-cloud.png",  
+        label: function() {
+            return this.name || "json2inchart";
+        },
+        oneditprepare: function () {
+        }
+    });
+</script>
+
+<!-- ノード編集画面テンプレート -->
+<script type="text/x-red" data-template-name="json2inchart">
+    <!-- ノード名 -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> ノード名</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <hr/>
+
+    <!-- 項目名(dataName) -->
+    <div class="form-row">
+        <label for="node-input-series"><i class="fa fa-list"></i> 項目名(dataName)<span style="color: #ff0000;">*</span></label>
+        <input type="text" id="node-input-series" placeholder="温度A,温度B,温度C">
+    </div>
+</script>
+
+<!-- エディタに登録するノード説明 -->
+<script type="text/x-red" data-help-name="json2inchart">
+    <p>このノードはiacloudオブジェクト（json形式）をdashborad - chartへ入力する際の形へ変換することができます。</p>
+    <h3>入力メッセージ</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>iacloudオブジェクト（json形式）。</dd>
+    </dl>
+    <h3>出力メッセージ</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>入力されたiacloudオブジェクトをdashborad - chartへ入力する際の形に変換した結果（json形式）。</dd>
+    </dl>
+    <h3>詳細説明</h3>
+    <p>このノードは「ノード：<a href="https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/dynamodb-iacloud">node-red-contrib-dynamodb-iacloud</a>」
+        からの出力を直接本ノードに入力して使用することができます。
+    <p>直接変換対象データを入力する場合は、以下プロパティを設定する必要があります。</p>
+    <ul>
+        <li><code>項目名</code> - (文字列)出力する項目名(dataName)をカンマ区切りで入力する</li>
+    </ul>
+</script>
