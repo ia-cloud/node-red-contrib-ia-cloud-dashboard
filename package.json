@@ -73,7 +73,7 @@
       "json2inwidget-iacloud": "json2inwidget-iacloud/json2inwidget.js",
       "ui-table": "ui-table/ui_table.js",
       "ui-oprstatus": "ui-oprstatus/ui_oprstatus.js",
-      "ui-spreadsheet": "ui_spreadsheet/ui_spreadsheet.js"
+      "ui-spreadsheet": "ui-spreadsheet/ui_spreadsheet.js"
     }
   },
   "optionalDependencies": {},
