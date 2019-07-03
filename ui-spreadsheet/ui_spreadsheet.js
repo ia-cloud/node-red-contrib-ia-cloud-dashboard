@@ -11,19 +11,21 @@ module.exports = function(RED) {
             }
 
             RED.nodes.createNode(this, config);
-            var node = this;
-            var done = null;
+            
+            var i;                              // ループ処理用
 
-            var confsel = config.confsel;
-            var item = config.item;
-
+            // var confsel = config.confsel;
+            this.item = config.item;            // 表示する項目
+            var aeStatus = "set";               // カウントするA＆Eステータス
+        
             var label = config.label;
             if  (label == undefined) {
                 label = "";
             }
 
-            var data;               // 出力データ
-            var dataAry = [];
+            var node = this;
+            var done = null;
+        
             var format = "<p align='center' style='font-size:16px;'>" + label + "</p>"
                 +"<table id='table' border='1' cellspacing='0'>"
                 + "<tr>"
@@ -32,8 +34,6 @@ module.exports = function(RED) {
                 + "<tr ng-repeat = 'row in msg.payload'>"
                 + "<td ng-repeat = 'item in row' style='font-size:14px; padding:3px'>{{item}}</td>"
                 + "</tr> </tbody> </table>";
-
-
 
             var group = RED.nodes.getNode(config.group);
             if (!group && config.templateScope !== 'global') { return; }
@@ -50,58 +50,74 @@ module.exports = function(RED) {
             var pixelsWide = ((config.width || group.config.width || 6) - 1) * 43 - 15;
 
             var previousTemplate = null
-            
-            /*
-            var theme = ui.getTheme();
-            var colortheme = {};
-            for (var i in theme) {
-                if (theme.hasOwnProperty(i)) {
-                    colortheme[i.replace(/-/g, "_")] = theme[i].value;
-                }
-            }
-            */
-    
-    
+
             node.on('input', function(msg) {
     
-                if (confsel == "inchartSet") {
-                    // json2inchartからの出力を使用する
-    
+                ItemList = msg.payload.Items;
+                // ItemList = msg.payload; 
+                
+                var contentList;        // 取得データ一時保存
+                var resultList = [];         // 集計結果保存
+
+                // A＆E 件数集計
+                for(i=0;i < ItemList.length; i++) {  //データ件数でループ
                     try {
-                        
-                        dataAry = [];
-
-                        msg.series = msg.payload[0].series;
-                        data = msg.payload[0].data;
-                        
-                        msg.series.unshift("timeStamp");
-        
-                        // 出力用データ作成
-                        var temp = [];
-                        for (var i=0;i<data[0].length;i++) {
-                            temp.push(data[0][i].x, data[0][i].y);
-                            for (var j=1;j<data.length;j++){
-                                temp.push(data[j][i].y);
-                            }
-                            dataAry.push(temp);
-                            temp = [];
+                        if (ItemList[i].dataObject.objectContent != undefined) {
+                            contentList = ItemList[i].dataobject.objectContent.contentData;
+                        } else if (ItemList[i].dataObject.ObjectContent != undefined) {
+                            contentList = ItemList[i].dataObject.ObjectContent.contentData;
+                        } else {
+                            node.error("ui_spreadsheet：A&Eデータではありません。");
+                            continue;
                         }
-
-                    } catch (e) {
-                        node.error("spreadsheet：表示対象データがありません。");
+                    } catch (e) { 
+                        node.error("ui_spreadsheet：A&Eデータではありません。");
+                        continue;
                     }
 
-                    msg.payload = dataAry;
-                    
-                } else {
-                    // 項目取得、配列に変換
-                    msg.series = item.split(",");
-        
+                    // アラームステータスがaeStatusのみのデータを処理
+                    if (contentList[0].dataValue == aeStatus) {
+                        var rIdx;
+                        for (rIdx=0; rIdx<resultList.length; rIdx++) {
+                            if (resultList[rIdx][0] == contentList[1].dataValue) {
+                                break;
+                            }
+                        }
+                        if (rIdx < resultList.length) {
+                            // エラー詳細がresultList内に見つかった場合はカウントに+1
+                            resultList[rIdx][2]++;
+                        } else {
+                            // エラー詳細がresultList内に見つからなかった場合はカウント新規作成
+                            resultList.push([contentList[1].dataValue,contentList[2].dataValue, 1]);
+                        }
+                    }
+
+                }
+
+                // 表示項目ごとに出力内容を設定
+                console.log("item:" + node.item+ "\n");
+                switch (node.item) {
+                    case "nodesc": 
+                    msg.series = ["No", "アラーム&イベント詳細", "回数"];
+                    msg.payload = resultList;
+                    break;
+
+                    case "no": 
+                    for (i=0;i < resultList.length; i++) { 
+                        resultList[i].splice(1, 1);
+                    }
+                    msg.series = ["No", "回数"];
+                    msg.payload = resultList;
+                    break;
+
+                    case "desc": 
+                    for (i=0;i < resultList.length; i++) { 
+                        resultList[i].splice(0, 1);
+                    }
+                    msg.series = ["アラーム&イベント詳細", "回数"];
+                    msg.payload = resultList;
                 }
             });
-
-
-
 
             // create new widget
             done = ui.addWidget({
@@ -120,7 +136,7 @@ module.exports = function(RED) {
                     var clonedMsg = {
                         templateScope: config.templateScope
                     };
-                    for (var i=0; i<properties.length; i++) {
+                    for (i=0; i<properties.length; i++) {
                         var property = properties[i];
                         clonedMsg[property] = msg[property];
                     }

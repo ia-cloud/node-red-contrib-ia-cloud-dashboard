@@ -20,7 +20,7 @@
                         return valid;
                 }},
             height: {value: 0},
-            item: {value: ""},
+            item: {value: "nodisc"},
             storeOutMessages: {value: true},
             fwdInMessages: {value: true},
             templateScope: {value: 'local'}
@@ -40,17 +40,6 @@
             });
 
             /*
-            if (typeof this.storeOutMessages === 'undefined') {
-                this.storeOutMessages = true;
-                $('#node-input-storeOutMessages').prop('checked', true);
-            }
-
-            if (typeof this.fwdInMessages === 'undefined') {
-                this.fwdInMessages = true;
-                $('#node-input-fwdInMessages').prop('checked', true);
-            }
-            */
-
             $('input[name="configSel"]:radio').change(function() {
                 if ($("#node-input-configSel1").is(":checked")) {
                     $("#node-row-item").hide();
@@ -67,6 +56,7 @@
                 $('#node-input-configSel2').prop('checked', true);
             }
             $('input[name="configSel"]:radio').change();
+            */
 
         }
         
@@ -74,19 +64,6 @@
 </script>
 
 <script type="text/x-red" data-template-name="ui_spreadsheet">
-
-    <!-- 入力値設定 -->
-    <label style="width: 100%;" for="node-input-setMode" ><i class="fa fa-list"></i>  入力値</label>
-    <div class="form-row">
-        <input type="text" style="display: none;" id="node-input-confsel" valie="inchartSet">
-        <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
-              name="configSel" id="node-input-configSel1"
-              value="inchartSet" checked="checked">
-        <label style="width: 40%;" for="node-input-configSel1"> json2inchartからの出力</label>
-        <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
-              name="configSel" id="node-input-configSel2" value="formatSet">
-        <label style="width: 40%;" for="node-input-configSel2"> 基本フォーマットデータ</label>
-    </div>
 
     <!-- グループ -->
 	<div class="form-row" id="template-row-group">
@@ -125,12 +102,14 @@
     </div>
     -->
 
-    <!-- 項目名 -->
-    <div class="form-group hide" id="node-row-item" style="width:300px;">
-        <div class="form-row">
-            <label for="node-input-item"><i class="fa fa-list"></i> 項目名</label>
-            <input type="text" id="node-input-item">
-        </div>
+    <!-- 表示項目 -->
+    <div class="form-row">
+        <label for="node-input-item"><i class="fa fa-bars"></i> 表示項目</label>
+        <select type="text" style="width:200px;" id="node-input-item">
+            <option value="nodesc">A&E No，A&E詳細</option>
+            <option value="no">A&E No</option>
+            <option value="desc">A&E詳細</option>
+        </select>
     </div>
 
     <!-- ノード名 -->

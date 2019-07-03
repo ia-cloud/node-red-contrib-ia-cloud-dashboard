@@ -1,43 +1,32 @@
 <script type="text/javascript">
-    RED.nodes.registerType('json2inchart',{
+    RED.nodes.registerType('getlatestdata',{
         category: "iaCloud dashboard",
         color: "#ffd700",
         defaults: {
-            name: {value:""},
-            confsel: {value:"rawData"},
-            series: {value: "", required:true}
-        },
+			name: {value:""},
+			tableName: {value: "", required:true},
+			objectKey: {value: "", required:true},
+			series: {value: "", required:true},
+		},
+		credentials: {
+			userID: {type:"text", required:true},
+            password: {type: "password", required:true}
+		},
         inputs:1,
         outputs:1,
-        icon: "ia-cloud.png",
-        paletteLabel: 'json2inChart',
+		icon: "ia-cloud.png", 
+		paletteLabel: 'getLatestdata',
         label: function() {
-            return this.name || "json2inChart";
+            return this.name || "getLatestdata";
         },
         oneditprepare: function () {
-            
-            $('input[name="configSel"]:radio').change(function() {
-                if ($("#node-input-configSel1").is(":checked")) {
-                    $('#node-input-confsel').val("rawData");
-                } else {
-                    $('#node-input-confsel').val("aggreData");
-                }
-            });
-            
-            if($("#node-input-confsel").val() == "rawData"){
-                $('#node-input-configSel1').prop('checked', true);
-            } else {
-                $('#node-input-configSel2').prop('checked', true);
-            }
-
-            $('input[name="configSel"]:radio').change();
 
         }
     });
 </script>
 
 <!-- ノード編集画面テンプレート -->
-<script type="text/x-red" data-template-name="json2inchart">
+<script type="text/x-red" data-template-name="getlatestdata">
     <!-- ノード名 -->
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> ノード名</label>
@@ -45,28 +34,55 @@
     </div>
     <hr/>
 
-    <!-- 項目設定 -->
+    <!-- 項目設定
     <label style="width: 100%;" for="node-input-format" ><i class="fa fa-list"></i>  入力値</label>
     <div class="form-row" style="margin-left: 100px">
-        <input type="text" style="display: none; vertical-align: top;" id="node-input-confsel" vale="rawData">
-        <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
+        <input type="text" style="display: none; vertical-align: top;" id="node-input-confsel" valie="rawData">
+        <input type="radio" style="display: inline-block; width: auto;  vertical-align: top;"
               name="configSel" id="node-input-configSel1"
               value="rowData" checked="checked">
         <label style="width: 30%; vertical-align: top;" for="node-input-configSel1"> 生データ</label>
-        <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
+        <input type="radio" style="display: inline-block; width: auto;  vertical-align: top;"
               name="configSel" id="node-input-configSel2" value="aggreData">
-        <label style="width: 50%; vertical-align: top;" for="node-input-configSel2"> アグリゲーションデータ</label>
-    </div>
+        <label style="width: 50%;" for="node-input-configSel2"> アグリゲーションデータ</label>
+	</div>
+	-->
 
-    <!-- 項目名(dataName) -->
+	<!-- ユーザID -->
+	<div class="form-row">
+		<label for="node-input-userID"><i class="fa fa-tag"></i> 接続用ID<span style="color: #ff0000;">*</span></label>
+		<input type="text" id="node-input-userID" placeholder="userID"></input>
+	</div>
+
+	<!-- パスワード -->
+	<div class="form-row">
+		<label for="node-input-password"><i class="fa fa-key"></i> パスワード<span style="color: #ff0000;">*</span></label>
+		<input type="password" id="node-input-password" placeholder="password"></input>
+	</div>
+	<hr/>
+
+	<!-- テーブル名 -->
+	<div class="form-row">
+		<label for="node-input-tableName"><i class="fa fa-tag"></i> テーブル名<span style="color: #ff0000;">*</span></label>
+		<input type="text" id="node-input-tableName" placeholder="tableName"></input>
+	</div>
+
+	<!-- オブジェクトキー -->
+	<div class="form-row">
+		<label for="node-input-objectKey"><i class="fa fa-key"></i> オブジェクトキー<span style="color: #ff0000;">*</span></label>
+		<input type="text" id="node-input-objectKey" placeholder="objectKey"></input>
+	</div>
+
+	<!-- 項目名(dataName) -->
     <div class="form-row">
         <label for="node-input-series"><i class="fa fa-list"></i> 項目名(dataName)<span style="color: #ff0000;">*</span></label>
         <input type="text" id="node-input-series" placeholder="温度A,温度B,温度C">
-    </div>
+	</div>
+
 </script>
 
 <!-- エディタに登録するノード説明 -->
-<script type="text/x-red" data-help-name="json2inchart">
+<script type="text/x-red" data-help-name="getlatestdata">
     <p>このノードはiacloudオブジェクト（json形式）をdashborad - chartへ入力する際の形へ変換することができます。</p>
     <h3>入力メッセージ</h3>
     <dl class="message-properties">

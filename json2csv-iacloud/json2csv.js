@@ -8,19 +8,20 @@ module.exports = function(RED) {
 
         // console.log("config: " + JSON.stringify(config));
 
-        var confSel = config.confsel;
+        this.confSel = config.confsel;
 
         // iaCloud形式の場合のフィールド
         var fields = "objectKey,timeStamp,dataObject.objectKey,dataObject.objectType,dataObject.objectDescription,"
-        + "dataObject.timeStamp,dataObject.instanceKey,dataObject.ObjectContent.contentType,"
-        + "dataObject.ObjectContent.contentData.dataName,dataObject.ObjectContent.contentData.dataValue,"
-        + "dataObject.ObjectContent.contentData.unit";
-        var unwind = "dataObject.ObjectContent.contentData";    // iaCloud形式の場合の項目名
+        + "dataObject.timeStamp,dataObject.instanceKey,dataObject.objectContent.contentType,"
+        + "dataObject.objectContent.contentData.dataName,dataObject.objectContent.contentData.dataValue,"
+        + "dataObject.objectContent.contentData.unit";
+        var unwind;                                             // iaCloud形式の場合の項目名
         this.complete = "payload.Items";                        // iaCloud形式の場合のパス
+
 
         // カスタムセットの場合はフィールド名とリストパスを取得
         // iaCloud形式の場合は上で設定した値を使用する
-        if (confSel == "customSet") {
+        if (node.confSel == "customSet") {
             fields = config.fields; // フィールド名
             unwind = config.unwind; // リストパス
             // 変換を行うパスの取得
@@ -36,7 +37,6 @@ module.exports = function(RED) {
                     node.log("\n"+util.inspect(msg, {colors:useColors, depth:10}));
                 }
             } else {
-                // debug user defined msg property
                 var property = "payload";
                 var json = msg[property];
                 if (this.complete !== "false" && typeof this.complete !== "undefined") {
@@ -49,9 +49,33 @@ module.exports = function(RED) {
                 }
             }
 
+
+            
+            // defaultSetの場合はunwind値の確定処理
+            try {
+                if (node.confSel == "defaultSet") {
+                    if (json[0].dataObject.objectContent != undefined) {
+                        unwind = "dataObject.objectContent.contentData";
+                    } else if (json[0].dataObject.ObjectContent != undefined) {
+                        unwind = "dataObject.ObjectContent.contentData";
+                    } else {
+                        node.error("json2csv：変換対象データが不正です。");
+                    }
+                }
+            } catch (e) { 
+                node.error("json2csv：変換対象データが不正です。");
+            }
+            
             // csvに変換
             var csv = csvConvert(json, fields, unwind);
             msg.payload = csv;
+
+            /*
+            console.log(msg.payload);
+            if (msg.payload == "") {
+                node.error("json2csv：正常に変換処理が行われませんでした。");
+            }
+            */
 
             node.send(msg);
         });

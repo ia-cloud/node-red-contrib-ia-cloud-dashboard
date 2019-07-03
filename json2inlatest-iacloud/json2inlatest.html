@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('json2inwidget',{
+    RED.nodes.registerType('json2inlatest',{
         category: "iaCloud dashboard",
         color: "#ffd700",
         defaults: {
@@ -8,9 +8,10 @@
         },
         inputs:1,
         outputs:1,
-        icon: "ia-cloud.png",  
+        icon: "ia-cloud.png",
+        paletteLabel: 'json2inLatest',
         label: function() {
-            return this.name || "json2inwidget";
+            return this.name || "json2inLatest";
         },
         oneditprepare: function () {
         }
@@ -18,7 +19,7 @@
 </script>
 
 <!-- ノード編集画面テンプレート -->
-<script type="text/x-red" data-template-name="json2inwidget">
+<script type="text/x-red" data-template-name="json2inlatest">
     <!-- ノード名 -->
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> ノード名</label>
@@ -34,7 +35,7 @@
 </script>
 
 <!-- エディタに登録するノード説明 -->
-<script type="text/x-red" data-help-name="json2inwidget">
+<script type="text/x-red" data-help-name="json2inlatest">
     <p>このノードはiacloudオブジェクト（json形式）をdashboradの各ウィジェットへ入力する際の形へ変換することができます。</p>
     <p>対象ウィジェットは以下の通り。</p>
     <ul>

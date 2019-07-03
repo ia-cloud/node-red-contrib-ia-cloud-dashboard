@@ -41,7 +41,7 @@
     "#USER",
     "/"
   ],
-  "_resolved": "git+https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git#63aefc7c7c235bc1d41d61fe6c3c3db40ffecdb2",
+  "_resolved": "git+https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard.git#fa59e5cd41e335edb5977d24f9242171460e3c24",
   "_shasum": "6589cebcde5251f170b63d81304370c669ff7aee",
   "_shrinkwrap": null,
   "_spec": "https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard",
@@ -68,9 +68,11 @@
   "node-red": {
     "nodes": {
       "dynamodb-iacloud": "dynamodb-iacloud/dynamoDB.js",
+      "getlatestdata-iacloud": "getchartdata-iacloud/getchartdata.js",
+      "getchartdata-iacloud": "getlatestdata-iacloud/getlatestdata.js",
       "json2csv-iacloud": "json2csv-iacloud/json2csv.js",
       "json2inchart-iacloud": "json2inchart-iacloud/json2inchart.js",
-      "json2inwidget-iacloud": "json2inwidget-iacloud/json2inwidget.js",
+      "json2inlatest-iacloud": "json2inlatest-iacloud/json2inlatest.js",
       "ui-table": "ui-table/ui_table.js",
       "ui-oprstatus": "ui-oprstatus/ui_oprstatus.js",
       "ui-spreadsheet": "ui-spreadsheet/ui_spreadsheet.js"
