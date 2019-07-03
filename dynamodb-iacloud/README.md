@@ -1,4 +1,4 @@
-# node-red-contrib-ia-cloud-output - dynamodb-iacloud
+# node-red-contrib-ia-cloud-dashboard - dynamodb-iacloud
 
 ## 名称
 AWS DynamoDB 操作ノード
