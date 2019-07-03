@@ -15,15 +15,28 @@ ia-cloud　データ取得・変換・可視化ノード
 - ### dynamodb-iacloud
   DynamoDBに格納されたia-cloudオブジェクトを取得するノード  
   
-- ### json2csv-iacloud
-  json入力をcsv形式へ変換することができるノード  
+- ### getChartdata-iacloud
+  DynamoDBに格納されたia-cloudオブジェクトを取得し、アグリゲーション・表示名変更を行った後にdashborad - chartへ入力する際の形に変換するノード  
+
+- ### getLatestdata-iacloud
+  DynamoDBに格納されたia-cloudオブジェクトを取得し、dashboradの各ウィジェットへ入力する際の形に変換するノード 
 
 - ### json2inchart-iacloud
-  json入力をdashborad - chartへ入力する際の形に変換するノード
+  json入力をdashborad - chartへ入力する際の形に変換するノード  
+
+- ### json2inLatest-iacloud
+  json入力をdashboradの各ウィジェットへ入力する際の形に変換するノード 
+
+- ### json2csv-iacloud
+  json入力をcsv形式へ変換することができるノード   
 
 - ### ui-porstatus
   「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装したノード   
-  入力値を基にダッシュボードへ稼働状況グラフを表示するノード
+  入力値を基にダッシュボードへ稼働状況グラフを表示するノード  
 - ### ui-table
   「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装したノード  
-  入力値を基にダッシュボードへテーブル(表)を表示するノード
+  入力値を基にダッシュボードへテーブル(表)を表示するノード  
+
+- ### ui-spreadsheet
+  「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装したノード  
+  ia-cloud アラーム&イベントモデルデータの集計を行いダッシュボードへテーブル(表)形式で表示するノード  
