@@ -24,25 +24,26 @@ json2inchartノード
             "timeStamp":"2017-10-16T08:18:12.477214+09:00",
             "dataObject":{
                 "timeStamp":"2017-10-16T08:18:12.477214+09:00",
-                "ObjectContent":{"contentType":"iaCloudData",
-                "contentData":[
-                    {
-                        "dataValue":35.938,
-                        "dataName":"CPU温度",
-                        "unit":"°C"
-                    },
-                    {
-                        "dataValue":0,
-                        "dataName":"CPU使用率",
-                        "unit":"%"
-                    },
-                    {
-                        "dataValue":500.3,
-                        "dataName":"空きメモリ量",
-                        "unit":"MB"
-                    }
-                ]
-            },
+                "ObjectContent":{
+                    "contentType":"iaCloudData",
+                    "contentData":[
+                        {
+                            "dataValue":35.938,
+                            "dataName":"CPU温度",
+                            "unit":"°C"
+                        },
+                        {
+                            "dataValue":0,
+                            "dataName":"CPU使用率",
+                            "unit":"%"
+                        },
+                        {
+                            "dataValue":500.3,
+                            "dataName":"空きメモリ量",
+                            "unit":"MB"
+                        }
+                    ]
+                },
                 "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
                 "objectType":"iaCloudObject",
                 "objectDescription":"RaspberryPi CPU情報"
@@ -53,25 +54,26 @@ json2inchartノード
             "timeStamp":"2017-10-16T08:17:42.476071+09:00",
             "dataObject":{
                 "timeStamp":"2017-10-16T08:17:42.476071+09:00",
-                "ObjectContent":{"contentType":"iaCloudData",
-                "contentData":[
-                    {
-                        "dataValue":35.938,
-                        "dataName":"CPU温度",
-                        "unit":"°C"
-                    },
-                    {
-                        "dataValue":0,
-                        "dataName":"CPU使用率",
-                        "unit":"%"
-                    },
-                    {
-                        "dataValue":499.92,
-                        "dataName":"空きメモリ量",
-                        "unit":"MB"
-                    }
-                ]
-            },
+                "ObjectContent":{
+                    "contentType":"iaCloudData",
+                    "contentData":[
+                        {
+                            "dataValue":35.938,
+                            "dataName":"CPU温度",
+                            "unit":"°C"
+                        },
+                        {
+                            "dataValue":0,
+                            "dataName":"CPU使用率",
+                            "unit":"%"
+                        },
+                        {
+                            "dataValue":499.92,
+                            "dataName":"空きメモリ量",
+                            "unit":"MB"
+                        }
+                    ]
+                },
                 "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
                 "objectType":"iaCloudObject",
                 "objectDescription":"RaspberryPi CPU情報"
@@ -82,25 +84,26 @@ json2inchartノード
             "timeStamp":"2017-10-16T08:17:12.476207+09:00",
             "dataObject":{
                 "timeStamp":"2017-10-16T08:17:12.476207+09:00",
-                "ObjectContent":{"contentType":"iaCloudData",
-                "contentData":[
-                    {
-                        "dataValue":35.939,
-                        "dataName":"CPU温度",
-                        "unit":"°C"
-                    },
-                    {
-                        "dataValue":0,
-                        "dataName":"CPU使用率",
-                        "unit":"%"
-                    },
-                    {
-                        "dataValue":500.92,
-                        "dataName":"空きメモリ量",
-                        "unit":"MB"
-                    }
-                ]
-            },
+                "ObjectContent":{
+                    "contentType":"iaCloudData",
+                    "contentData":[
+                        {
+                            "dataValue":35.939,
+                            "dataName":"CPU温度",
+                            "unit":"°C"
+                        },
+                        {
+                            "dataValue":0,
+                            "dataName":"CPU使用率",
+                            "unit":"%"
+                        },
+                        {
+                            "dataValue":500.92,
+                            "dataName":"空きメモリ量",
+                            "unit":"MB"
+                        }
+                    ]
+                },
                 "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
                 "objectType":"iaCloudObject",
                 "objectDescription":"RaspberryPi CPU情報"
