@@ -105,6 +105,7 @@ module.exports = function(RED) {
 					// アグリゲーションデータ
 					resultList = dynamodb.aggregation(body.Items, node);
 					ItemList = resultList;
+					delete body.Items;
 
 					// 変換データ取得
 					try {

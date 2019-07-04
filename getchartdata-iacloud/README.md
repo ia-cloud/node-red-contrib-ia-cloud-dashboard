@@ -1,146 +1,103 @@
-# node-red-contrib-ia-cloud-output - json2inchart-iacloud
+# node-red-contrib-ia-cloud-dashboard - getchartdata-iacloud
 
 ## 名称
-json2inchartノード
+getChartdataノード
 
 
 
 ## 機能概要
+このノードは指定したDynamoDBからiacloudオブジェクトを取得・アグリゲーション処理を行い、dashborad - chartへ入力する際の形へ変換することができます。
 
-このノードはiacloudオブジェクト（json形式）をdashborad - chartへ入力する際の形へ変換することができます。
+AWS-SDK DynamoDB関数をラップしており、DynamoDBからデータを取得する処理にはQueryを使用しています。  
+より詳細に知るには、[APIドキュメント](https://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html)を参照してください。
 
-
-
-## 入力メッセージ
-この関数を利用する際は、入力パラメータとしてiacloudオブジェクト（json形式）を記述します。 
-直接変換対象データを入力する場合は、リストItems内にデータを入力します。  
-「ノード：[node-red-contrib-dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-dynamodb-iacloud)」 からの出力を直接本ノードに入力して使用することができます。  
+このノードを使用するには、DynamoDB操作ユーザの情報が必要になります。ユーザ情報は別途発行・取得する必要があります。  
  
-以下に例を示します。  
-
-       Items":[
-        {
-            "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-            "timeStamp":"2017-10-16T08:18:12.477214+09:00",
-            "dataObject":{
-                "timeStamp":"2017-10-16T08:18:12.477214+09:00",
-                "ObjectContent":{"contentType":"iaCloudData",
-                "contentData":[
-                    {
-                        "dataValue":35.938,
-                        "dataName":"CPU温度",
-                        "unit":"°C"
-                    },
-                    {
-                        "dataValue":0,
-                        "dataName":"CPU使用率",
-                        "unit":"%"
-                    },
-                    {
-                        "dataValue":500.3,
-                        "dataName":"空きメモリ量",
-                        "unit":"MB"
-                    }
-                ]
-            },
-                "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-                "objectType":"iaCloudObject",
-                "objectDescription":"RaspberryPi CPU情報"
-            }
-        },
-        {
-            "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-            "timeStamp":"2017-10-16T08:17:42.476071+09:00",
-            "dataObject":{
-                "timeStamp":"2017-10-16T08:17:42.476071+09:00",
-                "ObjectContent":{"contentType":"iaCloudData",
-                "contentData":[
-                    {
-                        "dataValue":35.938,
-                        "dataName":"CPU温度",
-                        "unit":"°C"
-                    },
-                    {
-                        "dataValue":0,
-                        "dataName":"CPU使用率",
-                        "unit":"%"
-                    },
-                    {
-                        "dataValue":499.92,
-                        "dataName":"空きメモリ量",
-                        "unit":"MB"
-                    }
-                ]
-            },
-                "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-                "objectType":"iaCloudObject",
-                "objectDescription":"RaspberryPi CPU情報"
-            }
-        },
-        {
-            "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-            "timeStamp":"2017-10-16T08:17:12.476207+09:00",
-            "dataObject":{
-                "timeStamp":"2017-10-16T08:17:12.476207+09:00",
-                "ObjectContent":{"contentType":"iaCloudData",
-                "contentData":[
-                    {
-                        "dataValue":35.939,
-                        "dataName":"CPU温度",
-                        "unit":"°C"
-                    },
-                    {
-                        "dataValue":0,
-                        "dataName":"CPU使用率",
-                        "unit":"%"
-                    },
-                    {
-                        "dataValue":500.92,
-                        "dataName":"空きメモリ量",
-                        "unit":"MB"
-                    }
-                ]
-            },
-                "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-                "objectType":"iaCloudObject",
-                "objectDescription":"RaspberryPi CPU情報"
-            }
-        }
-    ]
-
-
 
 
 ## プロパティー
 
-変換するデータに応じて、以下のパラメータを設定します。
+取得するデータに応じて以下のパラメータを設定します。  
 
-- ### 項目名(dataName)
-  出力する項目名(dataName)をカンマ区切りで入力します。  
-  例：CPU温度,CPU使用率
+- ### ノード名
+  フロー上で表示するノード名を設定します。
+
+- ### 接続用ID
+  使用するDynamoDB操作ユーザのIDを設定します。
+
+- パスワード
+  使用するDynamoDB操作ユーザのパスワードを設定します。
+
+- ### テーブル名
+  検索を行うテーブル名を設定します。
+
+- ### オブジェクトキー  
+  検索を行うデータのobjectKeyを設定します。
+
+- ### 項目名  
+  出力結果のdataName部分の表示名を変更することができます。  
+  対応するdataNameと出力したい表示名を入力します。  
+
+- ### アグリゲーション
+  取得データのアグリゲーションが可能です。  
+  アグリゲーション処理を行う場合は設定にチェックを入れ、行うアグリゲーション処理、期間単位、表示桁数を指定します。各項目に設定できるものは以下の通りです。  
+   - アグリゲーション処理  
+  　最大値、最小値、平均、中央値、カウント、最初、最後  
+   - 期間単位  
+  　年、月、日、時、分、秒  
+   - 表示桁数  
+  　小数第3位 ～ 100の位
+
+- ### データ件数   
+  出力する結果件数を設定します。  
+  未設定だった場合、最大10,000件を出力します。  
+
+- ### 期間  
+  検索期間を設定します。  
+  取得開始日付と終了日付を記述してください。  
+
+- ### 並び順  
+  検索結果の並び順(昇順/降順)を設定します。  
+  アグリゲーション処理が設定されている場合、並び順を指定することはできません。  
 
 
 
 ## 出力メッセージ
-
 入力されたiacloudオブジェクトをdashborad - chartへ入力する際の形に変換した結果が出力されます。  
 以下に例を示します。
 
-    [
-        {
-            "series": [ "CPU温度", "CPU使用率", "空きメモリ量" ],
-            "data": [
-                [ { x: "2017-10-16T08:18:12.477214+09:00", y: 35.938 },
-                { x: "2017-10-16T08:17:42.476071+09:00", y: 35.938 },
-                { x: "2017-10-16T08:17:12.476207+09:00", y: 35.399 } ],
-                [ { x: "2017-10-16T08:18:12.477214+09:00", y: 0 },
-                { x: "2017-10-16T08:17:42.476071+09:00", y: 0 },
-                { x: "2017-10-16T08:17:12.476207+09:00", y: 0 } ],
-                [ { x: "2017-10-16T08:18:12.477214+09:00", y: 500.3 },
-                { x: "2017-10-16T08:17:42.476071+09:00", y: 499.92 },
-                { x: "2017-10-16T08:17:12.476207+09:00", y: 500.092 } ],
-            ],
-            labels: [ "" ]
-        }
-    ]
+         [
+            {
+                "series": [
+                    "電流1ch"
+                ],
+                "data": [
+                    [
+                        {
+                            "x": "2019-04-01T13:01:00+09:00",
+                            "y": 0.24
+                        },
+                        {
+                            "x": "2019-04-01T13:02:00+09:00",
+                            "y": 0.3
+                        },
+                        {
+                            "x": "2019-04-01T13:03:00+09:00",
+                            "y": 0.25
+                        },
+                        {
+                            "x": "2019-04-01T13:04:00+09:00",
+                            "y": 0.26
+                        },
+                        {
+                            "x": "2019-04-01T13:05:00+09:00",
+                            "y": 0.25
+                        }
+                    ]
+                ],
+                "labels": [
+                    ""
+                ]
+            }
+        ]
 

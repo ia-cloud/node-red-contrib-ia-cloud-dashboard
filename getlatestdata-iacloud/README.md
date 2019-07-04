@@ -1,146 +1,60 @@
-# node-red-contrib-ia-cloud-output - json2inchart-iacloud
+# node-red-contrib-ia-cloud-dashboard - getlatestdata-iacloud
 
 ## 名称
-json2inchartノード
+getLatestdataノード
 
 
 
 ## 機能概要
+このノードはiacloudオブジェクトをdashboradの各ウィジェットへ入力する際の形へ変換することができます。 
+対象ウィジェットは以下の通りです。  
+- ボタン    
+- ゲージ  
+- 数値  
+- テキスト  
+- テキスト入力    
+- スライダー  
+- チャート(*リアルタイム入力の場合)
 
-このノードはiacloudオブジェクト（json形式）をdashborad - chartへ入力する際の形へ変換することができます。
+※チャートへの入力は「ノード：[node-red-contrib-getchartdata-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard/tree/master/getchartdata-iacloud)」を使用してください。
 
+AWS-SDK DynamoDB関数をラップしており、DynamoDBからデータを取得する処理にはQueryを使用しています。  
+より詳細に知るには、[APIドキュメント](https://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html)を参照してください。
 
-
-## 入力メッセージ
-この関数を利用する際は、入力パラメータとしてiacloudオブジェクト（json形式）を記述します。 
-直接変換対象データを入力する場合は、リストItems内にデータを入力します。  
-「ノード：[node-red-contrib-dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-dynamodb-iacloud)」 からの出力を直接本ノードに入力して使用することができます。  
- 
-以下に例を示します。  
-
-       Items":[
-        {
-            "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-            "timeStamp":"2017-10-16T08:18:12.477214+09:00",
-            "dataObject":{
-                "timeStamp":"2017-10-16T08:18:12.477214+09:00",
-                "ObjectContent":{"contentType":"iaCloudData",
-                "contentData":[
-                    {
-                        "dataValue":35.938,
-                        "dataName":"CPU温度",
-                        "unit":"°C"
-                    },
-                    {
-                        "dataValue":0,
-                        "dataName":"CPU使用率",
-                        "unit":"%"
-                    },
-                    {
-                        "dataValue":500.3,
-                        "dataName":"空きメモリ量",
-                        "unit":"MB"
-                    }
-                ]
-            },
-                "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-                "objectType":"iaCloudObject",
-                "objectDescription":"RaspberryPi CPU情報"
-            }
-        },
-        {
-            "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-            "timeStamp":"2017-10-16T08:17:42.476071+09:00",
-            "dataObject":{
-                "timeStamp":"2017-10-16T08:17:42.476071+09:00",
-                "ObjectContent":{"contentType":"iaCloudData",
-                "contentData":[
-                    {
-                        "dataValue":35.938,
-                        "dataName":"CPU温度",
-                        "unit":"°C"
-                    },
-                    {
-                        "dataValue":0,
-                        "dataName":"CPU使用率",
-                        "unit":"%"
-                    },
-                    {
-                        "dataValue":499.92,
-                        "dataName":"空きメモリ量",
-                        "unit":"MB"
-                    }
-                ]
-            },
-                "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-                "objectType":"iaCloudObject",
-                "objectDescription":"RaspberryPi CPU情報"
-            }
-        },
-        {
-            "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-            "timeStamp":"2017-10-16T08:17:12.476207+09:00",
-            "dataObject":{
-                "timeStamp":"2017-10-16T08:17:12.476207+09:00",
-                "ObjectContent":{"contentType":"iaCloudData",
-                "contentData":[
-                    {
-                        "dataValue":35.939,
-                        "dataName":"CPU温度",
-                        "unit":"°C"
-                    },
-                    {
-                        "dataValue":0,
-                        "dataName":"CPU使用率",
-                        "unit":"%"
-                    },
-                    {
-                        "dataValue":500.92,
-                        "dataName":"空きメモリ量",
-                        "unit":"MB"
-                    }
-                ]
-            },
-                "objectKey":"com.atbridge-cnsltg.raspberrypi-1.CPUInfo",
-                "objectType":"iaCloudObject",
-                "objectDescription":"RaspberryPi CPU情報"
-            }
-        }
-    ]
+このノードを使用するには、DynamoDB操作ユーザの情報が必要になります。ユーザ情報は別途発行・取得する必要があります。  
 
 
 
 
 ## プロパティー
 
-変換するデータに応じて、以下のパラメータを設定します。
+取得するデータに応じて以下のパラメータを設定します。  
+
+- ### ノード名
+  フロー上で表示するノード名を設定します。
+
+- ### 接続用ID
+  使用するDynamoDB操作ユーザのIDを設定します。
+
+- パスワード
+  使用するDynamoDB操作ユーザのパスワードを設定します。
+
+- ### テーブル名
+  検索を行うテーブル名を設定します。
+
+- ### オブジェクトキー  
+  検索を行うデータのobjectKeyを設定します。
 
 - ### 項目名(dataName)
-  出力する項目名(dataName)をカンマ区切りで入力します。  
-  例：CPU温度,CPU使用率
-
+  出力する項目名(dataName)を入力します。  
+  複数の項目名を指定することはできません。  
+  例：CPU温度
+  
 
 
 ## 出力メッセージ
-
 入力されたiacloudオブジェクトをdashborad - chartへ入力する際の形に変換した結果が出力されます。  
 以下に例を示します。
 
-    [
-        {
-            "series": [ "CPU温度", "CPU使用率", "空きメモリ量" ],
-            "data": [
-                [ { x: "2017-10-16T08:18:12.477214+09:00", y: 35.938 },
-                { x: "2017-10-16T08:17:42.476071+09:00", y: 35.938 },
-                { x: "2017-10-16T08:17:12.476207+09:00", y: 35.399 } ],
-                [ { x: "2017-10-16T08:18:12.477214+09:00", y: 0 },
-                { x: "2017-10-16T08:17:42.476071+09:00", y: 0 },
-                { x: "2017-10-16T08:17:12.476207+09:00", y: 0 } ],
-                [ { x: "2017-10-16T08:18:12.477214+09:00", y: 500.3 },
-                { x: "2017-10-16T08:17:42.476071+09:00", y: 499.92 },
-                { x: "2017-10-16T08:17:12.476207+09:00", y: 500.092 } ],
-            ],
-            labels: [ "" ]
-        }
-    ]
+    35.938
 

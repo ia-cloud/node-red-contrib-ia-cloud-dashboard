@@ -1,68 +1,89 @@
-# node-red-contrib-ia-cloud-output - ui_table
+# node-red-contrib-ia-cloud-dashboard - ui_spreadsheet
 
 ## 名称
-dashboard - tableノード
+dashboard - spreadsheetノード
 
 
 ## 機能概要
-
 「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装したノードです。  
-テーブルを表示します。 
+ia-cloud アラーム&イベントモデルデータの集計結果をテーブル(表)を表示します。 
 
 
 
 ## 入力メッセージ
-この関数を利用する際には、ノード前にクエリを作成し  
-プロパティ内で入力値に設定したものに対応した入力パラメータを入力します。  
-「ノード：[json2inchart-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/json2inchart-iacloud)」からの出力を直接本ノードに入力して使用することが可能です。。
+この関数を利用する際には、「ノード：[dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/dynamodb-iacloud)」からの出力を直接本ノードに入力します。  
+以下に入力データの例を示します。 
 
-- ### json2inchartからの出力
-  json2inchartからの出力を入力する場合は、  
-  入力値で「json2inchartからの出力」を指定します。  
-  以下に入力データの例を示します。  
-
-        [
-            {
-                "series": [ "CPU温度", "CPU使用率", "空きメモリ量" ],
-                "data": [
-                    [ { x: "2017-10-16T08:18:12.477214+09:00", y: 35.938 },
-                    { x: "2017-10-16T08:17:42.476071+09:00", y: 35.938 },
-                    { x: "2017-10-16T08:17:12.476207+09:00", y: 35.399 } ],
-                    [ { x: "2017-10-16T08:18:12.477214+09:00", y: 0 },
-                    { x: "2017-10-16T08:17:42.476071+09:00", y: 0 },
-                    { x: "2017-10-16T08:17:12.476207+09:00", y: 0 } ],
-                    [ { x: "2017-10-16T08:18:12.477214+09:00", y: 500.3 },
-                    { x: "2017-10-16T08:17:42.476071+09:00", y: 499.92 },
-                    { x: "2017-10-16T08:17:12.476207+09:00", y: 500.092 } ],
-                ],
-                labels: [ "" ]
-            }
-        ]
-
-
-- ### 基本フォーマットデータ
-直接変換対象データを入力する場合は、  入力値で  
-「基本フォーマットデータ」を指定し、item内に項目名を入力します。   
-以下に例を示します。  
-
-        [
-            ["2017-10-16T08:18:12.477214+09:00",35.938,0],
-            ["2017-10-16T08:17:42.476071+09:00",35.938,0],
-            ["2017-10-16T08:17:12.476207+09:00",35.399,0],
-            ["2017-10-16T08:16:42.476268+09:00",36.476,0],
-            ["2017-10-16T08:16:12.485345+09:00",35.399,0]
-        ]
-
+        {
+            "Items": [
+                {
+                    "objectKey": "jp.co.iacloud.alarm",
+                    "timeStamp": "2019-04-01T13:07:30+09:00",
+                    "dataObject": {
+                        "timeStamp": "2019-04-01T13:07:30+09:00",
+                        "ObjectContent": {
+                            "contentType": "Alarm&Event",
+                            "contentData": [
+                                {
+                                    "dataValue": "set",
+                                    "dataName": "A&E Status",
+                                    "unit": "null"
+                                },
+                                {
+                                    "dataValue": 28,
+                                    "dataName": "A&E Code",
+                                    "unit": "null"
+                                },
+                                {
+                                    "dataValue": "0001：ｲﾝﾊﾞｰﾀ異常",
+                                    "dataName": "A&E Description",
+                                    "unit": "null"
+                                }
+                            ]
+                        },
+                        "objectKey": "jp.co.iacloud.alarm",
+                        "objectType": "iaCloudObject",
+                        "objectDescription": "null",
+                        "instanceKey": "null"
+                    }
+                },
+                {
+                    "objectKey": "jp.co.iacloud.alarm",
+                    "timeStamp": "2019-04-01T13:07:40+09:00",
+                    "dataObject": {
+                        "timeStamp": "2019-04-01T13:07:40+09:00",
+                        "ObjectContent": {
+                            "contentType": "Alarm&Event",
+                            "contentData": [
+                                {
+                                    "dataValue": "set",
+                                    "dataName": "A&E Status",
+                                    "unit": "null"
+                                },
+                                {
+                                    "dataValue": 56,
+                                    "dataName": "A&E Code",
+                                    "unit": "null"
+                                },
+                                {
+                                    "dataValue": "0005：過負荷異常",
+                                    "dataName": "A&E Description",
+                                    "unit": "null"
+                                }
+                            ]
+                        },
+                        "objectKey": "jp.co.iacloud.alarm",
+                        "objectType": "iaCloudObject",
+                        "objectDescription": "null",
+                        "instanceKey": "null"
+                    }
+                }
+            ]
+        }
 
 
 ## プロパティー
-
 変換するデータに応じて、以下のパラメータを設定します。
-
-- ### 入力値
-  入力するデータの種類を設定します。  
-  　・json2inchartからの出力  
-  　・基本フォーマットデータ  
 
 - ### グループ名
   結果を出力するダッシュボードグループを設定します。
@@ -70,10 +91,16 @@ dashboard - tableノード
 - ### サイズ
   結果出力時のテーブルサイズを設定します。
 
-- ### 項目名
-  基本フォーマットデータ入力時に指定します。  
-  データ表示時の項目名を入力します。  
-  例：timeStamp,CPU温度,CPU使用率
+- ### ラベル
+  ダッシュボード上での表示名を設定します。
+
+- ### 表示項目
+  ダッシュボード上に表示する際の項目を設定します。  
+  「A&E No,A&E詳細」、「A&E No」、「A&E詳細」から選択可能です。  
+
+- ### ノード名
+  フロー上で表示するノード名を設定します。
+
 
 ## 出力メッセージ
-ダッシュボード上に入力パラメータに応じたテーブルが出力されます。
+ダッシュボード上に入力パラメータに入力されたia-cloud アラーム&イベントモデルデータの集計結果をテーブル(表)形式で出力されます。

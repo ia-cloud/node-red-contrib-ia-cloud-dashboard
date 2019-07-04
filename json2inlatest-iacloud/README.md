@@ -1,13 +1,12 @@
 # node-red-contrib-ia-cloud-output - json2inwidget-iacloud
 
 ## 名称
-json2inwidgetノード
+json2inLatestノード
 
 
 
 ## 機能概要
-
-このノードはiacloudオブジェクト（json形式）をdashboradの各ウィジェットへ入力する際の形へ変換することができます。  
+このノードはiacloudオブジェクトをdashboradの各ウィジェットへ入力する際の形へ変換することができます。  
 対象ウィジェットは以下の通り。  
 - ボタン    
 - ゲージ  
@@ -22,9 +21,9 @@ json2inwidgetノード
 
 
 ## 入力メッセージ
-この関数を利用する際は、入力パラメータとしてiacloudオブジェクト（json形式）を記述します。 
+この関数を利用する際は、入力パラメータとしてiacloudオブジェクトを記述します。 
 直接変換対象データを入力する場合は、リストItems内にデータを入力します。  
-「ノード：[node-red-contrib-dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-dynamodb-iacloud)」 からの出力を直接本ノードに入力して使用することができます。  
+「ノード：[node-red-contrib-dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard/tree/master/dynamodb-iacloud)」直接本ノードに入力して使用することができます。  
  
 連続したデータが入力されても、取得できるdataValueは1件目のみです。
 
@@ -66,9 +65,7 @@ json2inwidgetノード
 
 
 ## プロパティー
-
 変換するデータに応じて、以下のパラメータを設定します。
-
 - ### 項目名(dataName)
   出力する項目名(dataName)を入力します。  
   複数の項目名を指定することはできません。  
@@ -77,7 +74,6 @@ json2inwidgetノード
 
 
 ## 出力メッセージ
-
 入力されたiacloudオブジェクトを各ウィジェットに入力する値に変換した結果が出力されます。  
 以下に例を示します。
 

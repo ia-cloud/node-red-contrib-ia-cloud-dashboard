@@ -1,4 +1,4 @@
-# node-red-contrib-ia-cloud-output - ui_table
+# node-red-contrib-ia-cloud-dasshboard - ui_table
 
 ## 名称
 dashboard - tableノード
@@ -14,12 +14,12 @@ dashboard - tableノード
 ## 入力メッセージ
 この関数を利用する際には、ノード前にクエリを作成し  
 プロパティ内で入力値に設定したものに対応した入力パラメータを入力します。  
-「ノード：[json2inchart-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/json2inchart-iacloud)」からの出力を直接本ノードに入力して使用することが可能です。。
+「ノード：[json2inchart-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/json2inchart-iacloud)」からの出力を直接本ノードに入力して使用することが可能です。
 
 - ### json2inchartからの出力
   json2inchartからの出力を入力する場合は、  
   入力値で「json2inchartからの出力」を指定します。  
-  以下に入力データの例を示します。  
+  以下に入力データの例を示します。 
 
         [
             {
@@ -70,10 +70,11 @@ dashboard - tableノード
 - ### サイズ
   結果出力時のテーブルサイズを設定します。
 
-- ### 項目名
-  基本フォーマットデータ入力時に指定します。  
-  データ表示時の項目名を入力します。  
-  例：timeStamp,CPU温度,CPU使用率
+- ### ラベル
+  ダッシュボード上での表示名を設定します。
+
+- ### ノード名
+  フロー上で表示するノード名を設定します。
 
 ## 出力メッセージ
 ダッシュボード上に入力パラメータに応じたテーブルが出力されます。
