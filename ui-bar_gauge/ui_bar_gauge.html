@@ -1,0 +1,90 @@
+<script type="text/javascript">
+    function mk_conf(NAME) {
+        var conf = {
+            category: 'iaCloud dashboard',
+            color: 'rgb(119, 198, 204)',
+            defaults: {
+                group: {type: 'ui_group', required:true},
+                order: {value: 0},
+                width: {value: 0,
+                        validate: function(v) {
+                            var valid = true
+                            var width = v||0;
+                            var currentGroup = $('#node-input-group').val()|| this.group;
+                            var groupNode = RED.nodes.node(currentGroup);
+                            valid = !groupNode || +width <= +groupNode.width;
+                            $("#node-input-size").toggleClass("input-error",!valid);
+                            return valid;
+                    }},
+                height: {value: 0},
+                name: {value: ''},
+                direction: {value: 'Vertical'},
+                label: {value: NAME},
+                units: {value: 'units'},
+                min: {value: 0},
+                max: {value: 100},
+                color: {value: "#e66465"}
+            },
+            inputs:1,
+            outputs:0,
+            align: "right",
+            icon: "ui_template.png",
+            paletteLabel: NAME,
+            label: function() { return this.name || (~this.label.indexOf('{{') ? null : this.label) || NAME; },
+            oneditprepare: function() {
+                var that = this;
+                $("#node-input-size").elementSizer({
+                    width: "#node-input-width",
+                    height: "#node-input-height",
+                    group: "#node-input-group"
+                });
+            }
+            
+        }
+        return conf;
+    };
+    RED.nodes.registerType('ui_bar_gauge', mk_conf('bar_gauge'));
+</script>
+
+<script type="text/x-red" data-template-name="ui_bar_gauge">
+	<div class="form-row" id="template-row-group">
+        <label for="node-input-group"><i class="fa fa-table"></i> <span data-i18n="uiBarGauge.label.group"></span></label>
+        <input type="text" id="node-input-group">
+    </div>
+    <div class="form-row" id="template-row-size">
+        <label><i class="fa fa-object-group"></i> <span data-i18n="uiBarGauge.label.size"></span></label>
+        <input type="hidden" id="node-input-width">
+        <input type="hidden" id="node-input-height">
+        <button class="editor-button" id="node-input-size"></button>
+    </div>
+    <div class="form-row">
+        <label for="node-input-direction"><i class="fa fa-list"></i> <span data-i18n="uiBarGauge.label.direction"></span></label>
+        <select type="text" id="node-input-direction" style="width: 100px;">
+            <option selected="selected" value="Vertical" data-i18n="uiBarGauge.label.vertical"></option>
+            <option value="Horizontal" data-i18n="uiBarGauge.label.horizontal"></option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-label"><i class="fa fa-i-cursor"></i> <span data-i18n="uiBarGauge.label.label"></span></label>
+        <input type="text" id="node-input-label">
+    </div>
+    <div class="form-row">
+        <label for="node-input-units"><i class="fa fa-i-cursor"></i> <span data-i18n="uiBarGauge.label.units"></span></label>
+        <input type="text" id="node-input-units">
+    </div>
+    <div class="form-row">
+        <label for="node-input-min"> <span data-i18n="uiBarGauge.label.range"></span></label>
+        <label for="node-input-min" style="width: auto;"> <span data-i18n="uiBarGauge.label.min"></span></label>
+        <input type="text" id="node-input-min" style="width: 80px;">
+        <label for="node-input-max" style="width: auto; margin-left: 20px;"> <span data-i18n="uiBarGauge.label.max"></span></label>
+        <input type="text" id="node-input-max" style="width: 80px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-color"> <span data-i18n="uiBarGauge.label.color"></span></label>
+        <input type="color" id="node-input-color" style="width: 75px;">
+    </div>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="node-red:common.label.name"></span></label>
+        <input type="text" id="node-input-name">
+    </div>
+</script>

@@ -1,0 +1,334 @@
+[
+    {
+        "id": "eb1beeac.b77248",
+        "type": "ui_lamps",
+        "z": "6e701356.db40fc",
+        "group": "350380d7.ac4f4",
+        "order": 2,
+        "width": "12",
+        "height": "2",
+        "name": "",
+        "label": "lamps",
+        "direction": "Horizontal",
+        "display_settings": "[{\"phase\":\"Square\",\"color\":\"Blue\"},{\"phase\":\"Square\",\"color\":\"Red\"},{\"phase\":\"Square\",\"color\":\"Green\"},{\"phase\":\"Square\",\"color\":\"Red\"},{\"phase\":\"Square\",\"color\":\"Green\"},{\"phase\":\"Square\",\"color\":\"Blue\"}]",
+        "x": 390,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "d55d7e13.28c688",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "350380d7.ac4f4",
+        "order": 6,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "[true]*6",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[true,true,true,true,true,true]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 140,
+        "y": 440,
+        "wires": [
+            [
+                "eb1beeac.b77248",
+                "b5da34e0.43957"
+            ]
+        ]
+    },
+    {
+        "id": "39e9d8a1.72dcf",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "350380d7.ac4f4",
+        "order": 7,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "[false]*6",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[false,false,false,false,false,false]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 140,
+        "y": 480,
+        "wires": [
+            [
+                "eb1beeac.b77248",
+                "b5da34e0.43957"
+            ]
+        ]
+    },
+    {
+        "id": "a9e9267a.eb8bc",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "350380d7.ac4f4",
+        "order": 8,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "[true, false]*3",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[true,false,true,false,true,false]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 160,
+        "y": 520,
+        "wires": [
+            [
+                "eb1beeac.b77248",
+                "b5da34e0.43957"
+            ]
+        ]
+    },
+    {
+        "id": "6981c22b.0b6454",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "350380d7.ac4f4",
+        "order": 9,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "[false, true]*3",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[false,true,false,true,false,true]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 160,
+        "y": 560,
+        "wires": [
+            [
+                "eb1beeac.b77248",
+                "b5da34e0.43957"
+            ]
+        ]
+    },
+    {
+        "id": "b5da34e0.43957",
+        "type": "ui_lamps",
+        "z": "6e701356.db40fc",
+        "group": "350380d7.ac4f4",
+        "order": 2,
+        "width": "12",
+        "height": "2",
+        "name": "",
+        "label": "lamps",
+        "direction": "Horizontal",
+        "display_settings": "[{\"phase\":\"Circle\",\"color\":\"Red\"},{\"phase\":\"Circle\",\"color\":\"Green\"},{\"phase\":\"Circle\",\"color\":\"Blue\"},{\"phase\":\"Circle\",\"color\":\"Green\"},{\"phase\":\"Circle\",\"color\":\"Blue\"},{\"phase\":\"Circle\",\"color\":\"Red\"}]",
+        "x": 390,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "492c2116.f1c8d",
+        "type": "ui_lamps",
+        "z": "6e701356.db40fc",
+        "group": "8347fd52.769998",
+        "order": 2,
+        "width": "2",
+        "height": "12",
+        "name": "",
+        "label": "lamps",
+        "direction": "Vertical",
+        "display_settings": "[{\"phase\":\"Square\",\"color\":\"Blue\"},{\"phase\":\"Square\",\"color\":\"Red\"},{\"phase\":\"Square\",\"color\":\"Green\"},{\"phase\":\"Square\",\"color\":\"Red\"},{\"phase\":\"Square\",\"color\":\"Green\"},{\"phase\":\"Square\",\"color\":\"Blue\"}]",
+        "x": 830,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "7221fb56.6129ec",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "8347fd52.769998",
+        "order": 6,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "[true]*6",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[true,true,true,true,true,true]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 580,
+        "y": 440,
+        "wires": [
+            [
+                "492c2116.f1c8d",
+                "80f8b608.dcb7f"
+            ]
+        ]
+    },
+    {
+        "id": "bc74428a.81adf",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "8347fd52.769998",
+        "order": 7,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "[false]*6",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[false,false,false,false,false,false]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 580,
+        "y": 480,
+        "wires": [
+            [
+                "492c2116.f1c8d",
+                "80f8b608.dcb7f"
+            ]
+        ]
+    },
+    {
+        "id": "f6900a17.e18548",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "8347fd52.769998",
+        "order": 8,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "[true, false]*3",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[true,false,true,false,true,false]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 600,
+        "y": 520,
+        "wires": [
+            [
+                "492c2116.f1c8d",
+                "80f8b608.dcb7f"
+            ]
+        ]
+    },
+    {
+        "id": "853509f1.67e8b",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "8347fd52.769998",
+        "order": 9,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "label": "[false, true]*3",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[false,true,false,true,false,true]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 600,
+        "y": 560,
+        "wires": [
+            [
+                "492c2116.f1c8d",
+                "80f8b608.dcb7f"
+            ]
+        ]
+    },
+    {
+        "id": "80f8b608.dcb7f",
+        "type": "ui_lamps",
+        "z": "6e701356.db40fc",
+        "group": "8347fd52.769998",
+        "order": 2,
+        "width": "2",
+        "height": "12",
+        "name": "",
+        "label": "lamps",
+        "direction": "Vertical",
+        "display_settings": "[{\"phase\":\"Circle\",\"color\":\"Red\"},{\"phase\":\"Circle\",\"color\":\"Green\"},{\"phase\":\"Circle\",\"color\":\"Blue\"},{\"phase\":\"Circle\",\"color\":\"Green\"},{\"phase\":\"Circle\",\"color\":\"Blue\"},{\"phase\":\"Circle\",\"color\":\"Red\"}]",
+        "x": 830,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "85376981.40ac48",
+        "type": "comment",
+        "z": "6e701356.db40fc",
+        "name": "ui_lamps Horizontal",
+        "info": "",
+        "x": 170,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "699677f.515c688",
+        "type": "comment",
+        "z": "6e701356.db40fc",
+        "name": "ui_lamps Vertical",
+        "info": "",
+        "x": 600,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "350380d7.ac4f4",
+        "type": "ui_group",
+        "z": "",
+        "name": "ui_lamps(Horizontal)",
+        "tab": "58eb2f86.41f37",
+        "order": 4,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "8347fd52.769998",
+        "type": "ui_group",
+        "z": "",
+        "name": "ui_lamps(Vertical)",
+        "tab": "58eb2f86.41f37",
+        "order": 2,
+        "disp": true,
+        "width": "4",
+        "collapse": false
+    },
+    {
+        "id": "58eb2f86.41f37",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Field",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]

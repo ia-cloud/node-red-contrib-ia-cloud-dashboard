@@ -1,0 +1,17 @@
+{
+    "uiBarGauge": {
+        "label": {
+            "group": "グループ",
+            "size": "サイズ",
+            "direction": "向き",
+            "vertical": "縦",
+            "horizontal": "横",
+            "label": "ラベル",
+            "units": "単位",
+            "range": "範囲",
+            "min": "最小値",
+            "max": "最大値",
+            "color": "色"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "uiBarGauge": {
+        "label": {
+            "group": "Group",
+            "size": "Size",
+            "direction": "Direction",
+            "vertical": "Vertical",
+            "horizontal": "Horizontal",
+            "label": "Label",
+            "units": "Units",
+            "range": "Range",
+            "min": "min",
+            "max": "max",
+            "color": "Color"
+        }
+    }
+}

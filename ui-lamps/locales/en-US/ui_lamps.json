@@ -1,0 +1,25 @@
+{
+    "uiLamps": {
+        "label": {
+            "group": "Group",
+            "size": "Size",
+            "direction": "Direction",
+            "vertical": "Vertical",
+            "horizontal": "Horizontal",
+            "label": "Label",
+            "index": "Index No.",
+            "delete": "Delete",
+            "phase": "Phase",
+            "square": "Square",
+            "circle": "Circle",
+            "color": "Color",
+            "red": "Red",
+            "green": "Green",
+            "blue": "Blue",
+            "yellow": "Yellow",
+            "orange": "Orange",
+            "purple": "Purple",
+            "white": "White"
+        }
+    }
+}

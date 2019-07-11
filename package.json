@@ -53,7 +53,7 @@
   "dependencies": {
     "json2csv": "4.3.5",
     "moment": "2.24.0",
-    "node-red-dashboard": "2.14.0",
+    "node-red-dashboard": "2.15.0",
     "request": "2.88.0",
     "serve-static": "~1.13.2",
     "socket.io": "^2.2.0"
@@ -75,7 +75,10 @@
       "json2inlatest-iacloud": "json2inlatest-iacloud/json2inlatest.js",
       "ui-table": "ui-table/ui_table.js",
       "ui-oprstatus": "ui-oprstatus/ui_oprstatus.js",
-      "ui-spreadsheet": "ui-spreadsheet/ui_spreadsheet.js"
+      "ui-spreadsheet": "ui-spreadsheet/ui_spreadsheet.js",
+      "ui-num_dt": "ui-num_dt/ui_num_dt.js",
+      "ui-lamps": "ui-lamps/ui_lamps.js",
+      "ui-bar_gauge": "ui-bar_gauge/ui_bar_gauge.js"
     }
   },
   "optionalDependencies": {},

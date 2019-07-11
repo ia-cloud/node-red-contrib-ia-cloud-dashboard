@@ -1,0 +1,248 @@
+[
+    {
+        "id": "95048643.fc4188",
+        "type": "ui_bar_gauge",
+        "z": "6e701356.db40fc",
+        "group": "9cd07699.be8a98",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "direction": "Horizontal",
+        "label": "CPU Load",
+        "units": "GHz",
+        "min": "0",
+        "max": "3000",
+        "color": "#f55c3d",
+        "x": 590,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "c7f4450c.a0c9c8",
+        "type": "ui_bar_gauge",
+        "z": "6e701356.db40fc",
+        "group": "9cd07699.be8a98",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "direction": "Horizontal",
+        "label": "Used Mem.",
+        "units": "MBytes",
+        "min": "0",
+        "max": "1024",
+        "color": "#962fea",
+        "x": 590,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "20fef801.badd2",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "9cd07699.be8a98",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "passthru": false,
+        "label": "Random Data Update",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "num",
+        "topic": "",
+        "x": 180,
+        "y": 700,
+        "wires": [
+            [
+                "c56867c8.05126",
+                "be0455b8.2dba1"
+            ]
+        ]
+    },
+    {
+        "id": "c56867c8.05126",
+        "type": "function",
+        "z": "6e701356.db40fc",
+        "name": "random",
+        "func": "rnd = Math.round(Math.random() * 3000);\nmsg.payload = [rnd];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 400,
+        "y": 660,
+        "wires": [
+            [
+                "95048643.fc4188"
+            ]
+        ]
+    },
+    {
+        "id": "be0455b8.2dba1",
+        "type": "function",
+        "z": "6e701356.db40fc",
+        "name": "random",
+        "func": "rnd = Math.round(Math.random() * 1024);\nmsg.payload = [rnd];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 400,
+        "y": 700,
+        "wires": [
+            [
+                "c7f4450c.a0c9c8"
+            ]
+        ]
+    },
+    {
+        "id": "6dd769e4.164538",
+        "type": "ui_bar_gauge",
+        "z": "6e701356.db40fc",
+        "group": "3b400940.0b5006",
+        "order": 1,
+        "width": "2",
+        "height": "12",
+        "name": "",
+        "direction": "Vertical",
+        "label": "CPU Load",
+        "units": "GHz",
+        "min": "0",
+        "max": "3000",
+        "color": "#f55c3d",
+        "x": 590,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "5a3e0a2c.b766c4",
+        "type": "ui_bar_gauge",
+        "z": "6e701356.db40fc",
+        "group": "3b400940.0b5006",
+        "order": 2,
+        "width": "2",
+        "height": "12",
+        "name": "",
+        "direction": "Vertical",
+        "label": "Used Mem.",
+        "units": "MBytes",
+        "min": "0",
+        "max": "1024",
+        "color": "#962fea",
+        "x": 590,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "fdc0fea9.7c7b28",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "3b400940.0b5006",
+        "order": 3,
+        "width": "0",
+        "height": "0",
+        "passthru": false,
+        "label": "Random Data Update",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "num",
+        "topic": "",
+        "x": 180,
+        "y": 800,
+        "wires": [
+            [
+                "909fa939.f616a",
+                "1bec390d.98f15f"
+            ]
+        ]
+    },
+    {
+        "id": "909fa939.f616a",
+        "type": "function",
+        "z": "6e701356.db40fc",
+        "name": "random",
+        "func": "rnd = Math.round(Math.random() * 3000);\nmsg.payload = [rnd];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 400,
+        "y": 760,
+        "wires": [
+            [
+                "6dd769e4.164538"
+            ]
+        ]
+    },
+    {
+        "id": "1bec390d.98f15f",
+        "type": "function",
+        "z": "6e701356.db40fc",
+        "name": "random",
+        "func": "rnd = Math.round(Math.random() * 1024);\nmsg.payload = [rnd];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 400,
+        "y": 800,
+        "wires": [
+            [
+                "5a3e0a2c.b766c4"
+            ]
+        ]
+    },
+    {
+        "id": "1b2116cb.682771",
+        "type": "comment",
+        "z": "6e701356.db40fc",
+        "name": "ui_barGauge Horizontal",
+        "info": "",
+        "x": 180,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "a56bd491.77d11",
+        "type": "comment",
+        "z": "6e701356.db40fc",
+        "name": "ui_barGauge Horizontal",
+        "info": "",
+        "x": 180,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "9cd07699.be8a98",
+        "type": "ui_group",
+        "z": "",
+        "name": "ui_barGauge(Horizontal)",
+        "tab": "58eb2f86.41f37",
+        "order": 3,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "3b400940.0b5006",
+        "type": "ui_group",
+        "z": "",
+        "name": "ui_barGauge(Vertical)",
+        "tab": "58eb2f86.41f37",
+        "order": 1,
+        "disp": true,
+        "width": "4",
+        "collapse": false
+    },
+    {
+        "id": "58eb2f86.41f37",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Field",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]

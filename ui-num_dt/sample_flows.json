@@ -1,0 +1,192 @@
+[
+    {
+        "id": "2de18610.acb7ea",
+        "type": "ui_num_dt",
+        "z": "6e701356.db40fc",
+        "group": "27ae9e11.186f32",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "name": "num_dt1",
+        "label": "num_dt1",
+        "datatype": "Number",
+        "display_settings": "[{\"label\":\"センサー1\",\"digits\":\"1\",\"unit\":\"度\",\"dt_label\":\"\",\"format\":\"\"},{\"label\":\"センサー2\",\"digits\":\"2\",\"unit\":\"mm\",\"dt_label\":\"\",\"format\":\"\"},{\"label\":\"\",\"digits\":\"2\",\"unit\":\"\",\"dt_label\":\"\",\"format\":\"\"},{\"label\":\"\",\"digits\":\"1\",\"unit\":\"\",\"dt_label\":\"\",\"format\":\"\"}]",
+        "x": 320,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "8866ae45.ed3de8",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "27ae9e11.186f32",
+        "order": 2,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "button1",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[[\"温度\",26.52,\"℃\"],[\"湿度\",65.512,\"%\"],[\"気圧\",1020.4,\"hPa\"],[\"照度\",432.3,\"lx\"]]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 140,
+        "y": 160,
+        "wires": [
+            [
+                "2de18610.acb7ea",
+                "8f2f053a.a8e998"
+            ]
+        ]
+    },
+    {
+        "id": "8f2f053a.a8e998",
+        "type": "ui_num_dt",
+        "z": "6e701356.db40fc",
+        "group": "27ae9e11.186f32",
+        "order": 2,
+        "width": "6",
+        "height": "4",
+        "name": "num_dt2",
+        "label": "num_dt4",
+        "datatype": "Number",
+        "display_settings": "[{\"label\":\"\",\"digits\":\"\",\"unit\":\"\",\"dt_label\":\"\",\"format\":\"\"}]",
+        "x": 320,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "ce48c54d.8dc12",
+        "type": "ui_button",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "group": "27ae9e11.186f32",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "passthru": false,
+        "label": "button2",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "[[\"温度\",30.167,\"℃\"],[\"湿度\",40.54,\"%\"],[\"気圧\",998.8756,\"hPa\"],[\"照度\",52.3536,\"lx\"]]",
+        "payloadType": "json",
+        "topic": "",
+        "x": 140,
+        "y": 200,
+        "wires": [
+            [
+                "2de18610.acb7ea",
+                "8f2f053a.a8e998"
+            ]
+        ]
+    },
+    {
+        "id": "132de7bd.944bf",
+        "type": "ui_num_dt",
+        "z": "6e701356.db40fc",
+        "group": "899b0a9e.b301f",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "label": "num_dt",
+        "datatype": "Datetime",
+        "display_settings": "[{\"label\":\"\",\"digits\":\"\",\"unit\":\"\",\"dt_label_flag\":\"on\",\"dt_label\":\"No.1\",\"format\":\"YYYY年MM月DD日 HH時mm分ss秒\"},{\"label\":\"\",\"digits\":\"\",\"unit\":\"\",\"dt_label_flag\":\"off\",\"dt_label\":\"No.2\",\"format\":\"\"},{\"label\":\"\",\"digits\":\"\",\"unit\":\"\",\"dt_label_flag\":\"off\",\"dt_label\":\"\",\"format\":\"YYYYMMDD_HHmmss\"},{\"label\":\"\",\"digits\":\"\",\"unit\":\"\",\"dt_label_flag\":\"on\",\"dt_label\":\"No.4\",\"format\":\"YYYY年M月D日 H時m分s秒\"}]",
+        "x": 500,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "46b3262.6065c58",
+        "type": "function",
+        "z": "6e701356.db40fc",
+        "name": "[payload]*4",
+        "func": "msg.payload = [msg.payload, msg.payload, msg.payload, msg.payload];\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 310,
+        "y": 300,
+        "wires": [
+            [
+                "132de7bd.944bf"
+            ]
+        ]
+    },
+    {
+        "id": "c5850b9e.9e91d",
+        "type": "ui_date_picker",
+        "z": "6e701356.db40fc",
+        "name": "",
+        "label": "date",
+        "group": "899b0a9e.b301f",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "passthru": true,
+        "topic": "",
+        "x": 130,
+        "y": 300,
+        "wires": [
+            [
+                "46b3262.6065c58"
+            ]
+        ]
+    },
+    {
+        "id": "924ef0f9.a6bfc8",
+        "type": "comment",
+        "z": "6e701356.db40fc",
+        "name": "ui_numDt Number",
+        "info": "",
+        "x": 170,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "a63440dd.5b407",
+        "type": "comment",
+        "z": "6e701356.db40fc",
+        "name": "ui_numDt Datetime",
+        "info": "",
+        "x": 170,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "27ae9e11.186f32",
+        "type": "ui_group",
+        "z": "",
+        "name": "ui_numDt(Number)",
+        "tab": "58eb2f86.41f37",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "899b0a9e.b301f",
+        "type": "ui_group",
+        "z": "",
+        "name": "ui_numDt(Datetime)",
+        "tab": "58eb2f86.41f37",
+        "order": 6,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "58eb2f86.41f37",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Field",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]

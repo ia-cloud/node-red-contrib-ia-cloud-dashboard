@@ -1,0 +1,25 @@
+{
+    "uiLamps": {
+        "label": {
+            "group": "グループ",
+            "size": "サイズ",
+            "direction": "向き",
+            "vertical": "縦",
+            "horizontal": "横",
+            "label": "ラベル",
+            "index": "番号",
+            "delete": "削除",
+            "phase": "形状",
+            "square": "四角",
+            "circle": "丸",
+            "color": "色",
+            "red": "赤",
+            "green": "緑",
+            "blue": "青",
+            "yellow": "黄",
+            "orange": "橙",
+            "purple": "紫",
+            "white": "白"
+        }
+    }
+}
