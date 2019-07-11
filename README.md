@@ -39,4 +39,16 @@ ia-cloud　データ取得・変換・可視化ノード
 
 - ### ui-spreadsheet
   「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装したノード  
-  ia-cloud アラーム&イベントモデルデータの集計を行いダッシュボードへテーブル(表)形式で表示するノード  
+  ia-cloud アラーム&イベントモデルデータの集計を行いダッシュボードへテーブル(表)形式で表示するノード 
+
+- ### ui-bar_gauge
+  「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装したノード  
+  入力値を基にダッシュボードへバーゲージを表示するノード 
+
+- ### ui-lamps
+  「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装したノード  
+  入力値を基にダッシュボードへ表示灯を表示するノード 
+
+- ### ui-num_dt
+  「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装したノード  
+  入力値を基にダッシュボードへ「数値」もしくは「日時」を表示するノード 
