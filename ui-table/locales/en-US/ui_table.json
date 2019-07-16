@@ -1,0 +1,16 @@
+{
+    "table": {
+        "label": {
+            "group": "group",
+            "size": "size",
+            "label": "label",
+            "input": "input",
+            "name": "name"
+        },
+        "input": {
+            "getchartdata": "getChartdata",
+            "formatdata": "formatData",
+            "item": "item"
+        }
+    }
+}

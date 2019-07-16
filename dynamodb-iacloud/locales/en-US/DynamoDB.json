@@ -1,0 +1,60 @@
+{
+    "dynamodb": {
+        "label":{
+            "name": "name",
+            "username": "username",
+            "password": "password",
+            "tableName": "tableName",
+            "operation": "operation",
+            "objectKey": "objectKey",
+            "period": "period",
+            "aggregation": "aggregation",
+            "round": "round",
+            "limit": "maximum data number",
+            "sort": "sort",
+            "item": "item"
+        },
+        "operation": {
+            "Query": "Query",
+            "Scan": "Scan",
+            "PutItem": "PutItem"
+        },
+        "period": {
+            "datesetInput": "datesetInput",
+            "manualsetInput": "manualsetInput"
+        },
+        "aggregation": {
+            "aggregationCheck": "setting",
+            "aggreunit": "unit",
+            "max": "max",
+            "min": "min",
+            "average": "average",
+            "median": "median",
+            "count": "count",
+            "integration": "integration",
+            "first": "firstData",
+            "last": "lastData",
+            "year": "year",
+            "month": "month",
+            "week": "week",
+            "day": "day",
+            "hour": "hour",
+            "minute": "minute",
+            "second": "second"
+        },
+        "round": {
+            "noexe": "noexe",
+            "3": "Third decimal place",
+            "2": "Second decimal place",
+            "1": "First decimal place",
+            "0": "Integer",
+            "-1": "Ones place",
+            "-2": "Tens place",
+            "-3": "Hundreds place"
+        },
+        "sort": {
+            "asc": "ascending order",
+            "desc": "descending order"
+        }
+    }
+}

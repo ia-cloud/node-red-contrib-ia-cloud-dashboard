@@ -1,0 +1,60 @@
+{
+    "dynamodb": {
+        "label":{
+            "name": "名前",
+            "username": "ユーザID",
+            "password": "パスワード",
+            "tableName": "テーブル名",
+            "operation": "操作",
+            "objectKey": "オブジェクトキー",
+            "period": "期間",
+            "aggregation": "アグリゲーション",
+            "round": "表示桁数",
+            "limit": "データ件数",
+            "sort": "並び順",
+            "item": "item"
+        },
+        "operation": {
+            "Query": "Query",
+            "Scan": "Scan",
+            "PutItem": "PutItem"
+        },
+        "period": {
+            "datesetInput": "datesetから入力",
+            "manualsetInput": "手動設定"
+        },
+        "aggregation": {
+            "aggregationCheck": "設定",
+            "aggreunit": "単位",
+            "max": "最大値",
+            "min": "最小値",
+            "average": "平均",
+            "median": "中央値",
+            "count": "カウント",
+            "integration": "積算",
+            "first": "最初",
+            "last": "最後",
+            "year": "年",
+            "month": "月",
+            "week": "週",
+            "day": "日",
+            "hour": "時",
+            "minute": "分",
+            "second": "秒"
+        },
+        "round": {
+            "noexe": "丸め無し",
+            "3": "小数第3位",
+            "2": "小数第2位",
+            "1": "小数第1位",
+            "0": "整数",
+            "-1": "1の位",
+            "-2": "10の位",
+            "-3": "100の位"
+        },
+        "sort": {
+            "asc": "昇順",
+            "desc": "降順"
+        }
+    }
+}

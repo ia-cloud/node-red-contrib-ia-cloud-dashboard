@@ -1,0 +1,35 @@
+{
+    "getlatestdata": {
+        "label":{
+            "name": "name",
+            "username": "username",
+            "password": "password",
+            "tableName": "tableName",
+            "objectKey": "objectKey",
+            "series": "series",
+            "round": "round",
+            "item": "item"
+        },
+        "series": {
+            "number": "No.",
+            "dataName": "dataName",
+            "displayName": "displayName",
+            "add": "add",
+            "delete": "delete"
+        },
+        "round": {
+            "noexe": "noexe",
+            "3": "Third decimal place",
+            "2": "Second decimal place",
+            "1": "First decimal place",
+            "0": "Integer",
+            "-1": "Ones place",
+            "-2": "Tens place",
+            "-3": "Hundreds place"
+        },
+        "item": {
+            "graphData": "graphData",
+            "numericData": "numericData"
+        }
+    }
+}

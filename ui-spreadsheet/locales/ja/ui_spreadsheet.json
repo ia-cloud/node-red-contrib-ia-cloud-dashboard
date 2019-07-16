@@ -1,0 +1,16 @@
+{
+    "spreadsheet": {
+        "label": {
+            "group": "グループ",
+            "size": "サイズ",
+            "label": "ラベル",
+            "item": "項目設定",
+            "name": "名前"
+        },
+        "item": {
+            "nodesc":"A&E No，A&E詳細",
+            "no":"A&E No",
+            "desc":"A&E詳細"
+        }
+    }
+}

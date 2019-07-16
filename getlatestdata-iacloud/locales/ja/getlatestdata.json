@@ -1,0 +1,35 @@
+{
+    "getlatestdata": {
+        "label":{
+            "name": "名前",
+            "username": "ユーザID",
+            "password": "パスワード",
+            "tableName": "テーブル名",
+            "objectKey": "オブジェクトキー",
+            "series": "項目設定",
+            "round": "表示桁数",
+            "item": "表示項目"
+        },
+        "series": {
+            "number": "No.",
+            "dataName": "dataName",
+            "displayName": "表示名",
+            "add": "追加",
+            "delete": "削除"
+        },
+        "round": {
+            "noexe": "丸め無し",
+            "3": "小数第3位",
+            "2": "小数第2位",
+            "1": "小数第1位",
+            "0": "整数",
+            "-1": "1の位",
+            "-2": "10の位",
+            "-3": "100の位"
+        },
+        "item": {
+            "graphData": "バーグラフ、ランプ、ゲージなど",
+            "numericData": "数値データ"
+        }
+    }
+}

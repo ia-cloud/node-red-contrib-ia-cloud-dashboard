@@ -1,0 +1,16 @@
+{
+    "table": {
+        "label": {
+            "group": "グループ",
+            "size": "サイズ",
+            "label": "ラベル",
+            "input": "入力値",
+            "name": "名前"
+        },
+        "input": {
+            "getchartdata": "getChartdata",
+            "formatdata": "フォーマットデータ",
+            "item": "項目名"
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "oprstatus": {
+        "label": {
+            "group": "グループ",
+            "size": "サイズ",
+            "label": "ラベル",
+            "input": "入力値",
+            "item": "サブタイトル",
+            "itemObject": "状態設定",
+            "name": "名前"
+        },
+        "input": {
+            "getchartdata": "getChartdata",
+            "formatdata": "フォーマットデータ"
+        },
+        "itemObject": {
+            "add": "追加",
+            "delete": "削除",
+            "number": "No.",
+            "statusColor": "表示色",
+            "statusValue": "指定値",
+            "statusLabel": "状態名"
+        }
+    }
+}
