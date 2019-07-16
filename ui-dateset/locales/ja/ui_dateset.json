@@ -1,0 +1,12 @@
+{
+    "dateset": {
+        "label": {
+            "group": "グループ",
+            "size": "サイズ",
+            "name": "名前"
+        },
+        "dashboard": {
+            "submit": "更新"
+        }
+    }
+}

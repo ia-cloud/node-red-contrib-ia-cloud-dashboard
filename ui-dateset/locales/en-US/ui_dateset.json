@@ -1,0 +1,12 @@
+{
+    "dateset": {
+        "label": {
+            "group": "group",
+            "size": "size",
+            "name": "name"
+        },
+        "dashboard": {
+            "submit": "update"
+        }
+    }
+}
