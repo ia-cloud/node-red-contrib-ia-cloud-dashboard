@@ -25,6 +25,7 @@ ia-cloud　データ取得・変換・可視化ノード
 
 |ノード名|説明|
 |:-|:-|
+|[ui-dateset](ui-dateset)|ダッシュボードから開始日時・終了日時を取得|
 |[ui-oprstatus](ui-oprstatus)|入力値を基にダッシュボードへ稼働状況グラフを表示|
 |[ui-table](ui-table)|入力値を基にダッシュボードへテーブル(表)を表示|
 |[ui-spreadsheet](ui-spreadsheet)|ia-cloud アラーム&イベントモデルデータの集計を行いダッシュボードへテーブル(表)形式で表示|
