@@ -14,12 +14,11 @@ dashboard - tableノード
 ## 入力メッセージ
 この関数を利用する際には、ノード前にクエリを作成し  
 プロパティ内で入力値に設定したものに対応した入力パラメータを入力します。  
-「ノード：[json2inchart-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/json2inchart-iacloud)」からの出力を直接本ノードに入力して使用することが可能です。
+「ノード：[getChartdata-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard/tree/master/getchartdata-iacloud)」からの出力を直接本ノードに入力して使用することも可能です。
 
-- ### json2inchartからの出力
-  json2inchartからの出力を入力する場合は、  
-  入力値で「json2inchartからの出力」を指定します。  
-  以下に入力データの例を示します。 
+- ### getChartdata
+  getChartdataからの出力を入力する場合は、入力値で「getChartdata」を指定します。  
+  以下に例を示します。 
 
         [
             {
@@ -40,9 +39,8 @@ dashboard - tableノード
         ]
 
 
-- ### 基本フォーマットデータ
-直接変換対象データを入力する場合は、  入力値で  
-「基本フォーマットデータ」を指定し、item内に項目名を入力します。   
+- ### フォーマットデータ
+直接変換対象データを入力する場合は、入力値で基本フォーマットデータ」を指定し、項目名を入力します。   
 以下に例を示します。  
 
         [
@@ -61,8 +59,9 @@ dashboard - tableノード
 
 - ### 入力値
   入力するデータの種類を設定します。  
-  　・json2inchartからの出力  
-  　・基本フォーマットデータ  
+  　・getChartdata
+  　・フォーマットデータ  
+  フォーマットデータを選択した場合、列名をカンマ区切りで入力します。
 
 - ### グループ名
   結果を出力するダッシュボードグループを設定します。
@@ -73,7 +72,7 @@ dashboard - tableノード
 - ### ラベル
   ダッシュボード上での表示名を設定します。
 
-- ### ノード名
+- ### 名前
   フロー上で表示するノード名を設定します。
 
 ## 出力メッセージ

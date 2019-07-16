@@ -11,7 +11,8 @@ ia-cloud アラーム&イベントモデルデータの集計結果をテーブ�
 
 
 ## 入力メッセージ
-この関数を利用する際には、「ノード：[dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/dynamodb-iacloud)」からの出力を直接本ノードに入力します。  
+この関数を利用する際には、「ノード：[dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/dynamodb-iacloud)」から出力されたia-cloud アラーム&イベントモデルデータを直接本ノードに入力します。 
+ia-cloud アラーム&イベントモデルデータを集計対象としており、その他のモデルデータの集計には対応していません。 
 以下に入力データの例を示します。 
 
         {

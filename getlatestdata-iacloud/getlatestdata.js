@@ -4,6 +4,7 @@ module.exports = function(RED) {
 	
     function getlatestdataNode(config) {
 
+		/* 使用モジュール定義 */
 		var dynamodb = require("../dynamodb")(RED);
 
 		var opts;			// dynamodbへのアクセス情報を格納
@@ -12,39 +13,42 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this,config);
 
 		// 検索条件の取得
-		this.name = config.name;				// ノード名
-		this.operation = "Query";				// 処理名
-		this.TableName = config.tableName;		// 検索対象テーブル名
-		this.ScanIndexForward = "false";		// 並び順
-		this.KeyConditionExpression = "objectKey = :a";	// 検索条件
-		this.ExpressionAttributeValues = {				// 検索条件値
+		this.name = config.name;							// ノード名
+		this.operation = "Query";							// 処理名
+
+		this.TableName = config.tableName;					// 検索対象テーブル名
+		this.Limit = 1;							// 検索件数
+		this.ScanIndexForward = "false";					// 並び順
+
+		this.aggregationCheck = false;	// アグリゲーション設定の有無
+
+		this.decimalPoint = config.decimalPoint;			// 表示桁数
+		this.KeyConditionExpression = "objectKey = :a";		// 検索条件
+		this.ExpressionAttributeValues = {					// 検索条件値
 			":a": config.objectKey
 		};
+
+		this.Limit = 1;
 		
 		// dynamoDB接続用情報の取得
 		this.userID = this.credentials.userID;
 		this.password = this.credentials.password;
 
 		// 出力データ項目設定情報取得
-		var outSeries = config.series;              // グラフに表示する項目
-        var outSeriesList = outSeries.split(",");   // カンマ事に項目を取得
+		var outSeriesList;
+		try {
+			outSeriesList = JSON.parse(config.seriesObject);
+		} catch (e) {
+			outSeriesList = {};
+		}
+
+		this.item = config.item;						// 出力データの構成設定
 
 		// node作成
 		var node = this;
 
 		// dynamodb接続設定
 		opts = dynamodb.cnctSetting(node.userID, node.password);
-
-
-    	// Limitチェック
-		if (node.Limit == "") {
-			// 上限件数の指定がなかった場合は10000件とする
-			node.Limit = 1;
-		}
-
-		// 期間式の設定
-		// node = dynamodb.expressionSetting(node);
-
 
 		// injectされたら実行
         node.on('input', function(msg) {
@@ -67,49 +71,109 @@ module.exports = function(RED) {
 			// DynamoDBへリクエスト
 			dynamodb.dynamoRequest(opts, node, function(body) {
 
-				var i;
+				var i, j;
 
-				if (body.Items != undefined) {
+				if (body.Items != undefined && body.Items.length > 0) {
 
 					var ItemList;						// 出力データ一時保存
+					var contentList;					// contentData一時格納用
 
-					var contentList
-					var seriesList = [];
+					resultList = body;					// 結果出力配列に一時的にbodyを入力
 
-					var dataValue;      // 取得したdataValueを格納
+					// 桁数変更処理
+					if (node.decimalPoint != "noexe") {
+						resultList = dynamodb.round(resultList, node);
+					}
 
-					resultList = body;
 					ItemList = resultList.Items;
-					
-
-
-					// 出力データ：項目部分抽出
-					contentList = ItemList[0].dataObject.ObjectContent.contentData;
-					
-					for(i=0;i < contentList.length;i++) {
-						seriesList.push(contentList[i].dataName);
-					}
+					delete resultList.Items;
+					resultList = [];
 				
-					var combIndex = -1;
+					// 出力データ：項目部分抽出
+
+					if (ItemList[0].dataObject.objectContent != undefined) {
+                        contentList = ItemList[0].dataObject.objectContent.contentData;
+                    } else if (ItemList[0].dataObject.ObjectContent != undefined) {
+                        contentList = ItemList[0].dataObject.ObjectContent.contentData;
+                    } else {
+                        console.log("objectContent(ObjectContent)が無効\n");
+                    }
+
 					
-					// 出力項目チェック
-					combIndex = seriesList.indexOf(outSeries);
-					if (combIndex >= 0){
-						// 存在する場合表示項目に追加
-						dataValue = contentList[combIndex].dataValue;
+					if (contentList != undefined && node.item == "graphData") {
+						// 一次元配列
+						for (i=0; i<outSeriesList.length; i++) {
+							for (j=0; j<contentList.length; j++) {
+								if (outSeriesList[i].dataName == contentList[j].dataName) {
+									break;
+								}
+							}
+							if (j < contentList.length) {
+								// 見つかった場合
+								resultList.push(contentList[j].dataValue);
+							} else {
+								// 見つからなかった場合
+								resultList.push(null);
+							}
+						}
+
+					} else if (contentList != undefined && node.item == "numericData") {
+						// 二次元配列
+						var tempAry;							// 一時保存用配列
+						for (i=0; i<outSeriesList.length; i++) {
+							for (j=0; j<contentList.length; j++) {
+								if (outSeriesList[i].dataName == contentList[j].dataName) {
+									break;
+								}
+							}
+							if (j < contentList.length) {
+								// 見つかった場合
+								tempAry = [];
+
+								// 表示名が設定されている場合は表示名をtempAryへ格納
+								if (outSeriesList[i].displayName != "") {
+									tempAry.push(outSeriesList[i].displayName);
+								} else {
+									tempAry.push(outSeriesList[i].dataName);
+								}
+
+								// dataValueをtempAryへ格納
+								if (contentList[j].unit != undefined) {
+									tempAry.push(contentList[j].dataValue);
+								} else {
+									tempAry.push(null);
+								}
+
+								// 単位をtempAryへ格納
+								if (contentList[j].unit != undefined) {
+									tempAry.push(contentList[j].unit);
+								} else {
+									tempAry.push(null);
+								}
+
+								resultList.push(tempAry);
+							} else {
+								// 見つからなかった場合
+								tempAry = [null, null, null];
+
+								resultList.push(tempAry);
+							}
+						}
+
+
 					} else {
-						// 存在しない場合エラー出力
-						console.log("指定された項目のデータが見つかりません");
-						node.error("エラー：指定された項目のデータが見つかりません", msg);
+						console.log("指定条件のデータが見つかりませんでした");
+					node.error("getLatestdata - 指定条件のデータが見つかりませんでした");
 					}
 
-					// dataValueをlayloadに格納
-					msg.payload = dataValue;
+					msg.payload = resultList;
+
 
 					node.send(msg);	
-				}else {
-					console.log("変換対象データがありません");
-					node.error("json2inLatest：変換対象データがありません");
+				} else {
+					console.log("指定条件のデータが見つかりませんでした");
+					node.error("getLatestdata - 指定条件のデータが見つかりませんでした");
+					node.sendMsg([]);
 				}
 			});
 

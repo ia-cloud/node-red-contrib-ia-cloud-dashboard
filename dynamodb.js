@@ -4,22 +4,27 @@ var apiUrl = "https://xfsjduorxc.execute-api.us-east-1.amazonaws.com/stage_1/iac
 
 module.exports = function(RED) {
 
+    /* 関数定義 */
     return {
         cnctSetting: cnctSetting,
         serviceSetting: serviceSetting,
         dynamoRequest: dynamoRequest,
         aggregation: aggregation,
+        round: round,
         expressionSetting: expressionSetting
     };
 };
 
+/* 使用モジュール定義 */
 var request = require("request");
 var moment = require("moment");
 
-var reqbody = {};
+var reqbody = {};                   // DynamoDBリクエスト用オブジェクト
 
+
+/* DynamoDB接続情報設定関数 */
 function cnctSetting (userID, password) {
-    var opts = {};
+    var opts = {};                  // 接続情報格納用オブジェクト
 
     // 接続情報のデコード
     var buffer = new Buffer(userID + ":" + password);
@@ -36,42 +41,51 @@ function cnctSetting (userID, password) {
     return opts;
 }
 
+
+/* 検索期間条件設定関数 */
 function expressionSetting (node) {
 
-    //期間の作成
-    if (node.stime!= "" && node.etime != "") {
+    if (node.sdate!= undefined && node.edate != undefined) {
         // 開始・終了共に条件あり
-        node.ExpressionAttributeValues[":stime"] = node.stime + "T00:00:00+09:00";	// 期間セット
-        node.ExpressionAttributeValues[":etime"] = node.etime + "T23:59:59+09:00";	// 期間セット
-        node.KeyConditionExpression += " and #t BETWEEN :stime and :etime";			// 検索条件
-        node.ExpressionAttributeNames = {											// 検索条件値
+        node.ExpressionAttributeValues[":sdate"] = node.sdate + "T00:00:00+09:00";	        // 期間セット
+        node.ExpressionAttributeValues[":edate"] = node.edate + "T23:59:59+09:00";	        // 期間セット
+        node.KeyConditionExpression = "objectKey = :a and #t BETWEEN :sdate and :edate";    // 検索条件
+        node.ExpressionAttributeNames = {											        // 検索条件値
             "#t": "timeStamp"
         };
-    } else if (node.stime != ""){
+    } else if (node.sdate != undefined){
         // 開始のみ条件あり
-        node.ExpressionAttributeValues[":stime"] = node.stime + "T00:00:00+09:00";	// 期間セット
-        node.KeyConditionExpression += " and #t > :stime";							// 検索条件
-        node.ExpressionAttributeNames = {											// 検索条件値
+        node.ExpressionAttributeValues[":sdate"] = node.sdate + "T00:00:00+09:00";	        // 期間セット
+        delete node.ExpressionAttributeValues[":edate"];                                    // 期間セット
+        node.KeyConditionExpression = "objectKey = :a and #t > :sdate";				        // 検索条件
+        node.ExpressionAttributeNames = {											        // 検索条件値
             "#t": "timeStamp"
         };
-    } else if (node.stime!= "") {
+    } else if (node.sdate!= undefined) {
         // 終了のみ条件あり
-        node.ExpressionAttributeValues[":etime"] = node.etime + "T23:59:59+09:00";	// 期間セット
-        node.KeyConditionExpression += " and #t < :etime";							// 検索条件
-        node.ExpressionAttributeNames = {											// 検索条件値
+        delete node.ExpressionAttributeValues[":sdate"];                                    // 期間セット
+        node.ExpressionAttributeValues[":edate"] = node.edate + "T23:59:59+09:00";          // 期間セット
+        node.KeyConditionExpression = "objectKey = :a and #t < :edate";	                    // 検索条件
+        node.ExpressionAttributeNames = {										        	// 検索条件値
             "#t": "timeStamp"
         };
     } else {
-        // 開始・終了共に条件なし
+        // 開始・終了共に条件なし       
+        delete node.ExpressionAttributeValues[":sdate"];                                    // 期間セット
+        delete node.ExpressionAttributeValues[":edate"];                                    // 期間セット
+        node.KeyConditionExpression = "objectKey = :a";	                                    // 検索条件
+        delete node.ExpressionAttributeNames;                                               // 検索条件値
     }
     
     return node;
 }
 
+
+/* DynamoDB操作内容設定関数 */
 function serviceSetting (opts, node) {
 
     reqbody = {};
-    service[node.operation](node);
+    service[node.operation](node);          // 操作内容を基にリクエストを設定
     reqbody.oparation = node.operation;
 
     opts.body = JSON.stringify(reqbody);
@@ -80,16 +94,19 @@ function serviceSetting (opts, node) {
 }
 
 
-function dynamoRequest(opts, node, callback){
-    request(opts, function(err, res, body) {
-        var resbody = null;
-        if(err){
+/* DynamoDBリクエスト実行関数 */
+function dynamoRequest (opts, node, callback) {
+    //  リクエストモジュールを利用して設定APIへリクエスト
+    request (opts, function(err, res, body) {
+        var resbody = null;                 // レスポンス設定用オブジェクト
+
+        if (err) {
             // リクエストが失敗したらエラーを出力
             if(err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT') {
                 node.error(RED._("common.errors.no-response"));
             }
             node.status({fill:"red", shape:"ring", text:"not respond"});
-        }else{
+        } else {
             // リクエストが成功したらレスポンス毎に処理を分岐
             if (res.statusCode == 500){
                 // 認証エラー
@@ -98,8 +115,8 @@ function dynamoRequest(opts, node, callback){
                     "errorMassage": "認証情報が正しくありません"
                 }; 
                 node.error("DynamoDB：認証エラー", resbody);
-            }else if (res.statusCode != 200){
-                    // その他エラー
+            } else if (res.statusCode != 200){
+                // その他エラー
                 var resbody = {
                     "status": 400,
                     "errorMassage": "エラーが発生しました"
@@ -107,8 +124,11 @@ function dynamoRequest(opts, node, callback){
                 node.error("DynamoDB：認証エラー", resbody);
             } else {
                 // 結果を出力
-                try { var resbody = JSON.parse(body); }
-                catch(e) { node.warn(RED._("common.errors.json-error")); }
+                try {
+                    resbody = JSON.parse(body);
+                } catch (e) {
+                    node.warn(RED._("common.errors.json-error"));
+                }
             }
         }
         callback(resbody);
@@ -116,25 +136,24 @@ function dynamoRequest(opts, node, callback){
 }
 
 
-
+/* アグリゲーション実行関数 */
 function aggregation (items, node) {
+    var aggrItem = {};                              // 集計データ格納用配列
 
-    // 集計データ格納用
-    var aggrItem = {};
+    // 処理対象データの有無を確認
+    if (items.length > 0) {
+        aggrItem.objectKey = items[0].objectkey;    // 勝利データ一件目のobjectKeyを取得
+        aggrItem.objectList = [];                   // アグリゲーション結果を格納するobjectListを作成
 
-    // objectKeyを格納
-    if (items != undefined) {
-        aggrItem.objectKey = items[0].objectkey;
-        aggrItem.objectList = [];
+        var tmpObj;					                // オブジェクト一時保存用オブジェクト	
+        var DatObj;					                // dataObject一時保存用オブジェクト
+        var contentData;			                // 集計結果一時保存用オブジェクト
 
-        var tmpObj;					// オブジェクト一時保存用		
-        var DatObj;					// dataObject一時保存用
-
-        var sumList;				// 集計用一時保存配列
-
-        var contentData;			// 結果集計オブジェクト一時保存用
-        var resultObj;				// 結果集計オブジェクト一時保存用
-        var resultList = [];		// 結果集計用解列
+        var sumList;				                // 一時集計用配列
+        
+        var resultList = [];		                // 集計結果一時保存用配列
+        var resultObj;				                // 結果結果一時保存用オブジェクト
+        
 
         // データをひとまとめに
         for (var i=0; i<items.length; i++) {
@@ -186,15 +205,17 @@ function aggregation (items, node) {
             }
         });
 
-        // sumList（一時格納配列）作成
+        // 全データの集計が終わるまで繰り返す
         for (var i=0; i<aggrItem.objectList.length; i) {
 
+            // 一時集計を容易にするため、tmpObjに一時格納
             tmpObj = aggrItem.objectList[i];
             
             // 期間設定処理
             var endTimeStamp = moment(tmpObj.timeStamp).endOf(node.aggreunit);
             sumList = {};				
 
+            // 指定単位（年～秒）で一時的にsumListへ集計
             for (i; i<aggrItem.objectList.length && moment(tmpObj.timeStamp)<=endTimeStamp; i) {
 
                 tmpObj.contentData.forEach (function (CntDat) {									
@@ -205,7 +226,7 @@ function aggregation (items, node) {
                     sumList[CntDat.dataName].push(CntDat.dataValue);
                 });
 
-                // 次に使用するtmpObjを取得
+                // 一時集計を容易にするため、tmpObjに一時格納
                 tmpObj = aggrItem.objectList[++i];
             }
             
@@ -215,7 +236,7 @@ function aggregation (items, node) {
             // 最大値
             case "max":
                 contentData = [];
-                // sumList内のオブジェクト毎にMAXを算出
+                // sumList内のオブジェクト毎にM最大値を算出
                 Object.keys(sumList).forEach(function (key) {
                     tmpObj = {};
                     tmpObj.dataName = key;
@@ -234,7 +255,7 @@ function aggregation (items, node) {
             case "min":
                 // 最小値
                 contentData = [];
-                // sumList内のオブジェクト毎にMINを算出
+                // sumList内のオブジェクト毎に最小値を算出
                 Object.keys(sumList).forEach(function (key) {
                     tmpObj = {};
                     tmpObj.dataName = key;
@@ -252,20 +273,18 @@ function aggregation (items, node) {
             
             case "average":
                 // 平均
-                // sum関数作成
+                // SUM関数作成
                 var sum  = function(arr) {
                     return arr.reduce(function(prev, current, i, arr) {
                         return prev+current;
                     });
                 };
-                var average;
                 contentData = [];
-                // sumList内のオブジェクト毎にAVERAGEを算出
+                // sumList内のオブジェクト毎に平均を算出
                 Object.keys(sumList).forEach(function (key) {
                     tmpObj = {};
                     tmpObj.dataName = key;
-                    average = Math.round(sum(sumList[key]) / sumList[key].length * Math.pow(10, node.decimalPoint)) / Math.pow(10, node.decimalPoint);
-                    tmpObj.dataValue = average;
+                    tmpObj.dataValue =  sum(sumList[key]) / sumList[key].length;
                     contentData.push(tmpObj);
                 });
                 // resultListに格納するためのオブジェクトを作成
@@ -285,7 +304,7 @@ function aggregation (items, node) {
                     }
                 var sortedList;
                 contentData = [];
-                // sumList内のオブジェクト毎にMEDIANを算出
+                // sumList内のオブジェクト毎に中央値を算出
                 Object.keys(sumList).forEach(function (key) {
                     tmpObj = {};
                     tmpObj.dataName = key;
@@ -306,7 +325,7 @@ function aggregation (items, node) {
             case "count":
                 //カウント
                 contentData = [];
-                // sumList内のオブジェクト毎にCOUNTを算出
+                // sumList内のオブジェクト毎にカウントを算出
                 Object.keys(sumList).forEach(function (key) {
                     tmpObj = {};
                     tmpObj.dataName = key;
@@ -323,14 +342,14 @@ function aggregation (items, node) {
                 break;
 
             case "integration":
-                // 分散
+                // 積算
                 // 未実装
                 break;
 
             case "first":
-                // 最初のデータ
+                // 指定単位（年～秒）内の最初のデータ
                 contentData = [];
-                // sumList内のオブジェクト毎にFIRSTを算出
+                // sumList内のオブジェクト毎に最初のデータを算出
                 Object.keys(sumList).forEach(function (key) {
                     tmpObj = {};
                     tmpObj.dataName = key;
@@ -347,9 +366,9 @@ function aggregation (items, node) {
                 break;
             
             case "last":
-                // 最後のデータ
+                // 指定単位（年～秒）内の最後のデータ
                 contentData = [];
-                // sumList内のオブジェクト毎にFIRSTを算出
+                // sumList内のオブジェクト毎に最後のデータを算出
                 Object.keys(sumList).forEach(function (key) {
                     tmpObj = {};
                     tmpObj.dataName = key;
@@ -368,17 +387,60 @@ function aggregation (items, node) {
             }
         }
     } else {
-        
+        // アグリゲーション処理用データが存在しなかった場合はエラー出力
         console.log("アグリゲーション対象データがありません");
-		node.error("dynamodb.hs -aggregation：アグリゲーション対象データがありません");
+		node.error("dynamodb.js -aggregation：アグリゲーション対象データがありません");
     }
 
+    // 集計結果(reusltList)を返却する
     return resultList;
 }
 
+/* 表示桁数関数 */
+function round (items, node) {
+    try {
+
+        if (node.aggregationCheck == true) {
+            // アグリゲーション処理後データ
+            items.forEach (function (item) {
+                item.contentData.forEach (function (obj) {
+                    obj.dataValue = Math.round(obj.dataValue * Math.pow(10, node.decimalPoint)) / Math.pow(10, node.decimalPoint);
+                });
+            });
+        } else if (node.aggregationCheck == false) {
+            if (items.Items[0].dataObject.objectContent != undefined) {
+                // 生データ（objectContent）
+                items.Items.forEach (function (item) {
+                    item.dataObject.objectContent.contentData.forEach (function (obj) {
+                        obj.dataValue = Math.round(obj.dataValue * Math.pow(10, node.decimalPoint)) / Math.pow(10, node.decimalPoint);
+                    });
+                });
+            } else if (items.Items[0].dataObject.ObjectContent != undefined) {
+                // 生データ（ObjectContent）
+                items.Items.forEach (function (item) {
+                    item.dataObject.ObjectContent.contentData.forEach (function (obj) {
+                        obj.dataValue = Math.round(obj.dataValue * Math.pow(10, node.decimalPoint)) / Math.pow(10, node.decimalPoint);
+                    });
+                });
+            } else {
+                // round処理未実施：生データ
+            }
+        }
+        //  else if (node.aggregationCheck == null) {
+        //     // アグリゲーション処理後データ
+        // }
+        
+    } catch (e) {
+        // 表示桁数変換データが存在しなかった場合はエラー出力
+        console.log("表示桁数変換対象データがありません");
+		node.error("dynamodb.js -round：表示桁数変換対象データがありません");
+    }
+    
+    return items;
+}
 
 
-// 文字列コピー関数：copyArg
+/* 文字列コピー関数*/
 var copyArg=function(src,arg,out,outArg,isObject){
     var tmpValue=src[arg];
     outArg = (typeof outArg !== 'undefined') ? outArg : arg;
@@ -388,7 +450,6 @@ var copyArg=function(src,arg,out,outArg,isObject){
         }
         out[outArg]=tmpValue;
     }
-    //AWS API takes 'Payload' not 'payload' (see Lambda)
     if (arg=="Payload" && typeof tmpValue == 'undefined'){
             out[arg]=src["payload"];
     }
@@ -396,9 +457,10 @@ var copyArg=function(src,arg,out,outArg,isObject){
 }
 
 
-// 処理毎にserivce設定
+// 処理毎にserivceを設定
 var service={};
 
+// Query処理を行う際のservice
 service.Query=function(msg){
 
     var params={};
@@ -425,6 +487,7 @@ service.Query=function(msg){
 
 }
 
+// Scan処理を行う際のservice
 service.Scan=function(msg){
     var params={};
     //copyArgs
@@ -448,6 +511,7 @@ service.Scan=function(msg){
     reqbody.params = params;
 }
 
+// PutItem処理を行う際のservice
 service.PutItem=function(msg){
     var params={};
     //copyArgs

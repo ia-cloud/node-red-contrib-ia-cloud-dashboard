@@ -3,7 +3,6 @@
         category: 'iaCloud dashboard',
         color: 'rgb(119, 198, 204)',
         defaults: {
-            // configSel: {value:"inchartSet", required:true},
             confsel: {value:"inchartSet"},
             group: {type: 'ui_group', required:false},
             name: {value: ''},
@@ -38,28 +37,7 @@
                 height: "#node-input-height",
                 group: "#node-input-group"
             });
-
-            /*
-            $('input[name="configSel"]:radio').change(function() {
-                if ($("#node-input-configSel1").is(":checked")) {
-                    $("#node-row-item").hide();
-                    $('#node-input-confsel').val("inchartSet");
-                } else {
-                    $("#node-row-item").show();
-                    $('#node-input-confsel').val("formatSet");
-                }
-            });
-            
-            if($("#node-input-confsel").val() == "inchartSet"){
-                $('#node-input-configSel1').prop('checked', true);
-            } else {
-                $('#node-input-configSel2').prop('checked', true);
-            }
-            $('input[name="configSel"]:radio').change();
-            */
-
         }
-        
     });
 </script>
 
@@ -67,13 +45,13 @@
 
     <!-- グループ -->
 	<div class="form-row" id="template-row-group">
-        <label for="node-input-group"><i class="fa fa-table"></i> Group</label>
+        <label for="node-input-group"><i class="fa fa-table"></i> <span data-i18n="spreadsheet.label.group"></span></label>
         <input type="text" id="node-input-group">
     </div>
 
     <!-- 表示サイズ -->
     <div class="form-row" id="template-row-size">
-        <label><i class="fa fa-object-group"></i> サイズ</label>
+        <label><i class="fa fa-object-group"></i> <span data-i18n="spreadsheet.label.size"></span></label>
         <input type="hidden" id="node-input-width">
         <input type="hidden" id="node-input-height">
         <button class="editor-button" id="node-input-size"></button>
@@ -81,40 +59,23 @@
 
     <!-- ラベル -->
     <div class="form-row">
-        <label for="node-input-label"><i class="fa fa-i-cursor"></i> ラベル</label>
+        <label for="node-input-label"><i class="fa fa-i-cursor"></i> <span data-i18n="spreadsheet.label.label"></span></label>
         <input type="text" id="node-input-label">
     </div>
 
-    
-    <!-- 入力・出力オプション -->
-    <!--
-    <div id="template-pass-store">
-        <div class="form-row" style="margin-bottom:0px;">
-            <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-fwdInMessages" style="display:inline-block; width:auto; vertical-align:top;">
-            <label for="node-input-fwdInMessages" style="width:70%;"> 入力からメッセージを渡す </label>
-        </div>
-        <div class="form-row" style="margin-bottom:0px;">
-            <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-storeOutMessages" style="display:inline-block; width:auto; vertical-align:top;">
-            <label for="node-input-storeOutMessages" style="width:70%;"> 保存された状態に出力メッセージを追加 </label>
-        </div>
-    </div>
-    -->
-
     <!-- 表示項目 -->
     <div class="form-row">
-        <label for="node-input-item"><i class="fa fa-bars"></i> 表示項目</label>
+        <label for="node-input-item"><i class="fa fa-bars"></i> <span data-i18n="spreadsheet.label.item"></span></label>
         <select type="text" style="width:200px;" id="node-input-item">
-            <option value="nodesc">A&E No，A&E詳細</option>
-            <option value="no">A&E No</option>
-            <option value="desc">A&E詳細</option>
+            <option value="nodesc" data-i18n="spreadsheet.item.nodesc"></option>
+            <option value="no" data-i18n="spreadsheet.item.no"></option>
+            <option value="desc" data-i18n="spreadsheet.item.desc"></option>
         </select>
     </div>
 
     <!-- ノード名 -->
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> ノード名</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="spreadsheet.label.name"></span></label>
         <input type="text" id="node-input-name">
     </div>
 </script>

@@ -1,4 +1,4 @@
-# node-red-contrib-ia-cloud-output - ui_oprstatus
+# node-red-contrib-ia-cloud-dashboard - ui_oprstatus
 
 ## 名称
 dashboard - oprStatusノード
@@ -15,12 +15,12 @@ dashboard - oprStatusノード
 ## 入力メッセージ
 この関数を利用する際には、ノード前にクエリを作成し  
 プロパティ内で入力値に設定したものに対応した入力パラメータを入力します。  
-「ノード：[dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/dynamodb-iacloud)」、 「ノード：[json2inchart-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/json2inchart-iacloud)」からの出力を直接本ノードに入力して使用することが可能です。 
+「ノード：[getChartdata-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard/tree/master/getchartdata-iacloud)」からの出力を直接本ノードに入力して使用することも可能です。 
+以下に入力データの例を示します。  
 
-- ### json2inchartからの出力
-  json2inchartからの出力を入力する場合は、  
-  入力値で「json2inchartからの出力」を指定します。  
-  以下に入力データの例を示します。  
+- ### getChartdata
+  getChartdataからの出力を入力する場合は、入力値で「getChartdata」を指定します。  
+  以下に例を示します。 
 
         [
             {
@@ -58,9 +58,8 @@ dashboard - oprStatusノード
         ]
 
 
-- ### 基本フォーマットデータ
-直接変換対象データを入力する場合は、  入力値で  
-「基本フォーマットデータ」を指定し、item内に項目名を入力します。   
+- ### フォーマットデータ
+直接変換対象データを入力する場合は入力値で「フォーマットデータ」を指定します。
 以下に例を示します。  
 
         [
@@ -77,11 +76,6 @@ dashboard - oprStatusノード
 
 変換するデータに応じて、以下のパラメータを設定します。
 
-- ### 入力値
-  入力するデータの種類を設定します。  
-  　・json2inchartからの出力  
-  　・基本フォーマットデータ  
-
 - ### グループ名
   結果を出力するダッシュボードグループを設定します。
 
@@ -91,16 +85,20 @@ dashboard - oprStatusノード
 - ### ラベル
   ダッシュボード上での表示名を設定します。
 
-- ### 項目名
-  基本フォーマットデータ入力時に指定します。  
-  データ表示時の項目名を入力します。  
-  例：制御盤A
+- ### 入力値
+  入力するデータの種類を設定します。  
+  　・getChartdata  
+  　・フォーマットデータ  
 
-- ### 項目詳細
+- ### サブタイトル
+  表示する稼働状況グラフのサブタイトルを設定します。
+  例：稼働信号
+
+- ### 状態設定
   各指定値毎に表示する色、状態名を指定します  
   例：表示色 -> グレー、指定値 -> 0、状態名 -> 正常停止
 
-- ### ノード名
+- ### 名前
   フロー上で表示するノード名を設定します。
 
 ## 出力メッセージ

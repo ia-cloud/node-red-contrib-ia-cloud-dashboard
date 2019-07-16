@@ -5,16 +5,15 @@
         defaults: {
 			name: {value:""},
 			tableName: {value: "", required:true},
-            // confsel: {value:"rawData"},
 			objectKey: {value: "", required:true},
-			// series: {value: "", required:true},
 			seriesObject:{value:"", required: true },
-			stime: {value: ""},
-			etime: {value: ""},
+			dateCheck: {value:"datesetInput"},
+			sdate: {value: ""},
+			edate: {value: ""},
 			aggregationCheck: {value: false},
 			aggregation: {value: "max"},
 			aggreunit: {value: "year"},
-			decimalPoint: {value: "0"},
+			decimalPoint: {value: "noexe"},
 			sort: {value: "true"},
 			limit: {value: ""}
 		},
@@ -31,6 +30,26 @@
         },
         oneditprepare: function () {
 
+			// 期間入力オプション
+			$('input[name="configSel"]:radio').change(function() {
+                if ($("#node-input-configSel1").is(":checked")) {
+                    $(".node-input-manualInput-row").hide();
+                    $('#node-input-dateCheck').val("datesetInput");
+                } else {
+                    $(".node-input-manualInput-row").show();
+                    $('#node-input-dateCheck').val("manualInput");
+                }
+            });
+			
+            if($("#node-input-dateCheck").val() == "datesetInput"){
+                $('#node-input-configSel1').prop('checked', true);
+            } else {
+                $('#node-input-configSel2').prop('checked', true);
+            }
+			$('input[name="configSel"]:radio').change();
+			
+
+			// アグリゲーションオプション
 			$("#node-input-aggregationCheck").change(function() {
                 if ($(this).is(":checked")) {
 					$(".node-input-aggregation-row").show();
@@ -97,10 +116,6 @@
 					frm_cnt = idx;
 				});
         	}
-
-			
-
-
 
 			//追加ボタンが押されたら
 			$("#form_add").off("click");
@@ -194,89 +209,66 @@
 			try {$("#node-input-seriesObject").val(JSON.stringify(dItems));}
 			catch(e) {$("#node-input-seriesObject").val("")}
 
-			}
-		});
+		}
+	});
 </script>
 
 <!-- ノード編集画面テンプレート -->
 <script type="text/x-red" data-template-name="getchartdata">
     <!-- ノード名 -->
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> ノード名</label>
+        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="getchartdata.label.name"></span></label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <hr/>
 
-    <!-- 項目設定
-    <label style="width: 100%;" for="node-input-format" ><i class="fa fa-list"></i>  入力値</label>
-    <div class="form-row" style="margin-left: 100px">
-        <input type="text" style="display: none; vertical-align: top;" id="node-input-confsel" valie="rawData">
-        <input type="radio" style="display: inline-block; width: auto;  vertical-align: top;"
-              name="configSel" id="node-input-configSel1"
-              value="rowData" checked="checked">
-        <label style="width: 30%; vertical-align: top;" for="node-input-configSel1"> 生データ</label>
-        <input type="radio" style="display: inline-block; width: auto;  vertical-align: top;"
-              name="configSel" id="node-input-configSel2" value="aggreData">
-        <label style="width: 50%;" for="node-input-configSel2"> アグリゲーションデータ</label>
-	</div>
-	-->
-
 	<!-- ユーザID -->
 	<div class="form-row">
-		<label for="node-input-userID"><i class="fa fa-tag"></i> 接続用ID<span style="color: #ff0000;">*</span></label>
+		<label for="node-input-userID"><i class="fa fa-tag"></i> <span data-i18n="getchartdata.label.username"></span><span style="color: #ff0000;">*</span></label>
 		<input type="text" id="node-input-userID" placeholder="userID"></input>
 	</div>
 
 	<!-- パスワード -->
 	<div class="form-row">
-		<label for="node-input-password"><i class="fa fa-key"></i> パスワード<span style="color: #ff0000;">*</span></label>
+		<label for="node-input-password"><i class="fa fa-key"></i> <span data-i18n="getchartdata.label.password"></span><span style="color: #ff0000;">*</span></label>
 		<input type="password" id="node-input-password" placeholder="password"></input>
 	</div>
 	<hr/>
 
 	<!-- テーブル名 -->
 	<div class="form-row">
-		<label for="node-input-tableName"><i class="fa fa-tag"></i> テーブル名<span style="color: #ff0000;">*</span></label>
+		<label for="node-input-tableName"><i class="fa fa-tag"></i> <span data-i18n="getchartdata.label.tableName"></span><span style="color: #ff0000;">*</span></label>
 		<input type="text" id="node-input-tableName" placeholder="tableName"></input>
 	</div>
 
 	<!-- オブジェクトキー -->
 	<div class="form-row">
-		<label for="node-input-objectKey"><i class="fa fa-key"></i> オブジェクトキー<span style="color: #ff0000;">*</span></label>
+		<label for="node-input-objectKey"><i class="fa fa-key"></i> <span data-i18n="getchartdata.label.objectKey"></span><span style="color: #ff0000;">*</span></label>
 		<input type="text" id="node-input-objectKey" placeholder="objectKey"></input>
 	</div>
-
-	<!-- 項目名(dataName)
-    <div class="form-row">
-        <label for="node-input-series"><i class="fa fa-list"></i> 項目名(dataName)<span style="color: #ff0000;">*</span></label>
-        <input type="text" id="node-input-series" placeholder="温度A,温度B,温度C">
-	</div>
-	-->
 
 	<!-- 項目名(dataName)と表示名 -->
 	<div class="form-row hidden">
 		<input type="text" id="node-input-seriesObject">
 	</div>
 	<div class="form-row">
-		<label for="node-input-series"><i class="fa fa-list"></i> 項目名<span style="color: #ff0000;">*</span></label>
+		<label for="node-input-series"><i class="fa fa-list"></i> <span data-i18n="getchartdata.label.series"></span><span style="color: #ff0000;">*</span></label>
 	</div>
 	<div id="blocks" style="margin-left: 10px">
 		<div class="form-block" id="form_block[0]">
 			<div class="form-row">
 				<div class="form-inline" id="from_del[0]" >
-					<span style="border-bottom:solid 2px;"><i class="fa fa-angle-right"></i> 項目番号</label></span>
+					<span data-i18n="getchartdata.series.number"></span>
 					<input type="text" id="dItem[0]" style="width: 30px;" value="1"
 						disabled="disabled">
-					<input type="button" name="del_btn" value="削除"
+					<input type="button" name="del_btn" data-i18n="[value]getchartdata.series.delete"
 						style="margin-left: 30px; width: 70px; display: none;">
 				</div>
 			</div>
 			<div class="form-row" style="margin-left: 15px">
-					<!-- <label for="node-input-dataName"><i class="fa fa-angle-right"></i> 指定値</label> -->
-				dataName：
+					<span data-i18n="getchartdata.series.dataName"></span>：
 					<input type="text" style="width:120px;" id="dataName[0]">
-				<!-- <label for="node-input-displayName"><i class="fa fa-angle-right"></i> 状態名</label> -->
-				　表示名：
+					　<span data-i18n="getchartdata.series.displayName"></span>：
 				<input type="text" style="width: 120px;" id="displayName[0]">
 			</div>
 			<br>
@@ -285,76 +277,90 @@
 
 	<!-- Addボタン -->
 	<div class="form-block">
-		<input type="button" id="form_add" name="add_btn" value="追加">
+		<input type="button" id="form_add" name="add_btn" style="width: 70px;" data-i18n="[value]getchartdata.series.add">
+	</div>
+	<hr/>
+
+	<!-- 期間 -->
+	<div class="form-row" style="width:450px;">
+		<input type="text" style="display: none;" id="node-input-dateCheck" value="datesetInput">
+		<label for="node-input-format" ><i class="fa fa-calendar"></i> <span data-i18n="getchartdata.label.period"></span></label>
+		<input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
+				name="configSel" id="node-input-configSel1"
+				value="datesetInput" checked="checked">
+		<label style="width: 30%;" for="node-input-configSel1"> <span data-i18n="getchartdata.period.datesetInput"></span></label>
+		<input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
+				name="configSel" id="node-input-configSel2" value="manualInput">
+		<label style="width: 30%;" for="node-input-configSel2"> <span data-i18n="getchartdata.period.manualsetInput"></span></label>
+	</div>
+	<div style="margin-left: 110px" class="node-input-manualInput-row hide">
+		<input type="date" style="width:140px;" id="node-input-sdate" placeholder="2018-01-01"></input>
+		～
+		<input type="date" style="width:140px;" id="node-input-edate" placeholder="2018-01-03"></input>
 	</div>
 
+	
 	<!-- アグリゲーション -->
-	<hr/>
 	<div class="form-row" style="width:450px;">
-		<label for="node-input-aggregation"><i class="fa fa-calculator"></i> アグリゲーション</label>
+		<label for="node-input-aggregation"><i class="fa fa-calculator"></i> <span data-i18n="getchartdata.label.aggregation"></span></label>
 		<input type="checkbox" id="node-input-aggregationCheck" style="display: inline-block; width: 20px; vertical-align: middle;>
-		<label for="node-input-aggregationCheck" style="width: 40%; vertical-align: middle;">設定</label>
-
+		<label for="node-input-aggregationCheck" style="width: 40%; vertical-align: middle;"><span data-i18n="getchartdata.aggregation.aggregationCheck"></span></label>
+		
 		<div style="margin-left: 20px" class="node-input-aggregation-row hide">
 			<div class="form-row" style="margin-left: 100px">
 				<select type="text" id="node-input-aggregation" style="width:150px;">
-					<option value="max">最大値</option>
-					<option value="min">最小値</option>
-					<option value="average">平均</option>
-					<option value="median">中央値</option>
-					<option value="count">カウント</option>
-					<option value="integration">積算</option>
-					<option value="first">最初</option>
-					<option value="last">最後</option>
+					<option value="max" data-i18n="getchartdata.aggregation.max"></option>
+					<option value="min" data-i18n="getchartdata.aggregation.min"></option>
+					<option value="average" data-i18n="getchartdata.aggregation.average"></option>
+					<option value="median" data-i18n="getchartdata.aggregation.median"></option>
+					<option value="count" data-i18n="getchartdata.aggregation.count"></option>
+					<!-- <option value="integration" data-i18n="getchartdata.aggregation.integration"></option> -->
+					<option value="first" data-i18n="getchartdata.aggregation.first"></option>
+					<option value="last" data-i18n="getchartdata.aggregation.last"></option>
 				</select>
-			</div>
-			<div class="form-row" style="margin-left: 100px">
-				単位
+				　<span data-i18n="getchartdata.aggregation.aggreunit"></span>
 				<select type="text" id="node-input-aggreunit" style="width:60px;">
-					<option value="year">年</option>
-					<option value="month">月</option>
-					<option value="week">週</option>
-					<option value="day">日</option>
-					<option value="hour">時</option>
-					<option value="minute">分</option>
-					<option value="second">秒</option>
-				</select>
-				　表示桁数
-				<select type="text" id="node-input-decimalPoint" style="width:120px;">
-					<option value="3">小数第3位</option>
-					<option value="2">小数第2位</option>
-					<option value="1">小数第1位</option>
-					<option value="0">整数</option>
-					<option value="-1">1の位</option>
-					<option value="-2">10の位</option>
-					<option value="-3">100の位</option>
+					<option value="year" data-i18n="getchartdata.aggregation.year"></option>
+					<option value="month" data-i18n="getchartdata.aggregation.month"></option>
+					<option value="week" data-i18n="getchartdata.aggregation.week"></option>
+					<option value="day" data-i18n="getchartdata.aggregation.day"></option>
+					<option value="hour" data-i18n="getchartdata.aggregation.hour"></option>
+					<option value="minute" data-i18n="getchartdata.aggregation.minute"></span></option>
+					<option value="second" data-i18n="getchartdata.aggregation.second"></span></option>
 				</select>
 			</div>
 		</div>
 	</div>
 
-	<!-- データ件数 -->
+	<!-- 表示桁数 -->
 	<div class="form-row">
-		<label for="node-input-limit"><i class="fa fa-clone"></i> データ件数</label>
-		<input type="text" style="width:130px;" id="node-input-limit" placeholder="100"></input>
+		<label for="node-input-decimalPoint"><i class="fa fa-sliders"></i> <span data-i18n="getchartdata.label.round"></span></label>
+		<select type="text" id="node-input-decimalPoint" style="width:120px;">
+			<option value="noexe" data-i18n="getchartdata.round.noexe"></option>
+			<option value="3" data-i18n="getchartdata.round.3"></option>
+			<option value="2" data-i18n="getchartdata.round.2"></option>
+			<option value="1" data-i18n="getchartdata.round.1"></option>
+			<option value="0" data-i18n="getchartdata.round.0"></option>
+			<option value="-1" data-i18n="getchartdata.round.-1"></option>
+			<option value="-2" data-i18n="getchartdata.round.-2"></option>
+			<option value="-3" data-i18n="getchartdata.round.-3"></option>
+		</select>
 	</div>
 
-	<!-- 期間 -->
+	<!-- データ件数 -->
 	<div class="form-row">
-		<label for="node-input-time"><i class="fa fa-calendar"></i> 期間</label>
-		<input type="date" style="width:150px;" id="node-input-stime" placeholder="2018-01-01"></input>
-		～
-		<input type="date" style="width:150px;" id="node-input-etime" placeholder="2018-01-03"></input>
+		<label for="node-input-limit"><i class="fa fa-clone"></i> <span data-i18n="getchartdata.label.limit"></span></label>
+		<input type="text" style="width:130px;" id="node-input-limit" placeholder="100"></input>
 	</div>
 
 	<div class="form-group hide"  id="node-row-SortSet">
 		<!-- アグリゲーション未使用で使用可能 -->
 		<!-- ソート -->
 		<div class="form-row">
-			<label for="node-input-sort"><i class="fa fa-sort"></i> 並び順</label>
+			<label for="node-input-sort"><i class="fa fa-sort"></i> <span data-i18n="getchartdata.label.sort"></span></label>
 			<select type="text" style="width:80px;" id="node-input-sort">
-				<option value="true">昇順</option>
-				<option value="false">降順</option>
+				<option value="true" data-i18n="getchartdata.sort.asc"></option>
+				<option value="false" data-i18n="getchartdata.sort.desc"></option>
 			</select>
 		</div>
 	</div>
@@ -362,22 +368,5 @@
 
 <!-- エディタに登録するノード説明 -->
 <script type="text/x-red" data-help-name="getchartdata">
-    <p>このノードはiacloudオブジェクト（json形式）をdashborad - chartへ入力する際の形へ変換することができます。</p>
-    <h3>入力メッセージ</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">object</span></dt>
-        <dd>iacloudオブジェクト（json形式）。</dd>
-    </dl>
-    <h3>出力メッセージ</h3>
-    <dl class="message-properties">
-        <dt>payload <span class="property-type">object</span></dt>
-        <dd>入力されたiacloudオブジェクトをdashborad - chartへ入力する際の形に変換した結果（json形式）。</dd>
-    </dl>
-    <h3>詳細説明</h3>
-    <p>このノードは「ノード：<a href="https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/dynamodb-iacloud">node-red-contrib-dynamodb-iacloud</a>」
-        からの出力を直接本ノードに入力して使用することができます。
-    <p>直接変換対象データを入力する場合は、以下プロパティを設定する必要があります。</p>
-    <ul>
-        <li><code>項目名</code> - (文字列)出力する項目名(dataName)をカンマ区切りで入力する</li>
-    </ul>
+    no en-US
 </script>
