@@ -73,6 +73,7 @@
       "json2csv-iacloud": "json2csv-iacloud/json2csv.js",
       "json2inchart-iacloud": "json2inchart-iacloud/json2inchart.js",
       "json2inlatest-iacloud": "json2inlatest-iacloud/json2inlatest.js",
+      "ui-dateset": "ui-dateset/ui_dateset.js",
       "ui-table": "ui-table/ui_table.js",
       "ui-oprstatus": "ui-oprstatus/ui_oprstatus.js",
       "ui-spreadsheet": "ui-spreadsheet/ui_spreadsheet.js",
