@@ -19,9 +19,6 @@ ia-cloud　データ取得・変換・可視化ノード
 |[dynamodb-iacloud](dynamodb-iacloud)|DynamoDBに格納されたia-cloudオブジェクトを取得|
 |[getChartdata-iacloud](getchartdata-iacloud)|DynamoDBに格納されたia-cloudオブジェクトを取得し、アグリゲーション・表示名変更を行った後にdashborad - chartへ入力する際の形に変換|
 |[getLatestdata-iacloud](getlatestdata-iacloud)|DynamoDBに格納されたia-cloudオブジェクトを取得し、dashboradの各ウィジェットへ入力する際の形に変換|
-|[json2inchart-iacloud](json2inchart-iacloud)|json入力をdashborad - chartへ入力する際の形に変換|
-|[json2inLatest-iacloud](json2inlatest-iacloud)|json入力をdashboradの各ウィジェットへ入力する際の形に変換|
-|[json2csv-iacloud](json2csv-iacloud)|json入力をcsv形式へ変換|
 
 - ### ダッシュボードを用いて可視化を行うノード
 「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装
