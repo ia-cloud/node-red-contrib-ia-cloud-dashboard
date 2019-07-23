@@ -64,7 +64,10 @@
   "gitHead": "9a393f07060d79f00a990670ddc456adbf4d0e89",
   "license": "ISC",
   "main": "dynamodb-iacloud/dynamoDB.js",
-  "name": "node-red-contrib-ia-cloud-dashboard",
+  "name": "@ia-cloud/node-red-contrib-ia-cloud-dashboard",
+  "keywords": [
+    "node-red"
+  ],
   "node-red": {
     "nodes": {
       "dynamodb-iacloud": "dynamodb-iacloud/dynamoDB.js",
