@@ -116,7 +116,7 @@ module.exports = function(RED) {
 	}
 
 
-	RED.nodes.registerType("DynamoDB", dynamodbNode, {
+	RED.nodes.registerType("dynamoDB", dynamodbNode, {
         credentials: {
             userID: {type:"text"},
             password: {type: "password"}
