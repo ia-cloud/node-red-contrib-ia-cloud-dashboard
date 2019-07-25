@@ -94,6 +94,8 @@ module.exports = function(RED) {
 				// DynamoDBへリクエスト
 				dynamodb.dynamoRequest(opts, node, function(body) {
 
+
+
 					if (body.Items != undefined && body.Items.length > 0) {	
 						var ItemList;						// 出力データ一時保存
 						var contentList = [];				//  出力データ項目部分作成
@@ -102,6 +104,7 @@ module.exports = function(RED) {
 						body.data = [];                     // 出力データ：データ部分
 						body.labels= [""];                  // 出力データ：ラベル部分
 
+						// アグリゲーション処理あり
 						if (node.aggregationCheck == true && body.Items != undefined) {
 
 							// アグリゲーションデータ
@@ -142,7 +145,7 @@ module.exports = function(RED) {
 									var matchData = seriesObject.filter(function(item, index){
 										if (item.dataName == outSeriesList[i]) return true;
 									});
-									if (matchData.length > 0) {
+									if (matchData.length > 0 && matchData[0].displayName != "") {
 										body.series.push(matchData[0].displayName);
 									} else {
 										body.series.push(outSeriesList[i]);
@@ -156,17 +159,28 @@ module.exports = function(RED) {
 							for(i=0;i < seriesCombList.length;i++) {    // 表示対象データでループ
 								var dataTmp = [];
 								for(j=0;j < ItemList.length;j++) {  //データ件数でループ
-									var timeStamp = ItemList[j].timeStamp;
+									var timestamp;
+
+									// timeStamp(timestamp)を格納
+									if (ItemList[j].timeStamp != undefined) {
+										timestamp = ItemList[j].timeStamp;
+									} else if (ItemList[j].timestamp != undefined) {
+										timestamp = ItemList[j].timestamp;
+									} else {
+										console.log("timeStamp(timestamp)が無効\n");
+										continue;
+									}
+
 									var contentList = ItemList[j].contentData;
-									// x:timeStamp, y:dataValue
+									// x:timestamp, y:dataValue
 									try {
 										var pushTmp = {
-											"x" : timeStamp,
+											"x" : timestamp,
 											"y" : contentList[seriesCombList[i].index].dataValue
 										};
 									}catch (e) {
 										var pushTmp = {
-											"x" : timeStamp,
+											"x" : timestamp,
 											"y" : null
 										};
 									}
@@ -176,7 +190,7 @@ module.exports = function(RED) {
 								body.data.push(dataTmp);
 							}
 
-
+						// アグリゲーション処理なし
 						} else if (node.aggregationCheck == false && body.Items != undefined) {
 
 							// 生データ
@@ -211,6 +225,7 @@ module.exports = function(RED) {
 							var seriesCombList = [];
 							var combIndex = -1;
 							
+							// 出力項目チェック
 							for (i=0; i < outSeriesList.length; i++) {
 								combIndex = seriesList.indexOf(outSeriesList[i]);
 								if (combIndex >= 0){
@@ -219,12 +234,11 @@ module.exports = function(RED) {
 										"index" : combIndex,
 										"dataName": outSeriesList[i]
 									};
-									// body.series.push(outSeriesList[i]);
 
-									var matchData = outSeriesList.filter(function(item, index){
+									var matchData = seriesObject.filter(function(item, index){
 										if (item.dataName == outSeriesList[i]) return true;
 									});
-									if (matchData.length > 0) {
+									if (matchData.length > 0 && matchData[0].displayName != "") {
 										body.series.push(matchData[0].displayName);
 									} else {
 										body.series.push(outSeriesList[i]);
@@ -238,17 +252,29 @@ module.exports = function(RED) {
 							for(i=0;i < seriesCombList.length;i++) {    // 表示対象データでループ
 								var dataTmp = [];
 								for(j=0;j < ItemList.length;j++) {  //データ件数でループ
-									var timeStamp = ItemList[j].dataObject.timeStamp;
+									var timestamp;
+
+									// timeStamp(timestamp)を格納
+									if (ItemList[j].dataObject.timeStamp != undefined) {
+										timestamp = ItemList[j].dataObject.timeStamp;
+									} else if (ItemList[j].dataObject.timestamp != undefined) {
+										timestamp = ItemList[j].dataObject.timestamp;
+									} else {
+										console.log("timeStamp(timestamp)が無効\n");
+										continue;
+									}
+
+
 									var contentList = ItemList[j].dataObject.ObjectContent.contentData;
-									// x:timeStamp, y:dataValue
+									// x:timestamp, y:dataValue
 									try {
 										var pushTmp = {
-											"x" : timeStamp,
+											"x" : timestamp,
 											"y" : contentList[seriesCombList[i].index].dataValue
 										};
 									}catch (e) {
 										var pushTmp = {
-											"x" : timeStamp,
+											"x" : timestamp,
 											"y" : null
 										};
 									}
