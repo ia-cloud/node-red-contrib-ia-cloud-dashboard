@@ -51,23 +51,23 @@ function expressionSetting (node) {
         node.ExpressionAttributeValues[":edate"] = node.edate + "T23:59:59+09:00";	        // 期間セット
         node.KeyConditionExpression = "objectKey = :a and #t BETWEEN :sdate and :edate";    // 検索条件
         node.ExpressionAttributeNames = {											        // 検索条件値
-            "#t": "timeStamp"
+            "#t": "timestamp"
         };
-    } else if (node.sdate != undefined){
+    } else if (node.sdate != undefined && node.edate == undefined){
         // 開始のみ条件あり
         node.ExpressionAttributeValues[":sdate"] = node.sdate + "T00:00:00+09:00";	        // 期間セット
         delete node.ExpressionAttributeValues[":edate"];                                    // 期間セット
         node.KeyConditionExpression = "objectKey = :a and #t > :sdate";				        // 検索条件
         node.ExpressionAttributeNames = {											        // 検索条件値
-            "#t": "timeStamp"
+            "#t": "timestamp"
         };
-    } else if (node.sdate!= undefined) {
+    } else if (node.sdate == undefined && node.edate != undefined) {
         // 終了のみ条件あり
         delete node.ExpressionAttributeValues[":sdate"];                                    // 期間セット
         node.ExpressionAttributeValues[":edate"] = node.edate + "T23:59:59+09:00";          // 期間セット
         node.KeyConditionExpression = "objectKey = :a and #t < :edate";	                    // 検索条件
         node.ExpressionAttributeNames = {										        	// 検索条件値
-            "#t": "timeStamp"
+            "#t": "timestamp"
         };
     } else {
         // 開始・終了共に条件なし       
@@ -163,9 +163,9 @@ function aggregation (items, node) {
 
                 // timeStamp(timestamp)を格納
                 if (DatObj.timeStamp != undefined) {
-                    tmpObj.timeStamp = DatObj.timeStamp;
+                    tmpObj.timestamp = DatObj.timeStamp;
                 } else if (DatObj.timestamp != undefined) {
-                    tmpObj.timeStamp = DatObj.timestamp;
+                    tmpObj.timestamp = DatObj.timestamp;
                 } else {
                     console.log("timeStamp(timestamp)が無効\n");
                     continue;
@@ -198,7 +198,7 @@ function aggregation (items, node) {
 
         // データをソート
         aggrItem.objectList.sort(function(a, b) {
-            if (a.timeStamp > b.timeStamp) {
+            if (a.timestamp > b.timestamp) {
                 return 1;
             } else {
                 return -1;
@@ -212,11 +212,11 @@ function aggregation (items, node) {
             tmpObj = aggrItem.objectList[i];
             
             // 期間設定処理
-            var endTimeStamp = moment(tmpObj.timeStamp).endOf(node.aggreunit);
+            var endTimeStamp = moment(tmpObj.timestamp).endOf(node.aggreunit);
             sumList = {};				
 
             // 指定単位（年～秒）で一時的にsumListへ集計
-            for (i; i<aggrItem.objectList.length && moment(tmpObj.timeStamp)<=endTimeStamp; i) {
+            for (i; i<aggrItem.objectList.length && moment(tmpObj.timestamp)<=endTimeStamp; i) {
 
                 tmpObj.contentData.forEach (function (CntDat) {									
                     // 初めて確認したdataNameの場合、項目箇所を新規作成
@@ -245,7 +245,7 @@ function aggregation (items, node) {
                 });
                 // resultListに格納するためのオブジェクトを作成
                 resultObj = {
-                    timeStamp: endTimeStamp.startOf(node.aggreunit).format(),
+                    timestamp: endTimeStamp.startOf(node.aggreunit).format(),
                     contentData: contentData
                 };
                 // resultListに格納
@@ -264,7 +264,7 @@ function aggregation (items, node) {
                 });
                 // resultListに格納するためのオブジェクトを作成
                 resultObj = {
-                    timeStamp: endTimeStamp.startOf(node.aggreunit).format(),
+                    timestamp: endTimeStamp.startOf(node.aggreunit).format(),
                     contentData: contentData
                 };
                 // resultListに格納
@@ -289,7 +289,7 @@ function aggregation (items, node) {
                 });
                 // resultListに格納するためのオブジェクトを作成
                 resultObj = {
-                    timeStamp: endTimeStamp.startOf(node.aggreunit).format(),
+                    timestamp: endTimeStamp.startOf(node.aggreunit).format(),
                     contentData: contentData
                 };
                 // resultListに格納
@@ -315,7 +315,7 @@ function aggregation (items, node) {
                 });
                 // resultListに格納するためのオブジェクトを作成
                 resultObj = {
-                    timeStamp: endTimeStamp.startOf(node.aggreunit).format(),
+                    timestamp: endTimeStamp.startOf(node.aggreunit).format(),
                     contentData: contentData
                 };
                 // resultListに格納
@@ -334,7 +334,7 @@ function aggregation (items, node) {
                 });
                 // resultListに格納するためのオブジェクトを作成
                 resultObj = {
-                    timeStamp: endTimeStamp.startOf(node.aggreunit).format(),
+                    timestamp: endTimeStamp.startOf(node.aggreunit).format(),
                     contentData: contentData
                 };
                 // resultListに格納
@@ -358,7 +358,7 @@ function aggregation (items, node) {
                 });
                 // resultListに格納するためのオブジェクトを作成
                 resultObj = {
-                    timeStamp: endTimeStamp.startOf(node.aggreunit).format(),
+                    timestamp: endTimeStamp.startOf(node.aggreunit).format(),
                     contentData: contentData
                 };
                 // resultListに格納
@@ -377,7 +377,7 @@ function aggregation (items, node) {
                 });
                 // resultListに格納するためのオブジェクトを作成
                 resultObj = {
-                    timeStamp: endTimeStamp.startOf(node.aggreunit).format(),
+                    timestamp: endTimeStamp.startOf(node.aggreunit).format(),
                     contentData: contentData
                 };
                 // resultListに格納
