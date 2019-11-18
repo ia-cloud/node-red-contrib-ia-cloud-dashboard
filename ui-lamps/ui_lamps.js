@@ -11,7 +11,7 @@ module.exports = function(RED) {
         var configAsJson = JSON.stringify(config);
         var html = String.raw`
         <div id="{{conf.nodeid}}" ng-init='init(` + configAsJson + `)' hidden></div>
-        <canvas width="100" height="100" style={{conf.cvs_padding}} ng-repeat="item in conf.ds"></canvas>
+        <canvas width="90" height="90" style={{conf.cvs_padding}} ng-repeat="item in conf.ds"></canvas>
         `;
         return html;
     }
