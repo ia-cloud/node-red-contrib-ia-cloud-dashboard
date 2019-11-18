@@ -8,7 +8,9 @@
 			objectKey: {value: "", required:true},
 			seriesObject:{value:"", required: true },
 			decimalPoint: {value: "noexe"},
-            item:{value:"graphData"}
+			item:{value:"graphData"},
+			repeatCheck: {value: ""},
+			repeat: {value: "1"},
 		},
 		credentials: {
 			userID: {type:"text", required:true},
@@ -23,8 +25,8 @@
         },
         oneditprepare: function () {
 
+			// 項目設定部分の追加・削除ボタン設定
             var frm_cnt = 0;
-            
             //あれば設定データを取り出して、formに展開する。
             var conf = $("#node-input-seriesObject").val();
             if (conf) {
@@ -149,13 +151,52 @@
 						}
 					});
 				});
-            });
+			});
+			
+			// 繰り返し設定
+			$("#node-input-repeatCheck").change(function() {
+                if ($(this).is(":checked")) {
+					$(".interval-row").show();
+					$("#node-input-repeatCheck").prop("checked", true);
+                } else {
+					$(".interval-row").hide();
+					$("#node-input-repeatCheck").prop("checked", false);
+                }
+			});
+			$(".interval-time-count").spinner({
+				//max:60,
+				min:1
+			});
+			$("#node-input-interval-units").change(function() {
+				var units = $("#node-input-interval-units option:selected").val();
+			});
+			var r = "s";
+			var c = this.repeat;
+			if (this.repeat % 60 === 0) { r = "m"; c = c/60; }
+			if (this.repeat % 1440 === 0) { r = "h"; c = c/60; }
+			$("#node-input-interval").val(c);
+			$("#node-input-interval-units").val(r);
             
         },
         oneditsave: function() {
 
-            var dItems = [];
+			// 繰り返し設定
+			var repeat = "";
+			var count = $("#node-input-interval").val();
+			var units = $("#node-input-interval-units").val();
+			if (units == "s") {
+				repeat = count;
+			} else {
+				if(units == "m"){
+					repeat = count * 60;
+				} else if (units ==  "h"){
+					repeat = count * 60 * 60;
+				}
+			}
+			$("#node-input-repeat").val(repeat);
 
+			// 項目設定部分の追加・削除ボタン設定
+            var dItems = [];
             $(".form-block[id^='form_block']").each(function(idx, obj){
                 // var item ={commonName: "Alarm&Event", dataValue: {}, options:{}};
                 var item = {};
@@ -241,7 +282,25 @@
 		<input type="button" id="form_add" name="add_btn" data-i18n="[value]getlatestdata.series.add">
 	</div>
 	<hr/>
+
+	<!-- 繰り返しON/OFF -->
+	<div class="form-row">
+		<label for="node-input-interval"<i class="fa fa-repeat"></i> <span data-i18n="getlatestdata.label.repeat"></span></label>
+		<input type="checkbox" id="node-input-repeatCheck" style="display: inline-block; width: 20px; vertical-align: middle;>
+		<label for="node-input-repeatCheck" style="width: 40%; vertical-align: middle;"><span data-i18n="getlatestdata.repeat.check"></label>
+	</div>	
 	
+	<!-- 繰り返し秒数 -->
+	<div class="form-row interval-row hide" id="dynamodb-interval-row" style="margin-left: 105px">
+        <input id="node-input-interval" value="1" class="interval-time-count"></input>
+        <select style="width: 150px" id="node-input-interval-units">
+            <option value="s" data-i18n="inject.seconds">Seconds</option>
+            <option value="m" data-i18n="inject.minutes">Minutes</option>
+            <option value="h" data-i18n="inject.hours">Hours</option>
+        </select><br/>
+    </div>
+    <input type="hidden" id="node-input-repeat">
+
 	<!-- 表示桁数 -->
 	<div class="form-row">
 		<label for="node-input-decimalPoint"><i class="fa fa-sliders"></i> <span data-i18n="getlatestdata.label.round"></span></label>
@@ -265,7 +324,20 @@
             <option value="numericData" data-i18n="getlatestdata.item.numericData"></option>
         </select>
     </div>
-
-	
-
 </script>
+
+<style>
+    .interval-row {
+    }
+    .interval-time-row select {
+        margin: 3px 0;
+    }
+    .interval-row > .ui-spinner {
+        height: 28px;
+        margin: 3px 0;
+        border-color: rgb(204, 204, 204);
+    }
+    .interval-time-count {
+        width: 40px !important;
+    }
+</style>

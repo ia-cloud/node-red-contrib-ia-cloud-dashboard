@@ -6,80 +6,52 @@ dashboard - spreadsheetノード
 
 ## 機能概要
 「ノード：[node-red-contrib-dashboard](https://github.com/node-red/node-red-dashboard)」内のウィジェット追加方法[[Creating New Dashboard Widgets](https://github.com/node-red/node-red-dashboard/wiki/Creating-New-Dashboard-Widgets)]を参考に実装したノードです。  
-ia-cloud アラーム&イベントモデルデータの集計結果をテーブル(表)を表示します。 
+ia-cloudオブジェクトデータの集計結果をテーブル(表)を表示します。 
 
 
 
 ## 入力メッセージ
-この関数を利用する際には、「ノード：[dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/dynamodb-iacloud)」から出力されたia-cloud アラーム&イベントモデルデータを直接本ノードに入力します。 
-ia-cloud アラーム&イベントモデルデータを集計対象としており、その他のモデルデータの集計には対応していません。 
+この関数を利用する際には、「ノード：[dynamodb-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-output/tree/master/dynamodb-iacloud)」から出力されたia-cloudオブジェクトデータを直接本ノードに入力します。 
 以下に入力データの例を示します。 
 
         {
-            "Items": [
-                {
-                    "objectKey": "jp.co.iacloud.alarm",
-                    "timeStamp": "2019-04-01T13:07:30+09:00",
-                    "dataObject": {
-                        "timeStamp": "2019-04-01T13:07:30+09:00",
-                        "ObjectContent": {
-                            "contentType": "Alarm&Event",
-                            "contentData": [
-                                {
-                                    "dataValue": "set",
-                                    "dataName": "A&E Status",
-                                    "unit": "null"
-                                },
-                                {
-                                    "dataValue": 28,
-                                    "dataName": "A&E Code",
-                                    "unit": "null"
-                                },
-                                {
-                                    "dataValue": "0001：ｲﾝﾊﾞｰﾀ異常",
-                                    "dataName": "A&E Description",
-                                    "unit": "null"
-                                }
-                            ]
-                        },
-                        "objectKey": "jp.co.iacloud.alarm",
-                        "objectType": "iaCloudObject",
-                        "objectDescription": "null",
-                        "instanceKey": "null"
+            "dataObject": {
+                "ObjectContent": {
+                "contentData": [
+                    {
+                        "commonName": "Alarm&Event",
+                        "dataValue": {
+                            "AnECode": "HR100",
+                            "AnEdescription": "HR100の警報",
+                            "AnEStatus": "on"
+                        }
+                    },
+                    {
+                        "commonName": "Alarm&Event",
+                        "dataValue": {
+                            "AnECode": "HR200",
+                            "AnEdescription": "HR200の警報",
+                            "AnEStatus": "on"
+                        }
+                    },
+                    {
+                        "commonName": "Alarm&Event",
+                        "dataValue": {
+                            "AnECode": "HR300",
+                            "AnEdescription": "HR300の警報",
+                            "AnEStatus": "set"
+                        }
                     }
+                ],
+                "contentType": "Alarm&Event"
                 },
-                {
-                    "objectKey": "jp.co.iacloud.alarm",
-                    "timeStamp": "2019-04-01T13:07:40+09:00",
-                    "dataObject": {
-                        "timeStamp": "2019-04-01T13:07:40+09:00",
-                        "ObjectContent": {
-                            "contentType": "Alarm&Event",
-                            "contentData": [
-                                {
-                                    "dataValue": "set",
-                                    "dataName": "A&E Status",
-                                    "unit": "null"
-                                },
-                                {
-                                    "dataValue": 56,
-                                    "dataName": "A&E Code",
-                                    "unit": "null"
-                                },
-                                {
-                                    "dataValue": "0005：過負荷異常",
-                                    "dataName": "A&E Description",
-                                    "unit": "null"
-                                }
-                            ]
-                        },
-                        "objectKey": "jp.co.iacloud.alarm",
-                        "objectType": "iaCloudObject",
-                        "objectDescription": "null",
-                        "instanceKey": "null"
-                    }
-                }
-            ]
+                "objectDescription": "アラーム",
+                "objectKey": "PLCAnE",
+                "objectType": "iaCloudObject",
+                "timestamp": "2019-04-01T09:00:00+09:00"
+            },
+            "objectKey": "PLCAnE",
+            "timestamp": "2019-04-01T09:00:00+09:00"
         }
 
 
@@ -95,9 +67,17 @@ ia-cloud アラーム&イベントモデルデータを集計対象としてお�
 - ### ラベル
   ダッシュボード上での表示名を設定します。
 
+- ### 集計データ対応
+  集計するデータを設定します。  
+  「アラーム&イベント」から選択可能です。  
+
 - ### 表示項目
   ダッシュボード上に表示する際の項目を設定します。  
   「A&E No,A&E詳細」、「A&E No」、「A&E詳細」から選択可能です。  
+
+- ### ステータス
+  集計するステータスを設定します。  
+  「set」、「reset」、「on」、「off」から選択可能です。  
 
 - ### ノード名
   フロー上で表示するノード名を設定します。

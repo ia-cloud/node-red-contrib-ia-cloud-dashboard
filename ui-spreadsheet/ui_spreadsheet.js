@@ -36,8 +36,9 @@ module.exports = function(RED) {
             var i;                              // ループ処理用
 
             // var confsel = config.confsel;
+            this.contype = config.contype;      // 集計対象のcontentType
             this.item = config.item;            // 表示する項目
-            var aeStatus = "set";               // カウントするA＆Eステータス
+            var status = config.status;       // カウントするステータス
         
             var label = config.label;
             if  (label == undefined) {
@@ -60,78 +61,6 @@ module.exports = function(RED) {
 
             var previousTemplate = null
 
-            /*
-            node.on('input', function(msg) {
-    
-                ItemList = msg.payload.Items;
-                // ItemList = msg.payload; 
-                
-                var contentList;        // 取得データ一時保存
-                var resultList = [];         // 集計結果保存
-
-                // A＆E 件数集計
-                for(i=0;i < ItemList.length; i++) {  //データ件数でループ
-                    try {
-                        if (ItemList[i].dataObject.objectContent != undefined) {
-                            contentList = ItemList[i].dataobject.objectContent.contentData;
-                        } else if (ItemList[i].dataObject.ObjectContent != undefined) {
-                            contentList = ItemList[i].dataObject.ObjectContent.contentData;
-                        } else {
-                            node.error("ui_spreadsheet：A&Eデータではありません。");
-                            continue;
-                        }
-                    } catch (e) { 
-                        node.error("ui_spreadsheet：A&Eデータではありません。");
-                        continue;
-                    }
-
-                    // アラームステータスがaeStatusのみのデータを処理
-                    if (contentList[0].dataValue == aeStatus) {
-                        var rIdx;
-                        for (rIdx=0; rIdx<resultList.length; rIdx++) {
-                            if (resultList[rIdx][0] == contentList[1].dataValue) {
-                                break;
-                            }
-                        }
-                        if (rIdx < resultList.length) {
-                            // エラー詳細がresultList内に見つかった場合はカウントに+1
-                            resultList[rIdx][2]++;
-                        } else {
-                            // エラー詳細がresultList内に見つからなかった場合はカウント新規作成
-                            resultList.push([contentList[1].dataValue,contentList[2].dataValue, 1]);
-                        }
-                    }
-
-                }
-
-                // 表示項目ごとに出力内容を設定
-                console.log("item:" + node.item+ "\n");
-                switch (node.item) {
-                    case "nodesc": 
-                    msg.series = ["No", "アラーム&イベント詳細", "回数"];
-                    msg.payload = resultList;
-                    break;
-
-                    case "no": 
-                    for (i=0;i < resultList.length; i++) { 
-                        resultList[i].splice(1, 1);
-                    }
-                    msg.series = ["No", "回数"];
-                    msg.payload = resultList;
-                    break;
-
-                    case "desc": 
-                    for (i=0;i < resultList.length; i++) { 
-                        resultList[i].splice(0, 1);
-                    }
-                    msg.series = ["アラーム&イベント詳細", "回数"];
-                    msg.payload = resultList;
-                }
-            });
-            */
-
-
-
             if (checkConfig(node, config)) {
 
                 var html = HTML(config);
@@ -140,80 +69,106 @@ module.exports = function(RED) {
                 done = ui.addWidget({
                     node: node,
                     format: html,
-                    templateScope: "local",
                     group: config.group,
                     width: parseInt(config.width || group.config.width || 6),
                     height: parseInt(config.height || group.config.width/3+1 || 2),
-                    // group: group,
+                    order: config.order,
+                    templateScope: "local",
                     emitOnlyNewValues: false,
                     forwardInputMessages: config.fwdInMessages,
                     storeFrontEndInputAsState: config.storeOutMessages,
                     beforeEmit: function(msg, value) {
                         
-                        ItemList = msg.payload.Items;
-                        // ItemList = msg.payload; 
+                        itemList = msg.payload.Items;
                         
-                        var contentList;        // 取得データ一時保存
-                        var resultList = [];         // 集計結果保存
-                        if (ItemList != undefined) {
+                        var contentList;                // 取得データ一時保存
+                        var resultList = [];            // 集計結果保存    [n][0]:AnEStatus, [n][1]:AnEDescription, [n][2]:カウント
+                        if (itemList != undefined) {
                             // A＆E 件数集計
-                            for(i=0;i < ItemList.length; i++) {  //データ件数でループ
+                            for(i=0;i < itemList.length; i++) {  //データ件数でループ
                                 try {
-                                    if (ItemList[i].dataObject.objectContent != undefined) {
-                                        contentList = ItemList[i].dataobject.objectContent.contentData;
-                                    } else if (ItemList[i].dataObject.ObjectContent != undefined) {
-                                        contentList = ItemList[i].dataObject.ObjectContent.contentData;
+                                    if (itemList[i].dataObject.objectContent != undefined) {
+                                        contentList = itemList[i].dataobject.objectContent.contentData;
+                                    } else if (itemList[i].dataObject.ObjectContent != undefined) {
+                                        contentList = itemList[i].dataObject.ObjectContent.contentData;
                                     } else {
-                                        node.error("ui_spreadsheet：A&Eデータではありません。");
+                                        node.error("ui_spreadsheet：ia-cloudオブジェクトではありません。");
                                         continue;
                                     }
                                 } catch (e) { 
-                                    node.error("ui_spreadsheet：A&Eデータではありません。");
+                                    node.error("ui_spreadsheet：ia-cloudオブジェクトではありません。");
                                     continue;
                                 }
 
-                                // アラームステータスがaeStatusのみのデータを処理
-                                if (contentList[0].dataValue == aeStatus) {
-                                    var rIdx;
-                                    for (rIdx=0; rIdx<resultList.length; rIdx++) {
-                                        if (resultList[rIdx][0] == contentList[1].dataValue) {
-                                            break;
-                                        }
-                                    }
-                                    if (rIdx < resultList.length) {
-                                        // エラー詳細がresultList内に見つかった場合はカウントに+1
-                                        resultList[rIdx][2]++;
-                                    } else {
-                                        // エラー詳細がresultList内に見つからなかった場合はカウント新規作成
-                                        resultList.push([contentList[1].dataValue,contentList[2].dataValue, 1]);
-                                    }
-                                }
+                                // 集計データごとに集計処理を実施
+                                switch (node.contype) {
+                                    case "Alarm&Event":
+                                        // contentListにデータ入っていたら検索開始
+                                        if (contentList.length > 0){
+                                            var conIdx;
+                                            for (conIdx=0; conIdx<contentList.length; conIdx++) {
+                                                
+                                                if (contentList[conIdx].commonName === "Alarm&Event" && contentList[conIdx].dataValue != undefined) {
+                                                    if (contentList[conIdx].dataValue.AnEStatus === status) {
+                                                        var rIdx;
+                                                        // 初回カウントデータ判定
+                                                        for (rIdx=0; rIdx<resultList.length; rIdx++) {
+                                                            if (resultList[rIdx][0] === contentList[conIdx].dataValue.AnECode) {
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (rIdx < resultList.length) {
+                                                            // エラー詳細がresultList内に見つかった場合はカウントに+1
+                                                            resultList[rIdx][2]++;
+                                                        } else {
+                                                            // エラー詳細がresultList内に見つからなかった場合はカウント新規作成
+                                                            resultList.push([contentList[conIdx].dataValue.AnECode, contentList[conIdx].dataValue.AnEDescription, 1]);
+                                                        }
+                                                    }
 
+                                                } else {
+                                                    node.warn("ui_spreadsheet：アラーム＆イベントデータではありません", contentList);
+                                                }
+                                            }
+                                        }
+                                        break;
+
+                                    default:
+                                        node.error("集計データタイプ：対象外の集計データです");
+                                }
                             }
                         }
 
                         // 表示項目ごとに出力内容を設定
-                        switch (node.item) {
-                            case "nodesc": 
-                            msg.series = ["No", "アラーム&イベント詳細", "回数"];
-                            msg.payload = resultList;
+                        switch (node.contype) {
+                            case "Alarm&Event":
+                            switch (node.item) {
+                                case "nodesc": 
+                                msg.series = ["No", "詳細", "回数"];
+                                msg.payload = resultList;
+                                break;
+    
+                                case "no": 
+                                for (i=0;i < resultList.length; i++) { 
+                                    resultList[i].splice(1, 1);
+                                }
+                                msg.series = ["No", "回数"];
+                                msg.payload = resultList;
+                                break;
+    
+                                case "desc": 
+                                for (i=0;i < resultList.length; i++) { 
+                                    resultList[i].splice(0, 1);
+                                }
+                                msg.series = ["詳細", "回数"];
+                                msg.payload = resultList;
+                            }
                             break;
 
-                            case "no": 
-                            for (i=0;i < resultList.length; i++) { 
-                                resultList[i].splice(1, 1);
-                            }
-                            msg.series = ["No", "回数"];
-                            msg.payload = resultList;
-                            break;
-
-                            case "desc": 
-                            for (i=0;i < resultList.length; i++) { 
-                                resultList[i].splice(0, 1);
-                            }
-                            msg.series = ["アラーム&イベント詳細", "回数"];
-                            msg.payload = resultList;
+                            default:
+                                node.error("項目設定：対象外の集計データです");
                         }
+                        
                         
                         
 

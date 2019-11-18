@@ -8,6 +8,7 @@
             "objectKey": "objectKey",
             "series": "seriesSetting",
             "period": "period",
+            "repeat": "repeat",
             "aggregation": "aggregation",
             "round": "round",
             "limit": "maximum data number",
@@ -21,8 +22,10 @@
             "delete": "delete"
         },
         "period": {
-            "datesetInput": "datesetInput",
-            "manualsetInput": "manualsetInput"
+            "check": "Allow input from dateset"
+        },
+        "repeat": {
+            "check": "Repeat the process"
         },
         "aggregation": {
             "aggregationCheck": "setting",

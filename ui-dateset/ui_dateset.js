@@ -8,18 +8,21 @@ module.exports = function(RED) {
         return true;
     }
 
-    function HTML(config) {
+    function HTML() {
         // define HTML code
         var html = String.raw`
-        <div align="center">
-        <input type="date" id="sdate" style="width:120px; height:25px; font-size: 70%;"
-            ng-model="sdate">
-        ～<input type="date" id="edate" style="width:120px; height:25px; font-size: 70%;"
-            ng-model="edate">
+        <div style="width:250px; text-align:left">
+            <input type="datetime-local" step="1" id="sdatetime" style="width:180px; height:25px; font-size: 70%;"
+                ng-model="sdatetime">
         </div>
-        <div align="center" style="margin-top : 5px">
-            <input type="button" id="send" style="width:250px; height:30px; font-size: 70%;" value="更新" ng-click="click(sdate ,edate)">
-        </div>`;
+        <div align="center" style="width:250px; text-align:right";>
+            ～　<input type="datetime-local" step="1" id="edatetime" style="width:180px; height:25px; font-size: 70%;"
+                ng-model="edatetime">
+        </div>
+        <div style="margin-top:5px; width:250px; text-align:center">
+            <input type="button" id="send" style="width:240px; height:30px; font-size: 70%;" value="更新" ng-click="click(sdatetime ,edatetime)">
+        </div>
+        `;
 
         return html;
     };
@@ -33,7 +36,8 @@ module.exports = function(RED) {
                 ui = RED.require("node-red-dashboard")(RED);
             }
             RED.nodes.createNode(this, config);
-            
+            var done = null;
+
             /* 使用モジュール定義 */
             var moment = require("moment");
 
@@ -50,41 +54,40 @@ module.exports = function(RED) {
             if (config.height === "0") { delete config.height; }
             
             if (checkConfig(node, config)) {
-
-                var html = HTML(config);
-
-                var done = ui.addWidget({
+                var html = HTML();
+                done = ui.addWidget({
                     node: node,
                     format: html,
-                    templateScope: "local",
                     group: config.group,
-                    width: config.width || group.config.width || 2,
-                    height: config.height || 1,
-                    emitOnlyNewValues: true,
+                    width: config.width || group.config.width || 6,
+                    height: config.height || 2,
+                    order: config.order,
+                    templateScope: "local",
+                    emitOnlyNewValues: false,
                     forwardInputMessages: false,
                     storeFrontEndInputAsState: false,
                     beforeSend: function (msg, orig) {
-                        if (orig) {
-                            return orig.msg;
-                        }
+                        if (orig) { return orig.msg; }
                     },
                     initController: function($scope, events) {
                         $scope.value1 = false;
                         // 更新ボタンが押されたら実行
-                        $scope.click = function (sdate, edate) {
-                            if (sdate != undefined && sdate != null) {
-                                sdate = moment(sdate).format("YYYY-MM-DD");
+                        $scope.click = function (sdatetime, edatetime) {
+
+                            if (sdatetime != undefined && sdatetime != null) {
+                                sdatetime = moment(sdatetime).format("YYYY-MM-DDTHH:mm:ss");
                             } else {
-                                sdate = undefined;
+                                sdatetime = undefined;
                             }
-                            if (edate != undefined && edate != null) {
-                                edate = moment(edate).format("YYYY-MM-DD");
+                            if (edatetime != undefined && edatetime != null) {
+                                edatetime = moment(edatetime).format("YYYY-MM-DDTHH:mm:ss");
                             } else {
-                                edate = undefined;
+                                edatetime = undefined;
                             }
+
                             var sendJson = {
-                                sdate:sdate,
-                                edate:edate
+                                sdatetime: sdatetime,
+                                edatetime: edatetime
                             }
                             $scope.send({payload: sendJson});
                         };
@@ -94,7 +97,6 @@ module.exports = function(RED) {
         } catch (e) {
             console.log(e);
         }
-
         node.on("close", done);
     }
     RED.nodes.registerType('ui_dateset', DatesetNode);

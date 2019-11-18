@@ -5,12 +5,25 @@
             "size": "サイズ",
             "label": "ラベル",
             "input": "入力値",
+            "contype": "contentType",
+            "statuscheck": "表示ステータス",
             "name": "名前"
         },
         "input": {
+            "dynamodb": "dynamoDB",
             "getchartdata": "getChartdata",
             "formatdata": "フォーマットデータ",
             "item": "項目名"
+        },
+        "contype":{
+            "ane": "アラーム&イベント",
+            "iacd": "ia-cloudデータ"
+        },
+        "ane": {
+            "set": "set",
+            "reset": "reset",
+            "on": "on",
+            "off": "off"
         }
     }
 }
