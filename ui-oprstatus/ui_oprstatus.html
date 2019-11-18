@@ -1,13 +1,11 @@
 <script type="text/javascript">
-
-function mk_conf(NAME) {
-        var conf = {
+    RED.nodes.registerType('ui_oprstatus',{
         category: 'iaCloud dashboard',
         color: 'rgb(119, 198, 204)',
         defaults: {
             confsel: {value:"inchartSet"},
             group: {type: 'ui_group', required:false},
-            label: {value: NAME},
+            label: {value: ''},
             name: {value: ''},
             order: {value: 0},
             width: {value: 0,
@@ -31,8 +29,8 @@ function mk_conf(NAME) {
         outputs:0,
         align: "right",
         icon: "ia-cloud.png",
-        paletteLabel: NAME,
-        label: function() { return this.name || NAME; },
+        paletteLabel: 'oprStatus',
+        label: function() { return this.name || 'oprStatus'; },
         oneditprepare: function() {
 
             var that = this;
@@ -186,6 +184,9 @@ function mk_conf(NAME) {
                 });
             });
         });
+
+
+
         },
         oneditsave: function() {
 
@@ -194,23 +195,21 @@ function mk_conf(NAME) {
             $(".form-block[id^='form_block']").each(function(idx, obj){
                 // var item ={commonName: "Alarm&Event", dataValue: {}, options:{}};
                 var item = {};
+
                 item.statusColor = $("#statusColor\\[" + idx + "\\]").val();
                 item.statusValue = $("#statusValue\\[" + idx + "\\]").val();
                 item.statusLabel = $("#statusLabel\\[" + idx + "\\]").val();
+                
                 dItems[idx]=item;
             });
 
             //フォームの各要素をobjectに記述し、JSON文字列に変換する。
             try {$("#node-input-statusObject").val(JSON.stringify(dItems));}
             catch(e) {$("#node-input-statusObject").val("")}
+
         }
-    }
-    return conf;
-}
 
-
-
-    RED.nodes.registerType('ui_oprstatus', mk_conf('oprStatus'));
+    });
 </script>
 
 <script type="text/x-red" data-template-name="ui_oprstatus">
