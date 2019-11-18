@@ -1,44 +1,52 @@
 <script type="text/javascript">
-    RED.nodes.registerType('ui_spreadsheet',{
-        category: 'iaCloud dashboard',
-        color: 'rgb(119, 198, 204)',
-        defaults: {
-            confsel: {value:"inchartSet"},
-            group: {type: 'ui_group', required:false},
-            name: {value: ''},
-            label: {value:''},
-            order: {value: 0},
-            width: {value: 0,
-                    validate: function(v) {
-                        var valid = true
-                        var width = v||0;
-                        var currentGroup = $('#node-input-group').val()|| this.group;
-                        var groupNode = RED.nodes.node(currentGroup);
-                        valid = !groupNode || +width <= +groupNode.width;
-                        $("#node-input-size").toggleClass("input-error",!valid);
-                        return valid;
-                }},
-            height: {value: 0},
-            item: {value: "nodesc"},
-            storeOutMessages: {value: true},
-            fwdInMessages: {value: true},
-            templateScope: {value: 'local'}
-        },
-        inputs:1,
-        outputs:0,
-        align: "right",
-        icon: "ia-cloud.png",
-        paletteLabel: 'spreadsheet',
-        label: function() { return this.name || 'ui_spreadsheet'; },
-        oneditprepare: function() {
-            var that = this;
-            $("#node-input-size").elementSizer({
-                width: "#node-input-width",
-                height: "#node-input-height",
-                group: "#node-input-group"
-            });
-        }
-    });
+
+    function mk_conf(NAME) {
+        var conf = {
+            category: 'iaCloud dashboard',
+            color: 'rgb(119, 198, 204)',
+            defaults: {
+                confsel: {value:"inchartSet"},
+                group: {type: 'ui_group', required:false},
+                name: {value: ''},
+                label: {value: NAME},
+                order: {value: 0},
+                width: {value: 0,
+                        validate: function(v) {
+                            var valid = true
+                            var width = v||0;
+                            var currentGroup = $('#node-input-group').val()|| this.group;
+                            var groupNode = RED.nodes.node(currentGroup);
+                            valid = !groupNode || +width <= +groupNode.width;
+                            $("#node-input-size").toggleClass("input-error",!valid);
+                            return valid;
+                    }},
+                height: {value: 0},
+                contype: {value: "Alarm&Event"},
+                item: {value: "nodesc"},
+                status: {value: "set"},
+                storeOutMessages: {value: true},
+                fwdInMessages: {value: true},
+                templateScope: {value: 'local'}
+            },
+            inputs:1,
+            outputs:0,
+            align: "right",
+            icon: "ia-cloud.png",
+            paletteLabel: NAME,
+            label: function() { return this.name || NAME; },
+            oneditprepare: function() {
+                var that = this;
+                $("#node-input-size").elementSizer({
+                    width: "#node-input-width",
+                    height: "#node-input-height",
+                    group: "#node-input-group"
+                });
+            }
+        };
+    return conf;
+    }
+
+    RED.nodes.registerType('ui_spreadsheet', mk_conf('spreadsheet'));
 </script>
 
 <script type="text/x-red" data-template-name="ui_spreadsheet">
@@ -63,6 +71,14 @@
         <input type="text" id="node-input-label">
     </div>
 
+    <!-- contentType -->
+    <div class="form-row">
+        <label for="node-input-contype"><i class="fa fa-bars"></i> <span data-i18n="spreadsheet.label.contype"></span></label>
+        <select type="text" style="width:200px;" id="node-input-contype">
+            <option value="Alarm&Event" data-i18n="spreadsheet.contype.ane"></option>
+        </select>
+    </div>
+
     <!-- 表示項目 -->
     <div class="form-row">
         <label for="node-input-item"><i class="fa fa-bars"></i> <span data-i18n="spreadsheet.label.item"></span></label>
@@ -70,6 +86,17 @@
             <option value="nodesc" data-i18n="spreadsheet.item.nodesc"></option>
             <option value="no" data-i18n="spreadsheet.item.no"></option>
             <option value="desc" data-i18n="spreadsheet.item.desc"></option>
+        </select>
+    </div>
+
+    <!-- カウント項目設定 -->
+    <div class="form-row">
+        <label for="node-input-status"><i class="fa fa-check"></i> <span data-i18n="spreadsheet.label.status"></span></label>
+        <select type="text" style="width:200px;" id="node-input-status">
+            <option value="set" data-i18n="spreadsheet.status.set"></option>
+            <option value="reset" data-i18n="spreadsheet.status.reset"></option>
+            <option value="on" data-i18n="spreadsheet.status.on"></option>
+            <option value="off" data-i18n="spreadsheet.status.off"></option>
         </select>
     </div>
 

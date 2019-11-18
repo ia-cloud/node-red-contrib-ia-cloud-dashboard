@@ -4,13 +4,24 @@
             "group": "グループ",
             "size": "サイズ",
             "label": "ラベル",
+            "contype": "集計データタイプ",
             "item": "項目設定",
+            "status": "ステータス",
             "name": "名前"
+        },
+        "contype":{
+            "ane": "アラーム&イベント"
         },
         "item": {
             "nodesc":"A&E No，A&E詳細",
             "no":"A&E No",
             "desc":"A&E詳細"
+        },
+        "status": {
+            "set": "set",
+            "reset": "reset",
+            "on": "on",
+            "off": "off"
         }
     }
 }
