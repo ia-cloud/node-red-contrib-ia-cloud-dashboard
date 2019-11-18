@@ -8,7 +8,6 @@
             "operation": "操作",
             "objectKey": "オブジェクトキー",
             "period": "期間",
-            "repeat": "繰り返し",
             "aggregation": "アグリゲーション",
             "round": "表示桁数",
             "limit": "データ件数",
@@ -21,10 +20,8 @@
             "PutItem": "PutItem"
         },
         "period": {
-            "check": "datesetからの入力を許可する"
-        },
-        "repeat": {
-            "check": "処理を繰り返す"
+            "datesetInput": "datesetから入力",
+            "manualsetInput": "手動設定"
         },
         "aggregation": {
             "aggregationCheck": "設定",
