@@ -7,6 +7,7 @@
             "tableName": "tableName",
             "objectKey": "objectKey",
             "series": "series",
+            "repeat": "repeat",
             "round": "round",
             "item": "item"
         },
@@ -16,6 +17,9 @@
             "displayName": "displayName",
             "add": "add",
             "delete": "delete"
+        },
+        "repeat": {
+            "check": "Repeat the process"
         },
         "round": {
             "noexe": "noexe",

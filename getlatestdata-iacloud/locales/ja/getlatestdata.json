@@ -7,6 +7,7 @@
             "tableName": "テーブル名",
             "objectKey": "オブジェクトキー",
             "series": "項目設定",
+            "repeat": "繰り返し",
             "round": "表示桁数",
             "item": "表示項目"
         },
@@ -16,6 +17,9 @@
             "displayName": "表示名",
             "add": "追加",
             "delete": "削除"
+        },
+        "repeat": {
+            "check": "処理を繰り返す"
         },
         "round": {
             "noexe": "丸め無し",
