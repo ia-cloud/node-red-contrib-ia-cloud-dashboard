@@ -9,7 +9,7 @@ AWS DynamoDB 操作ノード
 
 AWS-SDKでDynamoDB関数をラップするノードのセットです。
 
-このノードはscan, query, put関数のみを使用できます。
+このノードはscan, query関数のみを使用できます。
 
 本ノードはJavascript APIをラップしたものです。  
 より詳細に知るには、[APIドキュメント](https://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html)を参照してください。
@@ -41,10 +41,13 @@ AWS-SDKでDynamoDB関数をラップするノードのセットです。
   検索を行うデータのobjectKeyを設定します。
 
 - ### 期間  
-  検索期間の入力方法を設定します。  
-  「ノード：[ui-dateset-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard/tree/master/ui-dateset)」からの入力により期間設定を行いたい場合は、dataasetから入力を選択します。  
-  本ノード内で期間設定を行いたい場合は、手動設定を選択して取得開始日付と終了日付を記述してください。  
+  「ノード：[ui-dateset-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard/tree/master/ui-dateset)」からの入力により期間設定を行いたい場合は、「dateasetからの入力を許可する」を選択します。  
+  本ノード内で期間設定を行いたい場合は、手動設定を選択して取得開始日時と終了日時を記述してください。  
+  未入力の場合、全期間が検索対象になります。  
 
+- ### 繰り返し  
+  繰り返し処理を行う場合は本項目を設定します。  
+  設定後、繰り返し間隔を設定します。  
 
 - ### アグリゲーション
   取得データのアグリゲーションが可能です。  
@@ -76,8 +79,3 @@ AWS-SDKでDynamoDB関数をラップするノードのセットです。
 
 ### (2) query
 主キー値に基づいて項目が検索されます。  
-
-
-### (3) put
-新しい項目を作成するか、古い項目を新しい項目に書き換えます。  
-新しい項目と同じ主キーを持つ項目が指定された表にすでに存在する場合、新しい項目は既存の項目を完全に置き換えます。  

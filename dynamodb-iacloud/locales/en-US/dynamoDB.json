@@ -8,6 +8,7 @@
             "operation": "operation",
             "objectKey": "objectKey",
             "period": "period",
+            "repeat": "repeat",
             "aggregation": "aggregation",
             "round": "round",
             "limit": "maximum data number",
@@ -20,8 +21,10 @@
             "PutItem": "PutItem"
         },
         "period": {
-            "datesetInput": "datesetInput",
-            "manualsetInput": "manualsetInput"
+            "check": "Allow input from dateset"
+        },
+        "repeat": {
+            "check": "Repeat the process"
         },
         "aggregation": {
             "aggregationCheck": "setting",

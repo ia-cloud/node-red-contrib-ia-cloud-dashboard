@@ -1,16 +1,19 @@
 
 module.exports = function(RED) {
 
+	const MAX_LIMIT = 10000;			// 最大取得件数
+
+	/* 使用モジュール定義 */
+	var dynamodb = require("../dynamodb")(RED);
+	var moment = require("moment");
+
 	function dynamodbNode(config) {
 
-		/* 使用モジュール定義 */
-		var dynamodb = require("../dynamodb")(RED);
-		var moment = require("moment");
-
-		var opts;											// dynamodbへのアクセス情報を格納
-		var resultList;										// 取得結果格納用配列
-
 		RED.nodes.createNode(this,config);
+
+		// dynamoDB接続用情報の取得
+		this.userID = this.credentials.userID;
+		this.password = this.credentials.password;
 
 		// 検索条件の取得
 		this.name = config.name;							// ノード名
@@ -21,8 +24,8 @@ module.exports = function(RED) {
 		this.ScanIndexForward = config.sort;				// 並び順
 
 		this.dateCheck = config.dateCheck;					// 期間設定方法
-		this.sdate = config.sdate;							// 期間 開始期間
-		this.edate = config.edate;							// 期間 終了期間
+		// this.sdatetime = config.sdatetime;					// 期間 開始期間
+		// this.edatetime = config.edatetime;					// 期間 終了期間
 
 		this.aggregationCheck = config.aggregationCheck;	// アグリゲーション設定の有無
 		this.aggregation = config.aggregation;				// アグリゲーション操作
@@ -33,45 +36,82 @@ module.exports = function(RED) {
 			":a": config.objectKey
 		};
 
-		// dynamoDB接続用情報の取得
-		this.userID = this.credentials.userID;
-		this.password = this.credentials.password;
+		// Limitチェック
+		if (this.Limit == "" || this.Limit > MAX_LIMIT) {
+			// 上限件数の指定がない or MAX_LIMITを超える値の場合はMAX_LIMIT件とする
+			this.Limit = MAX_LIMIT;
+		}
 
-		// node作成
+		// 繰り返し条件の取得
+		this.repeatCheck = config.repeatCheck;
+		this.repeat = config.repeat;
+		var interval = null;
+
+		var resultList;										// 取得結果格納用配列
 		var node = this;
 
 		// dynamodb接続設定
-		opts = dynamodb.cnctSetting(node.userID, node.password);
+		var opts = dynamodb.cnctSetting(node.userID, node.password);
 
-		// Limitチェック
-		if (node.Limit == "") {
-			// 上限件数の指定がなかった場合は10000件とする
-			node.Limit = 10000;
+		// sendメッセージ関数作成
+		node.sendMsg = function (data) {
+			var msg;
+			if (!data) {
+				node.status({fill:"red", shape:"ring", text:"error"});
+				node.error("error: sendMeg error");
+				return;
+			} else {
+				msg = {payload: data};
+			}
+			node.send(msg);
+		};
+
+		// 繰り返し設定がされている場合は指定間隔で処理を繰り返す
+		if (node.repeatCheck) {
+			interval = setInterval( function() {
+				dataGet(config.sdatetime, config.edatetime);
+			}, node.repeat * 1000);	
 		}
-
+		
 		// injectされたら実行
-		node.on('input', function(msg) {
-			// ノード接続情報出力
-			node.sendMsg = function (data) {
-				if (!data) {
-					node.status({fill:"red",shape:"ring",text:"error"});
-					node.error("failed: Data acquisition failed");
-					return;
-				} else {
-					msg.payload = data;
-					node.status({});
-				}
-				node.send(msg);
-			};
+        node.on('input', function(msg) {
 
-			// dateCheckがdatesetInputの場合は入力されてきた値でsdate,edateを更新
-			if (node.dateCheck == "datesetInput") {
-				node.sdate = msg.payload.sdate;
-				node.edate = msg.payload.edate;
+			if (node.dateCheck) {
+				dataGet(msg.payload.sdatetime, msg.payload.edatetime);
+			} else {
+				dataGet(config.sdatetime, config.edatetime);
+			}
+			
+		});
+
+		// 処理終了時にはintervalをクリアする
+		this.on('close', function() {
+			if (interval != null) {
+				clearInterval(interval);
+			}
+			if (node.done) {
+				node.status({});
+				node.done();
+			}
+		});
+
+		// データ取得処理
+		function dataGet (sdatetime, edatetime) {
+
+			node.status({fill:"blue", shape:"dot", text:"connecting..."});
+
+			if (sdatetime == null || sdatetime == "") {
+				sdatetime = undefined
+			}
+			if (edatetime == null || edatetime == "") {
+				edatetime = undefined
 			}
 
-			// sdate, edate共に入力あり かつ sdate<=edateの場合に処理続行
-			if (node.sdate == undefined || node.edate == undefined || moment(node.sdate) <= moment(node.edate)) {
+			node.sdatetime = sdatetime;
+			node.edatetime = edatetime;
+			
+			// sdatetime, edatetime共に入力あり かつ sdatetime<=edatetimeの場合に処理続行
+			if (node.sdatetime == undefined || node.edatetime == undefined || moment(node.sdatetime) <= moment(node.edatetime)) {
 				
 				// 期間式の設定
 				node = dynamodb.expressionSetting(node);
@@ -82,11 +122,9 @@ module.exports = function(RED) {
 				// DynamoDBへリクエスト
 				dynamodb.dynamoRequest(opts, node, function(body) {
 
-					// console.log("\nDynamo検索結果:" + JSON.stringify(body) + "\n");
-
-					if (body.Items != undefined && body.Items.length > 0) {	
+					if (body.Items != undefined && body.Items.length > 0) {
 						// アグリゲーション処理
-						if (node.aggregationCheck == true) {
+						if (node.aggregationCheck) {
 							resultList = dynamodb.aggregation(body.Items, node);
 						} else {
 							resultList = body;
@@ -96,25 +134,26 @@ module.exports = function(RED) {
 						if (node.decimalPoint != "noexe") {
 							resultList = dynamodb.round(resultList, node);
 						}
-						
-						// resultListを出力へセット
+						node.status({fill:"green", shape:"dot", text:"completed"});
 						node.sendMsg(resultList);
+						
+					} else if (body.Items != undefined && body.Items.length > -1) {
+						node.status({fill:"yellow", shape:"ring", text:"no data"});
+						node.sendMsg([]);
 					} else {
-						console.log("指定条件のデータが見つかりませんでした");
-						node.error("DynamoDB - 指定条件のデータが見つかりませんでした");
+						node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
 						node.sendMsg([]);
 					}
 
 				});
 			} else {
-				console.log("期間指定に誤りがあります");
+				node.status({fill:"red", shape:"ring", text:"error: Invalid period"});
 				node.error("DynamoDB - 期間指定に誤りがあります");
 				node.sendMsg([]);
 			}
+		}
 
-		});
 	}
-
 
 	RED.nodes.registerType("dynamoDB", dynamodbNode, {
         credentials: {
