@@ -1,7 +1,7 @@
 # node-red-contrib-ia-cloud-dashboard
 
 ## 名称
-ia-cloud データ取得・変換・可視化ノード
+ia-cloud　データ取得・変換・可視化ノード
 
 
 

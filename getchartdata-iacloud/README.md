@@ -42,13 +42,9 @@ AWS-SDK DynamoDB関数をラップしており、DynamoDBからデータを取�
   表示名が未入力の場合は、dataNameをそのまま出力します。  
 
 - ### 期間  
-  「ノード：[ui-dateset-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard/tree/master/ui-dateset)」からの入力により期間設定を行いたい場合は、「dateasetからの入力を許可する」を選択します。  
-  本ノード内で期間設定を行いたい場合は、手動設定を選択して取得開始日時と終了日時を記述してください。    
-  未入力の場合、全期間が検索対象になります。  
-
-- ### 繰り返し  
-  繰り返し処理を行う場合は本項目を設定します。  
-  設定後、繰り返し間隔を設定します。  
+  検索期間の入力方法を設定します。  
+  「ノード：[ui-dateset-iacloud](https://github.com/ia-cloud/node-red-contrib-ia-cloud-dashboard/tree/master/ui-dateset)」からの入力により期間設定を行いたい場合は、dataasetから入力を選択します。  
+  本ノード内で期間設定を行いたい場合は、手動設定を選択して取得開始日付と終了日付を記述してください。  
 
 - ### アグリゲーション
   取得データのアグリゲーションが可能です。  

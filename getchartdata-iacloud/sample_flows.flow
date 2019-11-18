@@ -1,0 +1,358 @@
+[
+    {
+        "id": "bdc079da.3c0148",
+        "type": "comment",
+        "z": "84946cf0.0de31",
+        "name": "機番M01_温度・電流",
+        "info": "",
+        "x": 140,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "122a146d.e6737c",
+        "type": "ui_dateset",
+        "z": "84946cf0.0de31",
+        "group": "8d37288b.8b95c8",
+        "name": "M01折れ線グラフ更新",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "x": 160,
+        "y": 100,
+        "wires": [
+            [
+                "4e1f47c4.9cdbb8",
+                "923e8f9c.85a5e"
+            ]
+        ]
+    },
+    {
+        "id": "4e1f47c4.9cdbb8",
+        "type": "getchartdata",
+        "z": "84946cf0.0de31",
+        "name": "電流取得・変換",
+        "tableName": "HackathonUser_1",
+        "objectKey": "jp.co.iacloud.enocean.CT-M01",
+        "seriesObject": "[{\"dataName\":\"timeStamp\",\"displayName\":\"\"},{\"dataName\":\"CT-M01ct1\",\"displayName\":\"電流1ch\"}]",
+        "dateCheck": "datesetInput",
+        "sdate": "",
+        "edate": "",
+        "aggregationCheck": false,
+        "aggregation": "average",
+        "aggreunit": "minute",
+        "decimalPoint": "2",
+        "sort": "true",
+        "limit": "5",
+        "x": 380,
+        "y": 100,
+        "wires": [
+            [
+                "baa162cd.46e7e"
+            ]
+        ]
+    },
+    {
+        "id": "923e8f9c.85a5e",
+        "type": "getchartdata",
+        "z": "84946cf0.0de31",
+        "name": "温度取得・変換",
+        "tableName": "HackathonUser_1",
+        "objectKey": "jp.co.iacloud.enocean.TEMP-M01",
+        "seriesObject": "[{\"dataName\":\"timeStamp\",\"displayName\":\"\"},{\"dataName\":\"TEMP-M01temp1\",\"displayName\":\"温度1ch\"},{\"dataName\":\"TEMP-M01temp2\",\"displayName\":\"温度2ch\"},{\"dataName\":\"TEMP-M01temp3\",\"displayName\":\"温度3ch\"},{\"dataName\":\"TEMP-M01temp4\",\"displayName\":\"温度4ch\"}]",
+        "dateCheck": "datesetInput",
+        "sdate": "",
+        "edate": "",
+        "aggregationCheck": true,
+        "aggregation": "average",
+        "aggreunit": "minute",
+        "decimalPoint": "2",
+        "sort": "true",
+        "limit": "",
+        "x": 380,
+        "y": 140,
+        "wires": [
+            [
+                "da756fe5.fab83"
+            ]
+        ]
+    },
+    {
+        "id": "baa162cd.46e7e",
+        "type": "ui_chart",
+        "z": "84946cf0.0de31",
+        "name": "",
+        "group": "8d37288b.8b95c8",
+        "order": 2,
+        "width": "3",
+        "height": "2",
+        "label": "機番M01　電流",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "30",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 640,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "da756fe5.fab83",
+        "type": "ui_chart",
+        "z": "84946cf0.0de31",
+        "name": "",
+        "group": "8d37288b.8b95c8",
+        "order": 1,
+        "width": "3",
+        "height": "2",
+        "label": "機番M01　温度",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "30",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 640,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "97d19fee.73739",
+        "type": "comment",
+        "z": "84946cf0.0de31",
+        "name": "機番M02_温度・電流",
+        "info": "",
+        "x": 140,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "62af2e5e.b5421",
+        "type": "ui_dateset",
+        "z": "84946cf0.0de31",
+        "group": "ca01cf8a.e0266",
+        "name": "M02折れ線グラフ更新",
+        "order": 3,
+        "width": "3",
+        "height": "1",
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "7d2d3111.2ac6d",
+                "a00102b.fa016"
+            ]
+        ]
+    },
+    {
+        "id": "7d2d3111.2ac6d",
+        "type": "getchartdata",
+        "z": "84946cf0.0de31",
+        "name": "電流取得・変換",
+        "tableName": "HackathonUser_1",
+        "objectKey": "jp.co.iacloud.enocean.CT-M02",
+        "seriesObject": "[{\"dataName\":\"timeStamp\",\"displayName\":\"\"},{\"dataName\":\"CT-M02ct1\",\"displayName\":\"電流1ch\"}]",
+        "dateCheck": "datesetInput",
+        "sdate": "",
+        "edate": "",
+        "aggregationCheck": true,
+        "aggregation": "average",
+        "aggreunit": "minute",
+        "decimalPoint": "2",
+        "sort": "true",
+        "limit": "",
+        "x": 380,
+        "y": 240,
+        "wires": [
+            [
+                "89dfc9fe.5bc6d8"
+            ]
+        ]
+    },
+    {
+        "id": "a00102b.fa016",
+        "type": "getchartdata",
+        "z": "84946cf0.0de31",
+        "name": "温度取得・変換",
+        "tableName": "HackathonUser_1",
+        "objectKey": "jp.co.iacloud.enocean.TEMP-M02",
+        "seriesObject": "[{\"dataName\":\"timeStamp\",\"displayName\":\"\"},{\"dataName\":\"TEMP-M02temp1\",\"displayName\":\"温度1ch\"},{\"dataName\":\"TEMP-M02temp2\",\"displayName\":\"温度2ch\"},{\"dataName\":\"TEMP-M02temp3\",\"displayName\":\"温度3ch\"},{\"dataName\":\"TEMP-M02temp4\",\"displayName\":\"温度4ch\"}]",
+        "dateCheck": "datesetInput",
+        "sdate": "",
+        "edate": "",
+        "aggregationCheck": true,
+        "aggregation": "average",
+        "aggreunit": "minute",
+        "decimalPoint": "2",
+        "sort": "true",
+        "limit": "",
+        "x": 380,
+        "y": 280,
+        "wires": [
+            [
+                "8e39f41c.3e9e08"
+            ]
+        ]
+    },
+    {
+        "id": "89dfc9fe.5bc6d8",
+        "type": "ui_chart",
+        "z": "84946cf0.0de31",
+        "name": "",
+        "group": "ca01cf8a.e0266",
+        "order": 2,
+        "width": "3",
+        "height": "2",
+        "label": "機番M02　電流",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "30",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 640,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8e39f41c.3e9e08",
+        "type": "ui_chart",
+        "z": "84946cf0.0de31",
+        "name": "",
+        "group": "ca01cf8a.e0266",
+        "order": 1,
+        "width": "3",
+        "height": "2",
+        "label": "機番M02　温度",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "30",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 640,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8d37288b.8b95c8",
+        "type": "ui_group",
+        "z": "",
+        "name": "iaCloudダッシュボード　M01温度・電流",
+        "tab": "9df7a8f1.b2d958",
+        "order": 1,
+        "disp": false,
+        "width": "5",
+        "collapse": false
+    },
+    {
+        "id": "ca01cf8a.e0266",
+        "type": "ui_group",
+        "z": "",
+        "name": "iaCloudダッシュボード　M02温度・電流",
+        "tab": "9df7a8f1.b2d958",
+        "order": 2,
+        "disp": false,
+        "width": "5",
+        "collapse": false
+    },
+    {
+        "id": "9df7a8f1.b2d958",
+        "type": "ui_tab",
+        "z": "",
+        "name": "[デモ3]iaCloudダッシュボード",
+        "icon": "dashboard",
+        "order": 6,
+        "disabled": false,
+        "hidden": false
+    }
+]
