@@ -1,0 +1,66 @@
+[
+    {
+        "id": "db4acdc7.c6baa",
+        "type": "tab",
+        "label": "[iaCloud dashboard]テストフロー",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "a0b6ac47.8f334",
+        "type": "ui_dateset",
+        "z": "db4acdc7.c6baa",
+        "group": "61d7cac5.e56ae4",
+        "name": "日付指定",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "dateset",
+        "direction": "Vertical",
+        "display_settings": "",
+        "x": 100,
+        "y": 40,
+        "wires": [
+            [
+                "97131f0b.0706"
+            ]
+        ]
+    },
+    {
+        "id": "97131f0b.0706",
+        "type": "ui_text",
+        "z": "db4acdc7.c6baa",
+        "group": "61d7cac5.e56ae4",
+        "order": 2,
+        "width": "6",
+        "height": "3",
+        "name": "",
+        "label": "日付表示",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "x": 290,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "61d7cac5.e56ae4",
+        "type": "ui_group",
+        "z": "",
+        "name": "dateset",
+        "tab": "7cf4b125.6c20c",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "7cf4b125.6c20c",
+        "type": "ui_tab",
+        "z": "",
+        "name": "[iaCloud dashboard]テストフロー",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
