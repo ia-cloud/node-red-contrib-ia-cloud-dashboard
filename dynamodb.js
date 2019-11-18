@@ -45,34 +45,41 @@ function cnctSetting (userID, password) {
 /* 検索期間条件設定関数 */
 function expressionSetting (node) {
 
-    if (node.sdate!= undefined && node.edate != undefined) {
+    if (node.sdatetime != undefined) {
+        node.sdatetime = moment(node.sdatetime).format("YYYY-MM-DDTHH:mm:ss");
+    } 
+    if (node.edatetime != undefined) {
+        node.edatetime = moment(node.edatetime).format("YYYY-MM-DDTHH:mm:ss");
+    }
+
+    if (node.sdatetime!= undefined && node.edatetime != undefined) {
         // 開始・終了共に条件あり
-        node.ExpressionAttributeValues[":sdate"] = node.sdate + "T00:00:00+09:00";	        // 期間セット
-        node.ExpressionAttributeValues[":edate"] = node.edate + "T23:59:59+09:00";	        // 期間セット
-        node.KeyConditionExpression = "objectKey = :a and #t BETWEEN :sdate and :edate";    // 検索条件
+        node.ExpressionAttributeValues[":sdatetime"] = node.sdatetime + "+09:00";	        // 期間セット
+        node.ExpressionAttributeValues[":edatetime"] = node.edatetime + "+09:00";	        // 期間セット
+        node.KeyConditionExpression = "objectKey = :a and #t BETWEEN :sdatetime and :edatetime";    // 検索条件
         node.ExpressionAttributeNames = {											        // 検索条件値
             "#t": "timestamp"
         };
-    } else if (node.sdate != undefined && node.edate == undefined){
+    } else if (node.sdatetime != undefined && node.edatetime == undefined){
         // 開始のみ条件あり
-        node.ExpressionAttributeValues[":sdate"] = node.sdate + "T00:00:00+09:00";	        // 期間セット
-        delete node.ExpressionAttributeValues[":edate"];                                    // 期間セット
-        node.KeyConditionExpression = "objectKey = :a and #t > :sdate";				        // 検索条件
+        node.ExpressionAttributeValues[":sdatetime"] = node.sdatetime + "+09:00";	        // 期間セット
+        delete node.ExpressionAttributeValues[":edatetime"];                                    // 期間セット
+        node.KeyConditionExpression = "objectKey = :a and #t > :sdatetime";				        // 検索条件
         node.ExpressionAttributeNames = {											        // 検索条件値
             "#t": "timestamp"
         };
-    } else if (node.sdate == undefined && node.edate != undefined) {
+    } else if (node.sdatetime == undefined && node.edate != undefined) {
         // 終了のみ条件あり
-        delete node.ExpressionAttributeValues[":sdate"];                                    // 期間セット
-        node.ExpressionAttributeValues[":edate"] = node.edate + "T23:59:59+09:00";          // 期間セット
-        node.KeyConditionExpression = "objectKey = :a and #t < :edate";	                    // 検索条件
+        delete node.ExpressionAttributeValues[":sdatetime"];                                    // 期間セット
+        node.ExpressionAttributeValues[":edatetime"] = node.edatetime + "+09:00";          // 期間セット
+        node.KeyConditionExpression = "objectKey = :a and #t < :edatetime";	                    // 検索条件
         node.ExpressionAttributeNames = {										        	// 検索条件値
             "#t": "timestamp"
         };
     } else {
         // 開始・終了共に条件なし       
-        delete node.ExpressionAttributeValues[":sdate"];                                    // 期間セット
-        delete node.ExpressionAttributeValues[":edate"];                                    // 期間セット
+        delete node.ExpressionAttributeValues[":sdatetime"];                                    // 期間セット
+        delete node.ExpressionAttributeValues[":edatetime"];                                    // 期間セット
         node.KeyConditionExpression = "objectKey = :a";	                                    // 検索条件
         delete node.ExpressionAttributeNames;                                               // 検索条件値
     }
@@ -399,7 +406,6 @@ function aggregation (items, node) {
 /* 表示桁数関数 */
 function round (items, node) {
     try {
-
         if (node.aggregationCheck == true) {
             // アグリゲーション処理後データ
             items.forEach (function (item) {
@@ -407,7 +413,7 @@ function round (items, node) {
                     obj.dataValue = Math.round(obj.dataValue * Math.pow(10, node.decimalPoint)) / Math.pow(10, node.decimalPoint);
                 });
             });
-        } else if (node.aggregationCheck == false) {
+        } else {
             if (items.Items[0].dataObject.objectContent != undefined) {
                 // 生データ（objectContent）
                 items.Items.forEach (function (item) {
@@ -426,16 +432,11 @@ function round (items, node) {
                 // round処理未実施：生データ
             }
         }
-        //  else if (node.aggregationCheck == null) {
-        //     // アグリゲーション処理後データ
-        // }
-        
     } catch (e) {
         // 表示桁数変換データが存在しなかった場合はエラー出力
         console.log("表示桁数変換対象データがありません");
 		node.error("dynamodb.js -round：表示桁数変換対象データがありません");
     }
-    
     return items;
 }
 
