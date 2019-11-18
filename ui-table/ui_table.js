@@ -33,12 +33,20 @@ module.exports = function(RED) {
             RED.nodes.createNode(this, config);
             var done = null;
 
-            var confsel = config.confsel;
+            this.confsel = config.confsel;
+            this.contype1 = config.contype1;
+            this.contype2 = config.contype2;
             var item = config.item;
 
             var label = config.label;
             if  (label == undefined) {
                 label = "";
+            }
+
+            try {
+                var statusList = config.statuslist.split(",");
+            } catch (e) {
+                var statusList = [];
             }
 
             var data;               // 出力データ
@@ -55,60 +63,119 @@ module.exports = function(RED) {
             // サイズ調整
             if (config.width === "0") { delete config.width; }
             if (config.height === "0") { delete config.height; }
-            // number of pixels wide the chart will be... 43 = sizes.sx - sizes.px
-            var pixelsWide = ((config.width || group.config.width || 6) - 1) * 43 - 15;
-
+            
             var previousTemplate = null;
 
-
             if (checkConfig(node, config)) {
-
                 var html = HTML(config);
-
-                // create new widget
                 done = ui.addWidget({
                     node: node,
                     format: html,
-                    templateScope: "local",
                     group: config.group,
                     width: parseInt(config.width || group.config.width || 6),
                     height: parseInt(config.height || group.config.width/3+1 || 2),
-                    // group: group,
+                    order: config.order,
+                    templateScope: "local",
                     emitOnlyNewValues: false,
                     forwardInputMessages: config.fwdInMessages,
                     storeFrontEndInputAsState: config.storeOutMessages,
                     beforeEmit: function(msg, value) {
 
-                        if (confsel == "inchartSet") {
-                            // json2inchartからの出力を使用する
-                            try {
-                                dataAry = [];
-        
-                                msg.series = msg.payload[0].series;
-                                data = msg.payload[0].data;
-                                
-                                msg.series.unshift("timeStamp");
-                
-                                // 出力用データ作成
-                                var temp = [];
-                                for (var i=0;i<data[0].length;i++) {
-                                    temp.push(data[0][i].x, data[0][i].y);
-                                    for (var j=1;j<data.length;j++){
-                                        temp.push(data[j][i].y);
-                                    }
-                                    dataAry.push(temp);
-                                    temp = [];
+                        // 入力値によって分岐
+                        switch (node.confsel) {
+                            case "dynamodbSet":
+                                // contentTypeを基にデータ作成
+                                switch(node.contype1) {
+                                    case "Alarm&Event":
+                                            msg.series = ["timeStamp", "No", "エラー詳細", "ステータス"];
+                                            itemList = msg.payload.Items;
+
+                                            dataAry = [];       // 出力用データ一時保存用
+                                            var temp = [];          // 出力用データ保存用
+                                            var contentList;        // 取得データ一時保存
+
+                                            if (itemList != undefined) {
+                                            
+                                                for(i=0;i < itemList.length; i++) {  //データ件数でループ
+                                                    try {
+                                                        if (itemList[i].dataObject.objectContent != undefined) {
+                                                            contentList = itemList[i].dataobject.objectContent.contentData;
+                                                        } else if (itemList[i].dataObject.ObjectContent != undefined) {
+                                                            contentList = itemList[i].dataObject.ObjectContent.contentData;
+                                                        } else {
+                                                            node.error("ui_table：ia-cloudオブジェクトではありません。");
+                                                            continue;
+                                                        }
+                                                    } catch (e) { 
+                                                        node.error("ui_table：ia-cloudオブジェクトではありません。");
+                                                        continue;
+                                                    }
+
+                                                    if (contentList.length > 0){
+                                                        var conIdx;
+                                                        for (conIdx=0; conIdx<contentList.length; conIdx++) {
+                                                            if (contentList[conIdx].commonName === "Alarm&Event" && contentList[conIdx].dataValue != undefined) {
+                                                                if (statusList.indexOf(contentList[conIdx].dataValue.AnEStatus) != -1) {
+                                                                    // 情報をdataAryに格納
+                                                                    temp.push(itemList[i].timestamp);
+                                                                    temp.push(contentList[conIdx].dataValue.AnECode);
+                                                                    temp.push(contentList[conIdx].dataValue.AnEDescription);
+                                                                    temp.push(contentList[conIdx].dataValue.AnEStatus);
+
+                                                                    dataAry.push(temp);
+                                                                    temp = [];
+                                                                }
+                                                            } else {
+                                                                node.warn("ui_table：アラーム＆イベントデータではありません", contentList);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        
+                                        break;
+                                    default:
+                                        node.error("contentType：対象外の集計データです");
+                                        dataAry = [];
+                                    
                                 }
-        
-                            } catch (e) {
-                                node.error("table：表示対象データがありません。");
-                            }
-        
-                            msg.payload = dataAry;
-                            
-                        } else {
-                            // 項目取得、配列に変換
-                            msg.series = item.split(",");
+                                msg.payload = dataAry;
+                                break;
+
+                            case "inchartSet":
+                                switch(node.contype2) {
+                                    case "iaCloudData":
+                                    default:
+                                        try {
+                                            dataAry = [];       // 出力用データ一時保存用
+                                            var temp = [];          // 出力用データ保存用
+                                            
+                                            msg.series = msg.payload[0].series;
+                                            data = msg.payload[0].data;
+                                            
+                                            msg.series.unshift("timeStamp");
+
+                                            for (var i=0;i<data[0].length;i++) {
+                                                temp.push(data[0][i].x, data[0][i].y);
+                                                for (var j=1;j<data.length;j++){
+                                                    temp.push(data[j][i].y);
+                                                }
+                                                dataAry.push(temp);
+                                                temp = [];
+                                            }
+                                        } catch (e) {
+                                            node.error("table：表示対象データがありません。");
+                                        }
+                                }
+                                msg.payload = dataAry;
+                                break;
+
+                            case "formatSet":
+                                // 項目取得、配列に変換
+                                msg.series = item.split(",");
+                                break;
+                            default:
+                        
                         }
 
                         var properties = Object.getOwnPropertyNames(msg).filter(function (p) { return p[0] != '_'; });

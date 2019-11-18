@@ -1,12 +1,14 @@
 <script type="text/javascript">
-    RED.nodes.registerType('ui_table',{
+
+    function mk_conf(NAME) {
+        var conf = {
         category: 'iaCloud dashboard',
         color: 'rgb(119, 198, 204)',
         defaults: {
             confsel: {value:"inchartSet"},
             group: {type: 'ui_group', required:false},
             name: {value: ''},
-            label: {value:''},
+            label: {value: NAME},
             order: {value: 0},
             width: {value: 0,
                     validate: function(v) {
@@ -19,6 +21,13 @@
                         return valid;
                 }},
             height: {value: 0},
+            contype1: {value: "Alarm&Event"},
+            contype2: {value: "iaCloudData"},
+            statuslist: {value: ""},
+            "statuscheck-set": {value: ""},
+            "statuscheck-reset": {value: ""},
+            "statuscheck-on": {value: ""},
+            "statuscheck-off": {value: ""},
             item: {value: ""},
             storeOutMessages: {value: true},
             fwdInMessages: {value: true},
@@ -28,8 +37,8 @@
         outputs:0,
         align: "right",
         icon: "ia-cloud.png",
-        paletteLabel: 'table',
-        label: function() { return this.name || 'table'; },
+        paletteLabel: NAME,
+        label: function() { return this.name || NAME; },
         oneditprepare: function() {
             var that = this;
             $("#node-input-size").elementSizer({
@@ -38,27 +47,94 @@
                 group: "#node-input-group"
             });
 
-            // 入力値オプション
+            // 入力値設定
             $('input[name="configSel"]:radio').change(function() {
                 if ($("#node-input-configSel1").is(":checked")) {
                     $("#node-row-item").hide();
+                    $("#node-row-contype1").show();
+                    $("#node-row-contype2").hide();
+                    $("#node-row-statuscheck").show();
+                    $('#node-input-confsel').val("dynamodbSet");
+                } else if ($("#node-input-configSel2").is(":checked")) {
+                    $("#node-row-item").hide();
+                    $("#node-row-contype1").hide();
+                    $("#node-row-contype2").show();
+                    $("#node-row-statuscheck").hide();
                     $('#node-input-confsel').val("inchartSet");
                 } else {
                     $("#node-row-item").show();
+                    $("#node-row-contype1").hide();
+                    $("#node-row-contype2").hide();
+                    $("#node-row-statuscheck").hide();
                     $('#node-input-confsel').val("formatSet");
                 }
             });
-            
-            if($("#node-input-confsel").val() == "inchartSet"){
+            if($("#node-input-confsel").val() == "dynamodbSet"){
                 $('#node-input-configSel1').prop('checked', true);
-            } else {
+            } else if ($("#node-input-confsel").val() == "inchartSet") {
                 $('#node-input-configSel2').prop('checked', true);
+            } else {
+                $('#node-input-configSel3').prop('checked', true);
             }
             $('input[name="configSel"]:radio').change();
 
+            // 表示ステータス設定
+            $("#node-input-statuscheck-set").change(function() {
+                if ($(this).is(":checked")) {
+                    $("#node-input-statuscheck-set").prop("checked", true);
+                } else {
+                    $("#node-input-statuscheck-set").prop("checked", false);
+                }
+            });
+            $("#node-input-statuscheck-setre").change(function() {
+                if ($(this).is(":checked")) {
+                    $("#node-input-statuscheck-setre").prop("checked", true);
+                } else {
+                    $("#node-input-statuscheck-setre").prop("checked", false);
+                }
+            });
+            $("#node-input-statuscheck-on").change(function() {
+                if ($(this).is(":checked")) {
+                    $("#node-input-statuscheck-on").prop("checked", true);
+                } else {
+                    $("#node-input-statuscheck-on").prop("checked", false);
+                }
+            });
+            $("#node-input-statuscheck-off").change(function() {
+                if ($(this).is(":checked")) {
+                    $("#node-input-statuscheck-off").prop("checked", true);
+                } else {
+                    $("#node-input-statuscheck-off").prop("checked", false);
+                }
+			});
+
+
+        },
+        oneditsave: function() {
+
+            // 表示ステータス設定
+            var statuslist = [];
+            if ($("#node-input-statuscheck-set").is(":checked")) {
+                statuslist.push("set");
+            }
+            if ($("#node-input-statuscheck-reset").is(":checked")) {
+                statuslist.push("reset");
+            }
+            if ($("#node-input-statuscheck-off").is(":checked")) {
+                statuslist.push("off");
+            }
+            if ($("#node-input-statuscheck-on").is(":checked")) {
+                statuslist.push("on");
+            }
+            $("#node-input-statuslist").val(statuslist.join(','));
         }
         
-    });
+    };
+        return conf;
+    }
+
+
+    RED.nodes.registerType('ui_table', mk_conf('table'));
 </script>
 
 <script type="text/x-red" data-template-name="ui_table">
@@ -85,24 +161,62 @@
 
     <!-- 入力値設定 -->
     <div class="form-row">
-    <label for="node-input-setMode"><i class="fa fa-list"></i> <span data-i18n="table.label.input"></span></label>
+        <label for="node-input-setMode"><i class="fa fa-list"></i> <span data-i18n="table.label.input"></span></label>
         <input type="text" style="display: none;" id="node-input-confsel" valie="inchartSet">
         <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
-              name="configSel" id="node-input-configSel1"
-              value="inchartSet" checked="checked">
-        <label style="width: 30%;" for="node-input-configSel1"> <span data-i18n="table.input.getchartdata"></span></label>
+              name="configSel" id="node-input-configSel1" value="dynamodbSet" checked="checked">
+        <label style="width: 30%;" for="node-input-configSel1"> <span data-i18n="table.input.dynamodb"></span></label>
         <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
-              name="configSel" id="node-input-configSel2" value="formatSet">
-        <label style="width: 30%;" for="node-input-configSel2"> <span data-i18n="table.input.formatdata"></span></label>
+              name="configSel" id="node-input-configSel2" value="inchartSet" checked="checked">
+        <label style="width: 30%;" for="node-input-configSel2"> <span data-i18n="table.input.getchartdata"></span></label>
+    </div>
+    <div class="form-row" style="margin-left: 105px">
+        <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
+              name="configSel" id="node-input-configSel3" value="formatSet">
+        <label style="width: 40%;" for="node-input-configSel3"> <span data-i18n="table.input.formatdata"></span></label>
     </div>
 
-    <!-- 項目名 -->
-    <div class="form-group hide" id="node-row-item" style="width:300px;">
-        <div class="form-row" style="margin-left: 110px">
-            <label for="node-input-item"> <span data-i18n="table.input.item"></label>
+    <!-- contentType(dynamoDB) -->
+    <div class="form-group hide" id="node-row-contype1">
+        <div class="form-row">
+            <label for="node-input-contype1"><i class="fa fa-list"></i> <span data-i18n="table.label.contype"></span></label>
+            <select type="text" style="width:200px;" id="node-input-contype1">
+                <option value="Alarm&Event" data-i18n="table.contype.ane"></option>
+            </select>
         </div>
-        <div class="form-row" style="margin-left: 110px">
-            <input type="text" id="node-input-item" style="width: 250px">
+    </div>
+
+    <!-- contentType(getchartdata) -->
+    <div class="form-group hide" id="node-row-contype2">
+        <div class="form-row">
+            <label for="node-input-contype2"><i class="fa fa-list"></i> <span data-i18n="table.label.contype"></span></label>
+            <select type="text" style="width:200px;" id="node-input-contype2">
+                <option value="iaCloudData" data-i18n="table.contype.iacd"></option>
+            </select>
+        </div>
+    </div>
+
+    <!-- アラーム&イベント 表示対象ステータス設定 -->
+    <div class="form-group hide" id="node-row-statuscheck">
+        <div class="form-row">
+            <label for="node-input-statuscheck"><i class="fa fa-check"></i> <span data-i18n="table.label.statuscheck"></label>
+            <input id="node-input-statuscheck-set" type="checkbox" style="display: inline-block; width: auto; vertical-align: top;" name="set" value="set">
+            <label for="node-input-statuscheck-set" style="display: inline-block; width: 50px; vertical-align: top;"> <span data-i18n="table.ane.set"></span></label>
+            <input id="node-input-statuscheck-reset"type="checkbox" style="display: inline-block; width: auto; vertical-align: top;" name="reset" value="reset">
+            <label for="node-input-statuscheck-reset" style="display: inline-block; width: 50px; vertical-align: top;"> <span data-i18n="table.ane.reset"></span></label>
+            <input id="node-input-statuscheck-on" type="checkbox" style="display: inline-block; width: auto; vertical-align: top;" name="on" value="on">
+            <label for="node-input-statuscheck-on" style="display: inline-block; width: 50px; vertical-align: top;"> <span data-i18n="table.ane.on"></span></label>
+            <input id="node-input-statuscheck-off" type="checkbox" style="display: inline-block; width: auto; vertical-align: top;" name="off" value="off">
+            <label for="node-input-statuscheck-off" style="display: inline-block; width: 50px; vertical-align: top;"> <span data-i18n="table.ane.off"></span></label>
+        </div>
+    </div>
+    <input type="hidden" id="node-input-statuslist">
+
+    <!-- 項目名(inchartSet) -->
+    <div class="form-group hide" id="node-row-item">
+        <div class="form-row">
+            <label for="node-input-item"><i class="fa fa-list"></i> <span data-i18n="table.input.item"></label>
+            <input type="text" id="node-input-item">
         </div>
     </div>
 

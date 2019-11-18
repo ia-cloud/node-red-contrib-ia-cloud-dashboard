@@ -5,12 +5,25 @@
             "size": "size",
             "label": "label",
             "input": "input",
+            "contype": "contentType",
+            "statuscheck": "disypay Satus",
             "name": "name"
         },
         "input": {
+            "dynamodb": "dynamoDB",
             "getchartdata": "getChartdata",
             "formatdata": "formatData",
             "item": "item"
+        },
+        "contype":{
+            "ane": "Alarm&Event",
+            "iacd": "iaCloudData"
+        },
+        "ane": {
+            "set": "set",
+            "reset": "reset",
+            "on": "on",
+            "off": "off"
         }
     }
 }
