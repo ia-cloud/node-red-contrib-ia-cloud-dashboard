@@ -1,15 +1,17 @@
 <script type="text/javascript">
 	RED.nodes.registerType('dynamoDB',{
 		category: 'iaCloud dashboard',
-		color:"#ffd700",
+		color: "#ffd700",
 		defaults: {
 			name: {value: ""},
 			tableName: {value: "", required:true},
 			operation: {value: "Query" },
 			objectKey: {value: "", required:true},
-			dateCheck: {value:"datesetInput"},
-			sdate: {value: ""},
-			edate: {value: ""},
+			dateCheck: {value:""},
+			sdatetime: {value: ""},
+			edatetime: {value: ""},
+			repeatCheck: {value: ""},
+			repeat: {value: "1"},
 			aggregationCheck: {value: false},
 			aggregation: {value: "max"},
 			aggreunit: {value: "year"},
@@ -57,28 +59,17 @@
 					$("#node-row-PutItemSet").show();
 				}
 			});
-
-
-			// 期間入力オプション
-			$('input[name="configSel"]:radio').change(function() {
-                if ($("#node-input-configSel1").is(":checked")) {
-                    $(".node-input-manualInput-row").hide();
-                    $('#node-input-dateCheck').val("datesetInput");
+			
+			// 期間入力設定
+			$("#node-input-dateCheck").change(function() {
+                if ($(this).is(":checked")) {
+					$("#node-input-dateCheck").prop("checked", true);
                 } else {
-                    $(".node-input-manualInput-row").show();
-                    $('#node-input-dateCheck').val("manualInput");
+					$("#node-input-dateCheck").prop("checked", false);
                 }
-            });
-			
-            if($("#node-input-dateCheck").val() == "datesetInput"){
-                $('#node-input-configSel1').prop('checked', true);
-            } else {
-                $('#node-input-configSel2').prop('checked', true);
-            }
-            $('input[name="configSel"]:radio').change();
-			
+			});
 
-			// アグリゲーションオプション
+			// アグリゲーション設定
 			$("#node-input-aggregationCheck").change(function() {
                 if ($(this).is(":checked")) {
 					$(".node-input-aggregation-row").show();
@@ -90,7 +81,48 @@
 					$("#node-input-aggregationCheck").prop("checked", false);
                 }
 			});
+
+			// 繰り返し設定
+			$("#node-input-repeatCheck").change(function() {
+                if ($(this).is(":checked")) {
+					$(".interval-row").show();
+					$("#node-input-repeatCheck").prop("checked", true);
+                } else {
+					$(".interval-row").hide();
+					$("#node-input-repeatCheck").prop("checked", false);
+                }
+			});
+			$(".interval-time-count").spinner({
+				//max:60,
+				min:1
+			});
+			$("#node-input-interval-units").change(function() {
+				var units = $("#node-input-interval-units option:selected").val();
+			});
+			var r = "s";
+			var c = this.repeat;
+			if (this.repeat % 60 === 0) { r = "m"; c = c/60; }
+			if (this.repeat % 1440 === 0) { r = "h"; c = c/60; }
+			$("#node-input-interval").val(c);
+			$("#node-input-interval-units").val(r);
 		
+		},
+		oneditsave: function() {
+			// 繰り返し設定
+			var repeat = "";
+			var count = $("#node-input-interval").val();
+			var units = $("#node-input-interval-units").val();
+			if (units == "s") {
+				repeat = count;
+			} else {
+				if(units == "m"){
+					repeat = count * 60;
+				} else if (units ==  "h"){
+					repeat = count * 60 * 60;
+				}
+			}
+			$("#node-input-repeat").val(repeat);
+
 		}
 	
 	});
@@ -135,7 +167,7 @@
 		<select type="text" id="node-input-operation">
 			<option value="Query" data-i18n="dynamodb.operation.Query"></option>
 			<option value="Scan" data-i18n="dynamodb.operation.Scan"></option>
-			<option value="PutItem" data-i18n="dynamodb.operation.PutItem"></option>
+			<!-- <option value="PutItem" data-i18n="dynamodb.operation.PutItem"></option> -->
 		</select>
 	</div>
 
@@ -149,24 +181,37 @@
 	<div class="form-group hide" id="node-row-QuerySet">
 		<!-- 期間 -->
 		<div class="form-row" style="width:450px;">
-			<input type="text" style="display: none;" id="node-input-dateCheck" value="datesetInput">
 			<label for="node-input-format" ><i class="fa fa-calendar"></i> <span data-i18n="dynamodb.label.period"></span></label>
-			<input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
-					name="configSel" id="node-input-configSel1"
-					value="datesetInput" checked="checked">
-			<label style="width: 30%;" for="node-input-configSel1"> <span data-i18n="dynamodb.period.datesetInput"></span></label>
-			<input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
-					name="configSel" id="node-input-configSel2" value="manualInput">
-			<label style="width: 30%;" for="node-input-configSel2"> <span data-i18n="dynamodb.period.manualsetInput"></span></label>
+			<input type="checkbox" id="node-input-dateCheck" style="display: inline-block; width: 20px; vertical-align: middle;>
+			<label for="node-input-dateCheck" style="width: 40%; vertical-align: middle;"><span data-i18n="dynamodb.period.check"></label>
 		</div>
-		<div style="margin-left: 110px" class="node-input-manualInput-row hide">
-			<input type="date" style="width:140px;" id="node-input-sdate" placeholder="2018-01-01"></input>
-			～
-			<input type="date" style="width:140px;" id="node-input-edate" placeholder="2018-01-03"></input>
+		<div style="margin-left: 110px" class="node-input-manualInput-row">
+			<input type="datetime-local" step="1" style="width:200px;" id="node-input-sdatetime" placeholder="2000-01-01"></input>
+			 ～ 
+			<input type="datetime-local" step="1" style="width:200px;" id="node-input-edatetime" placeholder="2000-01-03"></input>
 		</div>
 	</div>
 	<!-- Scan・Queryで使用可能 -->
 	<div class="form-group hide"  id="node-row-ScanQuerySet">
+
+		<!-- 繰り返しON/OFF -->
+		<div class="form-row">
+			<label for="node-input-interval"<i class="fa fa-repeat"></i> <span data-i18n="dynamodb.label.repeat"></span></label>
+			<input type="checkbox" id="node-input-repeatCheck" style="display: inline-block; width: 20px; vertical-align: middle;>
+			<label for="node-input-repeatCheck" style="width: 40%; vertical-align: middle;"><span data-i18n="dynamodb.repeat.check"></label>
+		</div>	
+		
+		<!-- 繰り返し秒数 -->
+		<div class="form-row interval-row hide" id="dynamodb-interval-row" style="margin-left: 105px">
+			<input id="node-input-interval" value="1" class="interval-time-count"></input>
+			<select style="width: 150px" id="node-input-interval-units">
+				<option value="s" data-i18n="inject.seconds">Seconds</option>
+				<option value="m" data-i18n="inject.minutes">Minutes</option>
+				<option value="h" data-i18n="inject.hours">Hours</option>
+			</select><br/>
+		</div>
+		<input type="hidden" id="node-input-repeat">
+
 		<!-- アグリゲーション -->
 		<div class="form-row" style="width:450px;">
 			<label for="node-input-aggregation"><i class="fa fa-calculator"></i> <span data-i18n="dynamodb.label.aggregation"></span></label>
@@ -268,6 +313,22 @@
 	</script>
 
 </script>
+
+<style>
+	.interval-row {
+	}
+	.interval-time-row select {
+		margin: 3px 0;
+	}
+	.interval-row > .ui-spinner {
+		height: 28px;
+		margin: 3px 0;
+		border-color: rgb(204, 204, 204);
+	}
+	.interval-time-count {
+		width: 40px !important;
+	}
+</style>
 
 
 

@@ -102,11 +102,11 @@ module.exports = function(RED) {
                 done = ui.addWidget({
                     node: node,
                     format: html,
-                    templateScope: "local",
                     group: config.group,
                     width: parseInt(config.width || group.config.width || 6),
                     height: parseInt(config.height || 2),
-                    // group: group,
+                    order: config.order,
+                    templateScope: "local",
                     emitOnlyNewValues: false,
                     forwardInputMessages: config.fwdInMessages,
                     storeFrontEndInputAsState: config.storeOutMessages,
