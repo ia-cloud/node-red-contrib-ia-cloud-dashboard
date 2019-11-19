@@ -1,0 +1,70 @@
+[
+    {
+        "id": "db4acdc7.c6baa",
+        "type": "tab",
+        "label": "[iaCloud dashboard]テストフロー",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "6c113b6b.9d0cc4",
+        "type": "inject",
+        "z": "db4acdc7.c6baa",
+        "name": "稼働状況データ",
+        "topic": "",
+        "payload": "[{\"series\":[\"スイッチ1\"],\"data\":[[{\"x\":\"2019-10-04T15:36:30+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:36:31+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:36:41+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:36:45+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:37:03+09:00\",\"y\":\"pressed\"},{\"x\":\"2019-10-04T15:37:07+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:37:09+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:37:50+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:37:51+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:00+09:00\",\"y\":\"pressed\"},{\"x\":\"2019-10-04T15:38:01+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:03+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:04+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:11+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:13+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:21+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:22+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:37+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:39+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:40+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:38:53+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:39:03+09:00\",\"y\":\"pressed\"},{\"x\":\"2019-10-04T15:39:07+09:00\",\"y\":\"released\"},{\"x\":\"2019-10-04T15:39:08+09:00\",\"y\":\"released\"}]],\"labels\":[\"\"]}]",
+        "payloadType": "json",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 120,
+        "y": 60,
+        "wires": [
+            [
+                "6d1c85f0.ccf75c"
+            ]
+        ]
+    },
+    {
+        "id": "6d1c85f0.ccf75c",
+        "type": "ui_oprstatus",
+        "z": "db4acdc7.c6baa",
+        "confsel": "inchartSet",
+        "group": "61d7cac5.e56ae4",
+        "label": "稼働状況テスト",
+        "name": "稼働状況テスト",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "item": "スイッチ1",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "templateScope": "local",
+        "statusObject": "[{\"statusColor\":\"#008000\",\"statusValue\":\"pressed\",\"statusLabel\":\"start\"},{\"statusColor\":\"#c0c0c0\",\"statusValue\":\"released\",\"statusLabel\":\"stop\"}]",
+        "x": 360,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "61d7cac5.e56ae4",
+        "type": "ui_group",
+        "z": "",
+        "name": "oprStatus",
+        "tab": "7cf4b125.6c20c",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "7cf4b125.6c20c",
+        "type": "ui_tab",
+        "z": "",
+        "name": "[iaCloud dashboard]テストフロー",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
