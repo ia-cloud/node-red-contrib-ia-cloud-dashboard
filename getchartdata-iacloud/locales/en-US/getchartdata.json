@@ -2,8 +2,7 @@
     "getchartdata": {
         "label":{
             "name": "name",
-            "username": "username",
-            "password": "password",
+            "ccs-connection-config": "CCS",
             "tableName": "tableName",
             "objectKey": "objectKey",
             "series": "seriesSetting",

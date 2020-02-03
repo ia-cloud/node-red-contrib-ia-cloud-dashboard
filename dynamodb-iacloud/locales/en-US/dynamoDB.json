@@ -2,8 +2,7 @@
     "dynamodb": {
         "label":{
             "name": "name",
-            "username": "username",
-            "password": "password",
+            "ccs-connection-config": "CCS",
             "tableName": "tableName",
             "operation": "operation",
             "objectKey": "objectKey",
