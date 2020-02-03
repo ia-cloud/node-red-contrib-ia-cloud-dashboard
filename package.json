@@ -51,6 +51,7 @@
   },
   "bundleDependencies": false,
   "dependencies": {
+    "@ia-cloud/node-red-ia-cloud-common-nodes": "0.0.2",
     "json2csv": "4.3.5",
     "moment": "2.24.0",
     "node-red-dashboard": "2.17.0",
