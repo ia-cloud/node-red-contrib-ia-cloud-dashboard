@@ -1,7 +1,4 @@
 
-// APIURL
-var apiUrl = "https://xfsjduorxc.execute-api.us-east-1.amazonaws.com/stage_1/iacloud/dynamoreq";
-
 module.exports = function(RED) {
 
     /* 関数定義 */
@@ -23,15 +20,15 @@ var reqbody = {};                   // DynamoDBリクエスト用オブジェク
 
 
 /* DynamoDB接続情報設定関数 */
-function cnctSetting (userID, password) {
+function cnctSetting (ccsConnectionConfigNode) {
     var opts = {};                  // 接続情報格納用オブジェクト
 
     // 接続情報のデコード
-    var buffer = new Buffer(userID + ":" + password);
+    var buffer = new Buffer(ccsConnectionConfigNode.credentials.userId + ":" + ccsConnectionConfigNode.credentials.password);
     var encodedData = buffer.toString("base64");
 
     // httpリクエストのoptionを設定
-    opts.url = apiUrl;
+    opts.url = ccsConnectionConfigNode.url;
     opts.method = "POST";
     opts.headers = {};
     opts.headers["Content-Type"] =  "application/json";

@@ -2,8 +2,7 @@
     "getlatestdata": {
         "label":{
             "name": "名前",
-            "username": "ユーザID",
-            "password": "パスワード",
+            "ccs-connection-config": "接続先CCS",
             "tableName": "テーブル名",
             "objectKey": "オブジェクトキー",
             "series": "項目設定",

@@ -4,6 +4,7 @@
         color: "#ffd700",
         defaults: {
 			name: {value:""},
+			ccsConnectionConfig: { value: '', type: 'ia-cloud-ccs-connection-config', required: true },
 			tableName: {value: "", required:true},
 			objectKey: {value: "", required:true},
 			seriesObject:{value:"", required: true },
@@ -20,8 +21,6 @@
 			limit: {value: ""}
 		},
 		credentials: {
-			userID: {type:"text", required:true},
-            password: {type: "password", required:true}
 		},
         inputs:1,
         outputs:1,
@@ -252,17 +251,12 @@
     </div>
     <hr/>
 
-	<!-- ユーザID -->
+	<!-- CCS接続情報 -->
 	<div class="form-row">
-		<label for="node-input-userID"><i class="fa fa-tag"></i> <span data-i18n="getchartdata.label.username"></span><span style="color: #ff0000;">*</span></label>
-		<input type="text" id="node-input-userID" placeholder="userID"></input>
+		<label for="node-input-ccsConnectionConfig"><i class="fa fa-link"></i> <span data-i18n="getchartdata.label.ccs-connection-config" /></label>
+		<input type="text" id="node-input-ccsConnectionConfig" data-i18n="[placeholder]getchartdata.label.ccs-connection-config">
 	</div>
 
-	<!-- パスワード -->
-	<div class="form-row">
-		<label for="node-input-password"><i class="fa fa-key"></i> <span data-i18n="getchartdata.label.password"></span><span style="color: #ff0000;">*</span></label>
-		<input type="password" id="node-input-password" placeholder="password"></input>
-	</div>
 	<hr/>
 
 	<!-- テーブル名 -->

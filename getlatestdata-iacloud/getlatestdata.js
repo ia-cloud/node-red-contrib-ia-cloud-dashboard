@@ -8,9 +8,8 @@ module.exports = function(RED) {
 		
 		RED.nodes.createNode(this,config);
 
-		// dynamoDB接続用情報の取得
-		this.userID = this.credentials.userID;
-		this.password = this.credentials.password;
+		// CCS接続用情報の取得
+		const ccsConnectionConfigNode = RED.nodes.getNode(config.ccsConnectionConfig);
 		
 		// 検索条件の取得
 		this.name = config.name;							// ノード名
@@ -43,7 +42,7 @@ module.exports = function(RED) {
 		var node = this;
 
 		// dynamodb接続設定
-		var opts = dynamodb.cnctSetting(node.userID, node.password);
+		var opts = dynamodb.cnctSetting(ccsConnectionConfigNode);
 
 		// sendメッセージ関数作成
 		node.sendMsg = function (data) {
@@ -203,11 +202,5 @@ module.exports = function(RED) {
 		}
 	}
 
-	RED.nodes.registerType("getlatestdata", getlatestdataNode, {
-        credentials: {
-            userID: {type:"text"},
-            password: {type: "password"}
-        }
-    });
-
+	RED.nodes.registerType("getlatestdata", getlatestdataNode);
 };
