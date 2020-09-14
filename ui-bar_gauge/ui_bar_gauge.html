@@ -1,7 +1,7 @@
 <script type="text/javascript">
     function mk_conf(NAME) {
         var conf = {
-            category: 'iaCloud dashboard',
+            category: 'iaCloud Visuals',
             color: 'rgb(119, 198, 204)',
             defaults: {
                 group: {type: 'ui_group', required:true},
@@ -28,9 +28,15 @@
             inputs:1,
             outputs:0,
             align: "right",
-            icon: "ui_template.png",
+            icon: "ia-cloud.png",
             paletteLabel: NAME,
-            label: function() { return this.name || (~this.label.indexOf('{{') ? null : this.label) || NAME; },
+            label: function() { return  this._("uiBarGauge.paletteLabel")||this.name || (~this.label.indexOf('{{') ? null : this.label) || NAME; },
+            labelStyle: function() {
+                return this.name?"node_label_italic":"";
+            },
+            paletteLabel: function() {
+                return this._("uiBarGauge.paletteLabel") || "ui_bar_gauge";
+            },
             oneditprepare: function() {
                 var that = this;
                 $("#node-input-size").elementSizer({

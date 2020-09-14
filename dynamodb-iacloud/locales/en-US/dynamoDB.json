@@ -1,6 +1,7 @@
 {
     "dynamodb": {
         "label":{
+            "paletteLabel": "DynamoDB",
             "name": "name",
             "ccs-connection-config": "CCS",
             "tableName": "tableName",

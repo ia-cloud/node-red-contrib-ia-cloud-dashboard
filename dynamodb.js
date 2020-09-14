@@ -44,7 +44,7 @@ function expressionSetting (node) {
 
     if (node.sdatetime != undefined) {
         node.sdatetime = moment(node.sdatetime).format("YYYY-MM-DDTHH:mm:ss");
-    } 
+    }
     if (node.edatetime != undefined) {
         node.edatetime = moment(node.edatetime).format("YYYY-MM-DDTHH:mm:ss");
     }
@@ -74,13 +74,13 @@ function expressionSetting (node) {
             "#t": "timestamp"
         };
     } else {
-        // 開始・終了共に条件なし       
+        // 開始・終了共に条件なし
         delete node.ExpressionAttributeValues[":sdatetime"];                                    // 期間セット
         delete node.ExpressionAttributeValues[":edatetime"];                                    // 期間セット
         node.KeyConditionExpression = "objectKey = :a";	                                    // 検索条件
         delete node.ExpressionAttributeNames;                                               // 検索条件値
     }
-    
+
     return node;
 }
 
@@ -102,9 +102,14 @@ function serviceSetting (opts, node) {
 function dynamoRequest (opts, node, callback) {
     //  リクエストモジュールを利用して設定APIへリクエスト
     request (opts, function(err, res, body) {
-        var resbody = null;                 // レスポンス設定用オブジェクト
-
+        var resbody = {};                 // レスポンス設定用オブジェクト
         if (err) {
+            // その他エラー
+            var resbody = {
+                "status": "ng",
+                "statusCode": 500,
+                "errorMassage": "エラーが発生しました"
+            };
             // リクエストが失敗したらエラーを出力
             if(err.code === 'ETIMEDOUT' || err.code === 'ESOCKETTIMEDOUT') {
                 node.error(RED._("common.errors.no-response"));
@@ -115,21 +120,27 @@ function dynamoRequest (opts, node, callback) {
             if (res.statusCode == 500){
                 // 認証エラー
                 var resbody = {
-                    "status": 401,
+                    "status": "ng",
+                    "statusCode": 401,
                     "errorMassage": "認証情報が正しくありません"
-                }; 
+                };
                 node.error("DynamoDB：認証エラー", resbody);
             } else if (res.statusCode != 200){
                 // その他エラー
                 var resbody = {
-                    "status": 400,
+                    "status": "ng",
+                    "statusCode": 500,
                     "errorMassage": "エラーが発生しました"
-                }; 
+                };
                 node.error("DynamoDB：認証エラー", resbody);
             } else {
-                // 結果を出力
+                // 結果を返却
                 try {
-                    resbody = JSON.parse(body);
+                    resbody = {
+                        "status": "ok",
+                        "statusCode": 200,
+                        "data": JSON.parse(body)
+                    };
                 } catch (e) {
                     node.warn(RED._("common.errors.json-error"));
                 }
@@ -149,15 +160,14 @@ function aggregation (items, node) {
         aggrItem.objectKey = items[0].objectkey;    // 勝利データ一件目のobjectKeyを取得
         aggrItem.objectList = [];                   // アグリゲーション結果を格納するobjectListを作成
 
-        var tmpObj;					                // オブジェクト一時保存用オブジェクト	
+        var tmpObj;					                // オブジェクト一時保存用オブジェクト
         var DatObj;					                // dataObject一時保存用オブジェクト
         var contentData;			                // 集計結果一時保存用オブジェクト
 
         var sumList;				                // 一時集計用配列
-        
+
         var resultList = [];		                // 集計結果一時保存用配列
         var resultObj;				                // 結果結果一時保存用オブジェクト
-        
 
         // データをひとまとめに
         for (var i=0; i<items.length; i++) {
@@ -214,26 +224,34 @@ function aggregation (items, node) {
 
             // 一時集計を容易にするため、tmpObjに一時格納
             tmpObj = aggrItem.objectList[i];
-            
+
             // 期間設定処理
             var endTimeStamp = moment(tmpObj.timestamp).endOf(node.aggreunit);
-            sumList = {};				
+            sumList = {};
 
             // 指定単位（年～秒）で一時的にsumListへ集計
             for (i; i<aggrItem.objectList.length && moment(tmpObj.timestamp)<=endTimeStamp; i) {
 
-                tmpObj.contentData.forEach (function (CntDat) {									
+                tmpObj.contentData.forEach (function (CntDat) {
                     // 初めて確認したdataNameの場合、項目箇所を新規作成
-                    if (sumList[CntDat.dataName] == undefined) {
-                        sumList[CntDat.dataName] = [];
+
+                    var key;
+                    if (CntDat.dataName != undefined) {
+                        key = "dataName";
+                    } else {
+                        key = "dataname";
                     }
-                    sumList[CntDat.dataName].push(CntDat.dataValue);
+
+
+                    if (sumList[CntDat[key]] == undefined) {
+                        sumList[CntDat[key]] = [];
+                    }
+                    sumList[CntDat[key]].push(CntDat.dataValue);
                 });
 
                 // 一時集計を容易にするため、tmpObjに一時格納
                 tmpObj = aggrItem.objectList[++i];
             }
-            
 
             /* アグリゲーション */
             switch (node.aggregation) {
@@ -274,7 +292,7 @@ function aggregation (items, node) {
                 // resultListに格納
                 resultList.push(resultObj);
                 break;
-            
+
             case "average":
                 // 平均
                 // SUM関数作成
@@ -368,7 +386,7 @@ function aggregation (items, node) {
                 // resultListに格納
                 resultList.push(resultObj);
                 break;
-            
+
             case "last":
                 // 指定単位（年～秒）内の最後のデータ
                 contentData = [];
@@ -395,7 +413,6 @@ function aggregation (items, node) {
         console.log("アグリゲーション対象データがありません");
 		node.error("dynamodb.js -aggregation：アグリゲーション対象データがありません");
     }
-
     // 集計結果(reusltList)を返却する
     return resultList;
 }
@@ -462,24 +479,24 @@ var service={};
 service.Query=function(msg){
 
     var params={};
-    //copyArgs		
-    copyArg(msg,"TableName",params,undefined,false); 
-    copyArg(msg,"IndexName",params,undefined,false); 
-    copyArg(msg,"Select",params,undefined,false); 
-    copyArg(msg,"AttributesToGet",params,undefined,true); 
-    copyArg(msg,"Limit",params,undefined,false); 
-    copyArg(msg,"ConsistentRead",params,undefined,false); 
-    copyArg(msg,"KeyConditions",params,undefined,false); 
-    copyArg(msg,"QueryFilter",params,undefined,true); 
-    copyArg(msg,"ConditionalOperator",params,undefined,false); 
-    copyArg(msg,"ScanIndexForward",params,undefined,false); 
-    copyArg(msg,"ExclusiveStartKey",params,undefined,true); 
-    copyArg(msg,"ReturnConsumedCapacity",params,undefined,false); 
-    copyArg(msg,"ProjectionExpression",params,undefined,false); 
-    // copyArg(msg,"FilterExpression",params,undefined,false); 
-    copyArg(msg,"KeyConditionExpression",params,undefined,false); 
-    copyArg(msg,"ExpressionAttributeNames",params,undefined,true); 
-    copyArg(msg,"ExpressionAttributeValues",params,undefined,true); 
+    //copyArgs
+    copyArg(msg,"TableName",params,undefined,false);
+    copyArg(msg,"IndexName",params,undefined,false);
+    copyArg(msg,"Select",params,undefined,false);
+    copyArg(msg,"AttributesToGet",params,undefined,true);
+    copyArg(msg,"Limit",params,undefined,false);
+    copyArg(msg,"ConsistentRead",params,undefined,false);
+    copyArg(msg,"KeyConditions",params,undefined,false);
+    copyArg(msg,"QueryFilter",params,undefined,true);
+    copyArg(msg,"ConditionalOperator",params,undefined,false);
+    copyArg(msg,"ScanIndexForward",params,undefined,false);
+    copyArg(msg,"ExclusiveStartKey",params,undefined,true);
+    copyArg(msg,"ReturnConsumedCapacity",params,undefined,false);
+    copyArg(msg,"ProjectionExpression",params,undefined,false);
+    // copyArg(msg,"FilterExpression",params,undefined,false);
+    copyArg(msg,"KeyConditionExpression",params,undefined,false);
+    copyArg(msg,"ExpressionAttributeNames",params,undefined,true);
+    copyArg(msg,"ExpressionAttributeValues",params,undefined,true);
 
     reqbody.params = params;
 
@@ -489,22 +506,22 @@ service.Query=function(msg){
 service.Scan=function(msg){
     var params={};
     //copyArgs
-    copyArg(msg,"TableName",params,undefined,false); 
-    copyArg(msg,"IndexName",params,undefined,false); 
-    copyArg(msg,"AttributesToGet",params,undefined,true); 
-    copyArg(msg,"Limit",params,undefined,false); 
-    copyArg(msg,"Select",params,undefined,false); 
-    copyArg(msg,"ScanFilter",params,undefined,true); 
-    copyArg(msg,"ConditionalOperator",params,undefined,false); 
-    copyArg(msg,"ExclusiveStartKey",params,undefined,true); 
-    copyArg(msg,"ReturnConsumedCapacity",params,undefined,false); 
-    copyArg(msg,"TotalSegments",params,undefined,false); 
-    copyArg(msg,"Segment",params,undefined,false); 
-    copyArg(msg,"ProjectionExpression",params,undefined,false); 
-    copyArg(msg,"FilterExpression",params,undefined,false); 
-    copyArg(msg,"ExpressionAttributeNames",params,undefined,true); 
-    copyArg(msg,"ExpressionAttributeValues",params,undefined,true); 
-    copyArg(msg,"ConsistentRead",params,undefined,false); 
+    copyArg(msg,"TableName",params,undefined,false);
+    copyArg(msg,"IndexName",params,undefined,false);
+    copyArg(msg,"AttributesToGet",params,undefined,true);
+    copyArg(msg,"Limit",params,undefined,false);
+    copyArg(msg,"Select",params,undefined,false);
+    copyArg(msg,"ScanFilter",params,undefined,true);
+    copyArg(msg,"ConditionalOperator",params,undefined,false);
+    copyArg(msg,"ExclusiveStartKey",params,undefined,true);
+    copyArg(msg,"ReturnConsumedCapacity",params,undefined,false);
+    copyArg(msg,"TotalSegments",params,undefined,false);
+    copyArg(msg,"Segment",params,undefined,false);
+    copyArg(msg,"ProjectionExpression",params,undefined,false);
+    copyArg(msg,"FilterExpression",params,undefined,false);
+    copyArg(msg,"ExpressionAttributeNames",params,undefined,true);
+    copyArg(msg,"ExpressionAttributeValues",params,undefined,true);
+    copyArg(msg,"ConsistentRead",params,undefined,false);
 
     reqbody.params = params;
 }
@@ -513,16 +530,16 @@ service.Scan=function(msg){
 service.PutItem=function(msg){
     var params={};
     //copyArgs
-    copyArg(msg,"TableName",params,undefined,false); 
-    copyArg(msg,"Item",params,undefined,true); 
-    copyArg(msg,"Expected",params,undefined,true); 
-    copyArg(msg,"ReturnValues",params,undefined,false); 
-    copyArg(msg,"ReturnConsumedCapacity",params,undefined,false); 
-    copyArg(msg,"ReturnItemCollectionMetrics",params,undefined,false); 
-    copyArg(msg,"ConditionalOperator",params,undefined,false); 
-    copyArg(msg,"ConditionExpression",params,undefined,false); 
-    copyArg(msg,"ExpressionAttributeNames",params,undefined,true); 
-    copyArg(msg,"ExpressionAttributeValues",params,undefined,true); 
-    
+    copyArg(msg,"TableName",params,undefined,false);
+    copyArg(msg,"Item",params,undefined,true);
+    copyArg(msg,"Expected",params,undefined,true);
+    copyArg(msg,"ReturnValues",params,undefined,false);
+    copyArg(msg,"ReturnConsumedCapacity",params,undefined,false);
+    copyArg(msg,"ReturnItemCollectionMetrics",params,undefined,false);
+    copyArg(msg,"ConditionalOperator",params,undefined,false);
+    copyArg(msg,"ConditionExpression",params,undefined,false);
+    copyArg(msg,"ExpressionAttributeNames",params,undefined,true);
+    copyArg(msg,"ExpressionAttributeValues",params,undefined,true);
+
     reqbody.params = params;
 }

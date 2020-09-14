@@ -1,5 +1,6 @@
 {
     "table": {
+        "paletteLabel": "table",
         "label": {
             "group": "group",
             "size": "size",

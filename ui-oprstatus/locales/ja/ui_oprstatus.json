@@ -1,5 +1,6 @@
 {
     "oprstatus": {
+        "paletteLabel": "稼動状況グラフ",
         "label": {
             "group": "グループ",
             "size": "サイズ",

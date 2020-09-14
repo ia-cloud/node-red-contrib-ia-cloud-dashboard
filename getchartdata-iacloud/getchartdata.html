@@ -1,6 +1,6 @@
 <script type="text/javascript">
     RED.nodes.registerType('getchartdata',{
-        category: "iaCloud dashboard",
+        category: "iaCloud DB acs",
         color: "#ffd700",
         defaults: {
 			name: {value:""},
@@ -24,10 +24,16 @@
 		},
         inputs:1,
         outputs:1,
-		icon: "ia-cloud.png", 
+		icon: "ia-cloud.png",
 		paletteLabel: 'getChartdata',
         label: function() {
-            return this.name || "getChartdata";
+            return this.name||this._("getchartdata.paletteLabel");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        paletteLabel: function() {
+            return this._("getchartdata.paletteLabel") || "dynamoDB(chart)";
         },
         oneditprepare: function () {
 
@@ -39,7 +45,6 @@
 					$("#node-input-dateCheck").prop("checked", false);
                 }
 			});
-			
 			// アグリゲーション設定
 			$("#node-input-aggregationCheck").change(function() {
                 if ($(this).is(":checked")) {
@@ -76,7 +81,16 @@
 			if (this.repeat % 1440 === 0) { r = "h"; c = c/60; }
 			$("#node-input-interval").val(c);
 			$("#node-input-interval-units").val(r);
-			
+
+
+
+
+
+
+
+
+
+			/*
 			// 項目設定部分の追加・削除ボタン設定
 			var frm_cnt = 0;
             //あれば設定データを取り出して、formに展開する。
@@ -204,6 +218,8 @@
 					});
 				});
 			});
+			*/
+
 
 		},
 		oneditsave: function() {
@@ -230,7 +246,7 @@
 
 				item.dataName = $("#dataName\\[" + idx + "\\]").val();
 				item.displayName = $("#displayName\\[" + idx + "\\]").val();
-				
+
 				dItems[idx]=item;
 			});
 
@@ -243,13 +259,7 @@
 </script>
 
 <!-- ノード編集画面テンプレート -->
-<script type="text/x-red" data-template-name="getchartdata">
-    <!-- ノード名 -->
-    <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="getchartdata.label.name"></span></label>
-        <input type="text" id="node-input-name" placeholder="Name">
-    </div>
-    <hr/>
+<script type="text/html" data-template-name="getchartdata">
 
 	<!-- CCS接続情報 -->
 	<div class="form-row">
@@ -262,17 +272,31 @@
 	<!-- テーブル名 -->
 	<div class="form-row">
 		<label for="node-input-tableName"><i class="fa fa-tag"></i> <span data-i18n="getchartdata.label.tableName"></span><span style="color: #ff0000;">*</span></label>
-		<input type="text" id="node-input-tableName" placeholder="tableName"></input>
+		<input type="text" id="node-input-tableName" placeholder="tableName">
 	</div>
 
 	<!-- オブジェクトキー -->
 	<div class="form-row">
 		<label for="node-input-objectKey"><i class="fa fa-key"></i> <span data-i18n="getchartdata.label.objectKey"></span><span style="color: #ff0000;">*</span></label>
-		<input type="text" id="node-input-objectKey" placeholder="objectKey"></input>
+		<input type="text" id="node-input-objectKey" placeholder="objectKey">
 	</div>
 
+	<div id="list-property">
+        <div class="form-row">
+            <label style="width:200px; margin-left:8px"><span data-i18n="getchartdata.label.series"></span></label>
+        </div>
+        <!-- param propertyの設定 -->
+        <div class="form-row node-input-list-container-row">
+            <ol id="node-input-list-container">
+            </ol>
+        </div>
+    </div>
+
+
+
 	<!-- 項目名(dataName)と表示名 -->
-	<div class="form-row hidden">
+	<!--
+	<div class="form-row hide">
 		<input type="text" id="node-input-seriesObject">
 	</div>
 	<div class="form-row">
@@ -298,12 +322,11 @@
 			<br>
 		</div>
 	</div>
-
-	<!-- Addボタン -->
 	<div class="form-block">
 		<input type="button" id="form_add" name="add_btn" style="width: 70px;" data-i18n="[value]getchartdata.series.add">
 	</div>
 	<hr/>
+	-->
 
 	<!-- 期間 -->
 	<div class="form-row" style="width:450px;">
@@ -313,7 +336,7 @@
 	</div>
 	<div style="margin-left: 110px" class="node-input-manualInput-row">
 		<input type="datetime-local" step="1" style="width:200px;" id="node-input-sdatetime" placeholder="2000-01-01"></input>
-			～ 
+			～
 		<input type="datetime-local" step="1" style="width:200px;" id="node-input-edatetime" placeholder="2000-01-03"></input>
 	</div>
 
@@ -322,8 +345,8 @@
 		<label for="node-input-interval"<i class="fa fa-repeat"></i> <span data-i18n="getchartdata.label.repeat"></span></label>
 		<input type="checkbox" id="node-input-repeatCheck" style="display: inline-block; width: 20px; vertical-align: middle;>
 		<label for="node-input-repeatCheck" style="width: 40%; vertical-align: middle;"><span data-i18n="getchartdata.repeat.check"></label>
-	</div>	
-	
+	</div>
+
 	<!-- 繰り返し秒数 -->
 	<div class="form-row interval-row hide" id="dynamodb-interval-row" style="margin-left: 105px">
 		<input id="node-input-interval" value="1" class="interval-time-count"></input>
@@ -335,13 +358,13 @@
 	</div>
 	<input type="hidden" id="node-input-repeat">
 
-	
+
 	<!-- アグリゲーション -->
 	<div class="form-row" style="width:450px;">
 		<label for="node-input-aggregation"><i class="fa fa-calculator"></i> <span data-i18n="getchartdata.label.aggregation"></span></label>
 		<input type="checkbox" id="node-input-aggregationCheck" style="display: inline-block; width: 20px; vertical-align: middle;>
 		<label for="node-input-aggregationCheck" style="width: 40%; vertical-align: middle;"><span data-i18n="getchartdata.aggregation.aggregationCheck"></span></label>
-		
+
 		<div style="margin-left: 20px" class="node-input-aggregation-row hide">
 			<div class="form-row" style="margin-left: 100px">
 				<select type="text" id="node-input-aggregation" style="width:150px;">
@@ -400,6 +423,14 @@
 			</select>
 		</div>
 	</div>
+
+	<hr/>
+	<!-- ノード名 -->
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> <span data-i18n="getchartdata.label.name"></span></label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
 </script>
 
 <style>

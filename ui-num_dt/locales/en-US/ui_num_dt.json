@@ -1,5 +1,6 @@
 {
     "uiNumDt": {
+        "paletteLabel": "numDt",
         "label": {
             "group": "Group",
             "size": "Size",

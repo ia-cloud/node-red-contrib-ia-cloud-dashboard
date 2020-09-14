@@ -1,5 +1,6 @@
 {
     "table": {
+        "paletteLabel": "テーブル",
         "label": {
             "group": "グループ",
             "size": "サイズ",

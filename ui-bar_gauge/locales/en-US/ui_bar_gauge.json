@@ -1,5 +1,6 @@
 {
     "uiBarGauge": {
+        "paletteLabel": "barGauge",
         "label": {
             "group": "Group",
             "size": "Size",

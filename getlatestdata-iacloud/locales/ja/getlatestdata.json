@@ -1,5 +1,6 @@
 {
     "getlatestdata": {
+        "paletteLabel": "DynamoDB(最新取得用)",
         "label":{
             "name": "名前",
             "ccs-connection-config": "接続先CCS",

@@ -1,5 +1,6 @@
 {
     "uiLamps": {
+        "paletteLabel": "ランプ",
         "label": {
             "group": "グループ",
             "size": "サイズ",

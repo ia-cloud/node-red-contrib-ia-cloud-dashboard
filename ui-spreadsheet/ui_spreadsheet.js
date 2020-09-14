@@ -1,6 +1,6 @@
 
 module.exports = function(RED) {
-    
+
     function checkConfig(node, conf) {
         if (!conf || !conf.hasOwnProperty("group")) {
             node.error(RED._("ui_spreadsheet.error.no-group"));
@@ -14,7 +14,7 @@ module.exports = function(RED) {
                 +"<table id='table' border='1' cellspacing='0'>"
                 + "<tr>"
                 + "<th  ng-repeat = 'item in msg.series' style='font-size:14px; padding:3px'>{{item}}</th>"
-                + "</tr>" + "<tbody>" 
+                + "</tr>" + "<tbody>"
                 + "<tr ng-repeat = 'row in msg.payload'>"
                 + "<td ng-repeat = 'item in row' style='font-size:14px; padding:3px'>{{item}}</td>"
                 + "</tr> </tbody> </table>";
@@ -32,14 +32,14 @@ module.exports = function(RED) {
 
             RED.nodes.createNode(this, config);
             var done = null;
-            
+
             var i;                              // ループ処理用
 
             // var confsel = config.confsel;
             this.contype = config.contype;      // 集計対象のcontentType
             this.item = config.item;            // 表示する項目
             var status = config.status;       // カウントするステータス
-        
+
             var label = config.label;
             if  (label == undefined) {
                 label = "";
@@ -78,9 +78,7 @@ module.exports = function(RED) {
                     forwardInputMessages: config.fwdInMessages,
                     storeFrontEndInputAsState: config.storeOutMessages,
                     beforeEmit: function(msg, value) {
-                        
                         itemList = msg.payload.Items;
-                        
                         var contentList;                // 取得データ一時保存
                         var resultList = [];            // 集計結果保存    [n][0]:AnEStatus, [n][1]:AnEDescription, [n][2]:カウント
                         if (itemList != undefined) {
@@ -95,7 +93,7 @@ module.exports = function(RED) {
                                         node.error("ui_spreadsheet：ia-cloudオブジェクトではありません。");
                                         continue;
                                     }
-                                } catch (e) { 
+                                } catch (e) {
                                     node.error("ui_spreadsheet：ia-cloudオブジェクトではありません。");
                                     continue;
                                 }
@@ -107,7 +105,6 @@ module.exports = function(RED) {
                                         if (contentList.length > 0){
                                             var conIdx;
                                             for (conIdx=0; conIdx<contentList.length; conIdx++) {
-                                                
                                                 if (contentList[conIdx].commonName === "Alarm&Event" && contentList[conIdx].dataValue != undefined) {
                                                     if (contentList[conIdx].dataValue.AnEStatus === status) {
                                                         var rIdx;
@@ -143,21 +140,21 @@ module.exports = function(RED) {
                         switch (node.contype) {
                             case "Alarm&Event":
                             switch (node.item) {
-                                case "nodesc": 
+                                case "nodesc":
                                 msg.series = ["No", "詳細", "回数"];
                                 msg.payload = resultList;
                                 break;
-    
-                                case "no": 
-                                for (i=0;i < resultList.length; i++) { 
+
+                                case "no":
+                                for (i=0;i < resultList.length; i++) {
                                     resultList[i].splice(1, 1);
                                 }
                                 msg.series = ["No", "回数"];
                                 msg.payload = resultList;
                                 break;
-    
-                                case "desc": 
-                                for (i=0;i < resultList.length; i++) { 
+
+                                case "desc":
+                                for (i=0;i < resultList.length; i++) {
                                     resultList[i].splice(0, 1);
                                 }
                                 msg.series = ["詳細", "回数"];
@@ -168,9 +165,6 @@ module.exports = function(RED) {
                             default:
                                 node.error("項目設定：対象外の集計データです");
                         }
-                        
-                        
-                        
 
                         var properties = Object.getOwnPropertyNames(msg).filter(function (p) { return p[0] != '_'; });
                         var clonedMsg = {
@@ -180,20 +174,20 @@ module.exports = function(RED) {
                             var property = properties[i];
                             clonedMsg[property] = msg[property];
                         }
-        
+
                         // transform to string if msg.template is buffer
                         if (clonedMsg.template !== undefined && Buffer.isBuffer(clonedMsg.template)) {
                             clonedMsg.template = clonedMsg.template.toString();
                         }
-        
+
                         if (clonedMsg.template === undefined && previousTemplate !== null) {
                             clonedMsg.template = previousTemplate;
                         }
-        
+
                         if (clonedMsg.template) {
                             previousTemplate = clonedMsg.template
                         }
-        
+
                         return { msg:clonedMsg };
                     },
                     beforeSend: function (msg, original) {
@@ -205,7 +199,6 @@ module.exports = function(RED) {
         catch (e) {
             console.log(e);
         }
-        
         node.on("close", done);
     }
     RED.nodes.registerType('ui_spreadsheet', TableNode);

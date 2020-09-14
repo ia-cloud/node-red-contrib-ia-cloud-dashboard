@@ -1,5 +1,6 @@
 {
     "getchartdata": {
+        "paletteLabel": "DynamoDB(chart用)",
         "label":{
             "name": "名前",
             "ccs-connection-config": "接続先CCS",

@@ -2,7 +2,7 @@
 
     function mk_conf(NAME) {
         var conf = {
-        category: 'iaCloud dashboard',
+        category: 'iaCloud Visuals',
         color: 'rgb(119, 198, 204)',
         defaults: {
             confsel: {value:"inchartSet"},
@@ -38,7 +38,15 @@
         align: "right",
         icon: "ia-cloud.png",
         paletteLabel: NAME,
-        label: function() { return this.name || NAME; },
+        label: function() {
+            return this.name||this._("table.paletteLabel");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        paletteLabel: function() {
+            return this._("table.paletteLabel") || "ui_table";
+        },
         oneditprepare: function() {
             var that = this;
             $("#node-input-size").elementSizer({
@@ -137,7 +145,7 @@
     RED.nodes.registerType('ui_table', mk_conf('table'));
 </script>
 
-<script type="text/x-red" data-template-name="ui_table">
+<script type="text/html" data-template-name="ui_table">
 
     <!-- グループ -->
 	<div class="form-row" id="template-row-group">

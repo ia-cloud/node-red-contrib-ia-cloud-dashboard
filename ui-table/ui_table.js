@@ -14,7 +14,7 @@ module.exports = function(RED) {
                 +"<table id='table' border='1' cellspacing='0'>"
                 + "<tr>"
                 + "<th  ng-repeat = 'item in msg.series' style='font-size:14px; padding:3px'>{{item}}</th>"
-                + "</tr>" + "<tbody>" 
+                + "</tr>" + "<tbody>"
                 + "<tr ng-repeat = 'row in msg.payload'>"
                 + "<td ng-repeat = 'item in row' style='font-size:14px; padding:3px'>{{item}}</td>"
                 + "</tr> </tbody> </table>";
@@ -51,7 +51,7 @@ module.exports = function(RED) {
 
             var data;               // 出力データ
             var dataAry = [];
-            
+
             var group = RED.nodes.getNode(config.group);
             if (!group && config.templateScope !== 'global') { return; }
             var tab = null;
@@ -63,7 +63,7 @@ module.exports = function(RED) {
             // サイズ調整
             if (config.width === "0") { delete config.width; }
             if (config.height === "0") { delete config.height; }
-            
+
             var previousTemplate = null;
 
             if (checkConfig(node, config)) {
@@ -95,7 +95,7 @@ module.exports = function(RED) {
                                             var contentList;        // 取得データ一時保存
 
                                             if (itemList != undefined) {
-                                            
+
                                                 for(i=0;i < itemList.length; i++) {  //データ件数でループ
                                                     try {
                                                         if (itemList[i].dataObject.objectContent != undefined) {
@@ -106,7 +106,7 @@ module.exports = function(RED) {
                                                             node.error("ui_table：ia-cloudオブジェクトではありません。");
                                                             continue;
                                                         }
-                                                    } catch (e) { 
+                                                    } catch (e) {
                                                         node.error("ui_table：ia-cloudオブジェクトではありません。");
                                                         continue;
                                                     }
@@ -132,12 +132,12 @@ module.exports = function(RED) {
                                                     }
                                                 }
                                             }
-                                        
+
                                         break;
                                     default:
                                         node.error("contentType：対象外の集計データです");
                                         dataAry = [];
-                                    
+
                                 }
                                 msg.payload = dataAry;
                                 break;
@@ -149,10 +149,10 @@ module.exports = function(RED) {
                                         try {
                                             dataAry = [];       // 出力用データ一時保存用
                                             var temp = [];          // 出力用データ保存用
-                                            
+
                                             msg.series = msg.payload[0].series;
                                             data = msg.payload[0].data;
-                                            
+
                                             msg.series.unshift("timeStamp");
 
                                             for (var i=0;i<data[0].length;i++) {
@@ -175,7 +175,6 @@ module.exports = function(RED) {
                                 msg.series = item.split(",");
                                 break;
                             default:
-                        
                         }
 
                         var properties = Object.getOwnPropertyNames(msg).filter(function (p) { return p[0] != '_'; });
@@ -186,20 +185,20 @@ module.exports = function(RED) {
                             var property = properties[i];
                             clonedMsg[property] = msg[property];
                         }
-        
+
                         // transform to string if msg.template is buffer
                         if (clonedMsg.template !== undefined && Buffer.isBuffer(clonedMsg.template)) {
                             clonedMsg.template = clonedMsg.template.toString();
                         }
-        
+
                         if (clonedMsg.template === undefined && previousTemplate !== null) {
                             clonedMsg.template = previousTemplate;
                         }
-        
+
                         if (clonedMsg.template) {
                             previousTemplate = clonedMsg.template
                         }
-        
+
                         return { msg:clonedMsg };
                     },
                     beforeSend: function (msg, original) {
@@ -211,7 +210,6 @@ module.exports = function(RED) {
         catch (e) {
             console.log(e);
         }
-        
         node.on("close", done);
     }
     RED.nodes.registerType('ui_table', TableNode);

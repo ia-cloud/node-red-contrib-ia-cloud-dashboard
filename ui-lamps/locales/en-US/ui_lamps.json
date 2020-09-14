@@ -1,5 +1,6 @@
 {
     "uiLamps": {
+        "paletteLabel": "lampGauge",
         "label": {
             "group": "Group",
             "size": "Size",

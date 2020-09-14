@@ -5,12 +5,12 @@ module.exports = function(RED) {
 	var dynamodb = require("../dynamodb")(RED);
 
     function getlatestdataNode(config) {
-		
+
 		RED.nodes.createNode(this,config);
 
 		// CCS接続用情報の取得
 		const ccsConnectionConfigNode = RED.nodes.getNode(config.ccsConnectionConfig);
-		
+
 		// 検索条件の取得
 		this.name = config.name;							// ノード名
 		this.operation = "Query";							// 処理名
@@ -24,7 +24,7 @@ module.exports = function(RED) {
 		this.ExpressionAttributeValues = {					// 検索条件値
 			":a": config.objectKey
 		};
-		
+
 		// 繰り返し条件の取得
 		this.repeatCheck = config.repeatCheck;
 		this.repeat = config.repeat;
@@ -61,14 +61,14 @@ module.exports = function(RED) {
 		if (node.repeatCheck) {
 			interval = setInterval( function() {
 				dataGet();
-			}, node.repeat * 1000);	
+			}, node.repeat * 1000);
 		}
-		
+
 		// injectされたら実行
         node.on('input', function() {
 			dataGet();
 		});
-		
+
 		// 処理終了時にはintervalをクリアする
 		this.on('close', function() {
 			if (interval != null) {
@@ -82,125 +82,127 @@ module.exports = function(RED) {
 
 
 		function dataGet () {
-
 			node.status({fill:"blue", shape:"dot", text:"connecting..."});
-			
 			// DynamoDBパラメータの作成
 			opts = dynamodb.serviceSetting (opts, node);
-
 			// DynamoDBへリクエスト
-			dynamodb.dynamoRequest(opts, node, function(body) {
-			var i, j;
+			dynamodb.dynamoRequest(opts, node, function(result) {
+				var i, j;
+				if (result.status === "ok") {
+					// 正常なレスポンス
+					var items = result.data.Items;
+					if (items != undefined && items.length > 0) {
+						try {
+							var itemList;						// 出力データ一時保存
+							var contentList;					// contentData一時格納用
+							resultList = result.data;					// 結果出力配列に一時的にresultを入力
+							// 桁数変更処理
+							if (node.decimalPoint != "noexe") {
+								resultList = dynamodb.round(resultList, node);
+							}
 
-				if (body.Items != undefined && body.Items.length > 0) {
-	
-					var ItemList;						// 出力データ一時保存
-					var contentList;					// contentData一時格納用
-					resultList = body;					// 結果出力配列に一時的にbodyを入力
-	
-					// 桁数変更処理
-					if (node.decimalPoint != "noexe") {
-						resultList = dynamodb.round(resultList, node);
-					}
-					
-					ItemList = resultList.Items;
-					delete resultList.Items;
-					resultList = [];
-				
-					// 出力データ：項目部分抽出
-					if (ItemList[0].dataObject.objectContent != undefined) {
-						contentList = ItemList[0].dataObject.objectContent.contentData;
-					} else if (ItemList[0].dataObject.ObjectContent != undefined) {
-						contentList = ItemList[0].dataObject.ObjectContent.contentData;
-					} else {
-						console.log("objectContent(ObjectContent)が無効\n");
-					}
-					
-					if (contentList != undefined && node.item == "graphData") {
-						// 一次元配列
-						for (i=0; i<outSeriesList.length; i++) {
-							for (j=0; j<contentList.length; j++) {
-								if (outSeriesList[i].dataName == contentList[j].dataName) {
-									break;
-								} else if (outSeriesList[i].dataName == contentList[j].dataname) {
-									break;
-								}
-							}
-							if (j < contentList.length) {
-								// 見つかった場合
-								node.status({fill:"green", shape:"dot", text:"completed"});
-								resultList.push(contentList[j].dataValue);
+							itemList = resultList.Items;
+							delete resultList.Items;
+							resultList = [];
+
+							// 出力データ：項目部分抽出
+							if (itemList[0].dataObject.objectContent != undefined) {
+								contentList = itemList[0].dataObject.objectContent.contentData;
+							} else if (itemList[0].dataObject.ObjectContent != undefined) {
+								contentList = itemList[0].dataObject.ObjectContent.contentData;
 							} else {
-								// 見つからなかった場合
-								node.status({fill:"yellow", shape:"ring", text:"no data"});
-								resultList.push(null);
+								console.log("objectContent(ObjectContent)が無効\n");
 							}
-						}
-						
-	
-					} else if (contentList != undefined && node.item == "numericData") {
-						// 二次元配列
-						var tempAry;							// 一時保存用配列
-						for (i=0; i<outSeriesList.length; i++) {
-							for (j=0; j<contentList.length; j++) {
-								if (outSeriesList[i].dataName == contentList[j].dataName) {
-									break;
-								} else if (outSeriesList[i].dataName == contentList[j].dataname) {
-									break;
+							if (contentList != undefined && node.item == "graphData") {
+								// 一次元配列
+								for (i=0; i<outSeriesList.length; i++) {
+									for (j=0; j<contentList.length; j++) {
+										if (outSeriesList[i].dataName == contentList[j].dataName) {
+											break;
+										} else if (outSeriesList[i].dataName == contentList[j].dataname) {
+											break;
+										}
+									}
+									if (j < contentList.length) {
+										// 見つかった場合
+										node.status({fill:"green", shape:"dot", text:"completed"});
+										resultList.push(contentList[j].dataValue);
+									} else {
+										// 見つからなかった場合
+										node.status({fill:"yellow", shape:"ring", text:"no data"});
+										resultList.push(null);
+									}
 								}
-							}
-							if (j < contentList.length) {
-								// 見つかった場合
-								tempAry = [];
-	
-								// 表示名が設定されている場合は表示名をtempAryへ格納
-								if (outSeriesList[i].displayName != "") {
-									tempAry.push(outSeriesList[i].displayName);
-								} else {
-									tempAry.push(outSeriesList[i].dataName);
+							} else if (contentList != undefined && node.item == "numericData") {
+								// 二次元配列
+								var tempAry;							// 一時保存用配列
+								for (i=0; i<outSeriesList.length; i++) {
+									for (j=0; j<contentList.length; j++) {
+										if (outSeriesList[i].dataName == contentList[j].dataName) {
+											break;
+										} else if (outSeriesList[i].dataName == contentList[j].dataname) {
+											break;
+										}
+									}
+									if (j < contentList.length) {
+										// 見つかった場合
+										tempAry = [];
+
+										// 表示名が設定されている場合は表示名をtempAryへ格納
+										if (outSeriesList[i].displayName != "") {
+											tempAry.push(outSeriesList[i].displayName);
+										} else {
+											tempAry.push(outSeriesList[i].dataName);
+										}
+
+										// dataValueをtempAryへ格納
+										if (contentList[j].unit != undefined) {
+											tempAry.push(contentList[j].dataValue);
+										} else {
+											tempAry.push(null);
+										}
+
+										// 単位をtempAryへ格納
+										if (contentList[j].unit != undefined) {
+											tempAry.push(contentList[j].unit);
+										} else {
+											tempAry.push(null);
+										}
+										node.status({fill:"green", shape:"dot", text:"completed"});
+										resultList.push(tempAry);
+									} else {
+										// 見つからなかった場合
+										tempAry = [null, null, null];
+										node.status({fill:"yellow", shape:"ring", text:"no data"});
+										resultList.push(tempAry);
+									}
 								}
-	
-								// dataValueをtempAryへ格納
-								if (contentList[j].unit != undefined) {
-									tempAry.push(contentList[j].dataValue);
-								} else {
-									tempAry.push(null);
-								}
-	
-								// 単位をtempAryへ格納
-								if (contentList[j].unit != undefined) {
-									tempAry.push(contentList[j].unit);
-								} else {
-									tempAry.push(null);
-								}
-								node.status({fill:"green", shape:"dot", text:"completed"});
-								resultList.push(tempAry);
 							} else {
-								// 見つからなかった場合
-								tempAry = [null, null, null];
-	
-								node.status({fill:"yellow", shape:"ring", text:"no data"});
-								resultList.push(tempAry);
+								node.error("getLatestdata - 指定条件のデータが見つかりませんでした");
+								node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+								resultList = [];
 							}
+							node.sendMsg(resultList);
+						} catch (e) {
+							// データ取得時に例外発生
+							console.log("データ分解時に例外発生");
+							node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+							node.sendMsg([]);
 						}
-						
+					} else if (items != undefined && items.length > -1) {
+						node.status({fill:"yellow", shape:"ring", text:"no data"});
+						node.sendMsg([]);
 					} else {
-						node.error("getLatestdata - 指定条件のデータが見つかりませんでした");
 						node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
-						resultList = [];
+						node.sendMsg([]);
 					}
-					node.sendMsg(resultList);
-					
-				} else if (body.Items != undefined && body.Items.length > -1) {
-					node.status({fill:"yellow", shape:"ring", text:"no data"});
-					node.sendMsg([]);
 				} else {
+					// 異常なレスポンス
 					node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
 					node.sendMsg([]);
 				}
 			});
 		}
 	}
-
 	RED.nodes.registerType("getlatestdata", getlatestdataNode);
 };

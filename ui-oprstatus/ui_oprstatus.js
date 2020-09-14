@@ -66,6 +66,8 @@ module.exports = function(RED) {
             } catch (e) {
                 statusObject = {};
             }
+            console.log("statusObject");
+            console.log(statusObject);
 
             var data;                       // 出力データ
             var graphData;                  // グラフ表示部分データ
