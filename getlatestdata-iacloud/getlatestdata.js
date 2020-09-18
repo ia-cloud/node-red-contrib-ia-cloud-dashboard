@@ -8,6 +8,8 @@ module.exports = function(RED) {
 
 		RED.nodes.createNode(this,config);
 
+		var node = this;
+		
 		// CCS接続用情報の取得
 		const ccsConnectionConfigNode = RED.nodes.getNode(config.ccsConnectionConfig);
 
@@ -31,15 +33,26 @@ module.exports = function(RED) {
 		var interval = null;
 
 		// 出力データ項目設定情報取得
-		var outSeriesList;
+		var params;
 		try {
-			outSeriesList = JSON.parse(config.seriesObject);
+			// params = JSON.parse(config.params);
+			params = config.params;
 		} catch (e) {
-			outSeriesList = {};
+			params = [];
 		}
 
+		// no rule found
+        if (params.length === 0) {
+			node.status({fill:"yellow", shape:"ring", text:"runtime.noParam"});
+			node.sendMsg([]);
+		}
+
+		var outSeriesList = [];
+		params.forEach (function (object) {
+			outSeriesList.push(object);
+		});
+
 		this.item = config.item;						// 出力データの構成設定
-		var node = this;
 
 		// dynamodb接続設定
 		var opts = dynamodb.cnctSetting(ccsConnectionConfigNode);
@@ -48,7 +61,7 @@ module.exports = function(RED) {
 		node.sendMsg = function (data) {
 			var msg;
 			if (!data) {
-				node.status({fill:"red", shape:"ring", text:"error"});
+				node.status({fill:"red", shape:"ring", text:"runtime.error"});
 				node.error("error: sendMeg error");
 				return;
 			} else {
@@ -82,7 +95,7 @@ module.exports = function(RED) {
 
 
 		function dataGet () {
-			node.status({fill:"blue", shape:"dot", text:"connecting..."});
+			node.status({fill:"blue", shape:"dot", text:"runtime.connect"});
 			// DynamoDBパラメータの作成
 			opts = dynamodb.serviceSetting (opts, node);
 			// DynamoDBへリクエスト
@@ -125,17 +138,17 @@ module.exports = function(RED) {
 									}
 									if (j < contentList.length) {
 										// 見つかった場合
-										node.status({fill:"green", shape:"dot", text:"completed"});
 										resultList.push(contentList[j].dataValue);
 									} else {
 										// 見つからなかった場合
-										node.status({fill:"yellow", shape:"ring", text:"no data"});
 										resultList.push(null);
 									}
+									node.status({fill:"green", shape:"dot", text:"runtime.complete"});
 								}
 							} else if (contentList != undefined && node.item == "numericData") {
 								// 二次元配列
 								var tempAry;							// 一時保存用配列
+								
 								for (i=0; i<outSeriesList.length; i++) {
 									for (j=0; j<contentList.length; j++) {
 										if (outSeriesList[i].dataName == contentList[j].dataName) {
@@ -156,7 +169,7 @@ module.exports = function(RED) {
 										}
 
 										// dataValueをtempAryへ格納
-										if (contentList[j].unit != undefined) {
+										if (contentList[j].dataValue != undefined) {
 											tempAry.push(contentList[j].dataValue);
 										} else {
 											tempAry.push(null);
@@ -168,37 +181,36 @@ module.exports = function(RED) {
 										} else {
 											tempAry.push(null);
 										}
-										node.status({fill:"green", shape:"dot", text:"completed"});
 										resultList.push(tempAry);
 									} else {
 										// 見つからなかった場合
 										tempAry = [null, null, null];
-										node.status({fill:"yellow", shape:"ring", text:"no data"});
 										resultList.push(tempAry);
 									}
 								}
+								node.status({fill:"green", shape:"dot", text:"runtime.complete"});
 							} else {
 								node.error("getLatestdata - 指定条件のデータが見つかりませんでした");
-								node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+								node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 								resultList = [];
 							}
 							node.sendMsg(resultList);
 						} catch (e) {
 							// データ取得時に例外発生
 							console.log("データ分解時に例外発生");
-							node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+							node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 							node.sendMsg([]);
 						}
 					} else if (items != undefined && items.length > -1) {
-						node.status({fill:"yellow", shape:"ring", text:"no data"});
+						node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
 						node.sendMsg([]);
 					} else {
-						node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+						node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 						node.sendMsg([]);
 					}
 				} else {
 					// 異常なレスポンス
-					node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+					node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 					node.sendMsg([]);
 				}
 			});

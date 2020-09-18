@@ -11,6 +11,8 @@ module.exports = function(RED) {
 
 		RED.nodes.createNode(this,config);
 
+		var node = this;
+
 		// CCS接続用情報の取得
 		const ccsConnectionConfigNode = RED.nodes.getNode(config.ccsConnectionConfig);
 
@@ -46,19 +48,25 @@ module.exports = function(RED) {
 		var interval = null;
 
 		// 出力データ項目設定情報取得
-		var seriesObject;
+		var params;
 		try {
-			seriesObject = JSON.parse(config.seriesObject);
+			// params = JSON.parse(config.params);
+			params = config.params;
 		} catch (e) {
-			seriesObject = {};
+			params = [];
 		}
+
+		// no rule found
+        if (params.length === 0) {
+			node.status({fill:"yellow", shape:"ring", text:"runtime.noParam"});
+			node.sendMsg([]);
+		}
+
 		var outSeriesList = [];
-		seriesObject.forEach (function (object) {
+		params.forEach (function (object) {
 			outSeriesList.push(object.dataName);
 		});
-
 		var resultList;		// 取得結果を保存
-		var node = this;
 
 		// dynamodb接続設定
 		var opts = dynamodb.cnctSetting(ccsConnectionConfigNode);
@@ -67,7 +75,7 @@ module.exports = function(RED) {
 		node.sendMsg = function (data) {
 			var msg;
 			if (!data) {
-				node.status({fill:"red", shape:"ring", text:"error"});
+				node.status({fill:"red", shape:"ring", text:"runtime.error"});
 				node.error("error: sendMeg error");
 				return;
 			} else {
@@ -106,7 +114,7 @@ module.exports = function(RED) {
 		// データ取得処理
 		function dataGet (sdatetime, edatetime) {
 
-			node.status({fill:"blue", shape:"dot", text:"connecting..."});
+			node.status({fill:"blue", shape:"dot", text:"runtime.connect"});
 			if (sdatetime == null || sdatetime == "") {
 				sdatetime = undefined
 			}
@@ -153,26 +161,35 @@ module.exports = function(RED) {
 
 									itemList = resultList;
 									delete items;
-
-									// 変換データ取得
-									try {
-										contentList = itemList[0].contentData;
-									} catch (e) {
-										node.error("getChartdata：変換対象データがありません。");
-									}
-									var seriesList = [];
-									for(i=0;i < contentList.length;i++) {
-										if (contentList[i].dataName === undefined) {
-											seriesList.push(contentList[i].dataname);
-										} else {
-											seriesList.push(contentList[i].dataName);
+									var noDataNameFlag = false;
+									for (var itemIdx=0;itemIdx<itemList.length;itemIdx++) {
+										// 変換データ取得
+										try {
+											contentList = itemList[itemIdx].contentData;
+										} catch (e) {
+											node.error("getChartdata：変換対象データがありません。");
 										}
+										var seriesList = [];
+										for(i=0;i < contentList.length;i++) {
+											if (contentList[i].dataName != undefined) {
+												seriesList.push(contentList[i].dataName);
+											} else if (contentList[i].dataname != undefined) {
+												seriesList.push(contentList[i].dataname);
+											} else {
+												noDataNameFlag = true;
+											}
+										}
+									}
+
+									if (noDataNameFlag) {
+										node.error("getChartdata：dataNameが存在しない項目がありました");
 									}
 
 									var seriesCombList = [];
 									var combIndex = -1;
 
 									// 出力項目チェック
+									
 									for (i=0; i < outSeriesList.length; i++) {
 										combIndex = seriesList.indexOf(outSeriesList[i]);
 										if (combIndex >= 0){
@@ -182,7 +199,7 @@ module.exports = function(RED) {
 												"dataName": outSeriesList[i]
 											};
 
-											var matchData = seriesObject.filter(function(item, index){
+											var matchData = params.filter(function(item, index){
 												if (item.dataName == outSeriesList[i]) return true;
 											});
 											if (matchData.length > 0 && matchData[0].displayName != "") {
@@ -194,7 +211,7 @@ module.exports = function(RED) {
 											seriesCombList.push(combTmp);
 										}
 									}
-
+									
 									// 出力データ：データ部分作成
 									for(i=0;i < seriesCombList.length;i++) {    // 表示対象データでループ
 										var dataTmp = [];
@@ -243,32 +260,39 @@ module.exports = function(RED) {
 
 									itemList = resultList.Items;
 									delete resultList.Items;
+									var noDataNameFlag = false;
 
-									// 変換データ取得
-									try {
-										if (itemList[0].dataObject.objectContent != undefined) {
-											contentList = itemList[0].dataobject.objectContent.contentData;
-										} else if (itemList[0].dataObject.ObjectContent != undefined) {
-											contentList = itemList[0].dataObject.ObjectContent.contentData;
-										} else {
+									for (var itemIdx=0;itemIdx<itemList.length;itemIdx++) {
+										// 変換データ取得
+										try {
+											if (itemList[itemIdx].dataObject.objectContent != undefined) {
+												contentList = itemList[itemIdx].databject.objectContent.contentData;
+											} else if (itemList[itemIdx].dataObject.ObjectContent != undefined) {
+												contentList = itemList[itemIdx].dataObject.ObjectContent.contentData;
+											} else {
+												node.error("getChartdata：変換対象データがありません。");
+											}
+										} catch (e) {
 											node.error("getChartdata：変換対象データがありません。");
 										}
-									} catch (e) {
-										node.error("getChartdata：変換対象データがありません。");
-									}
 
-									var seriesList = [];
-									for(i=0;i < contentList.length;i++) {
-										if (contentList[i].dataName === undefined) {
-											seriesList.push(contentList[i].dataname);
-										} else {
-											seriesList.push(contentList[i].dataName);
+										var seriesList = [];
+										for(i=0;i < contentList.length;i++) {
+											if (contentList[i].dataName != undefined) {
+												seriesList.push(contentList[i].dataName);
+											} else if (contentList[i].dataname != undefined) {
+												seriesList.push(contentList[i].dataname);
+											} else {
+												noDataNameFlag = true;
+											}
 										}
+									}
+									if (noDataNameFlag) {
+										node.error("getChartdata：dataNameが存在しない項目がありました");
 									}
 
 									var seriesCombList = [];
 									var combIndex = -1;
-
 									// 出力項目チェック
 									for (i=0; i < outSeriesList.length; i++) {
 										combIndex = seriesList.indexOf(outSeriesList[i]);
@@ -279,9 +303,10 @@ module.exports = function(RED) {
 												"dataName": outSeriesList[i]
 											};
 
-											var matchData = seriesObject.filter(function(item, index){
+											var matchData = params.filter(function(item, index){
 												if (item.dataName == outSeriesList[i]) return true;
 											});
+											
 											if (matchData.length > 0 && matchData[0].displayName != "") {
 												tmpObj.series.push(matchData[0].displayName);
 											} else {
@@ -329,35 +354,35 @@ module.exports = function(RED) {
 
 								try {
 									if (resultList[0].data.length > 0) {
-										node.status({fill:"green", shape:"dot", text:"completed"});
+										node.status({fill:"green", shape:"dot", text:"runtime.complete"});
 									} else {
-										node.status({fill:"yellow", shape:"ring", text:"no data"});
+										node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
 									}
 								} catch (e) {
-									node.status({fill:"yellow", shape:"ring", text:"no data"});
+									node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
 								}
 								node.sendMsg(resultList);
 							} catch (e) {
 								// データ取得時に例外発生
 								console.log("データ分解時に例外発生");
-								node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+								node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 								node.sendMsg([]);
 							}
 						} else if (items != undefined && items.length > -1) {
-							node.status({fill:"yellow", shape:"ring", text:"no data"});
+							node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
 							node.sendMsg([]);
 						} else {
-							node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+							node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 							node.sendMsg([]);
 						}
 					} else {
 						// 異常なレスポンス
-						node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+						node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 						node.sendMsg([]);
 					}
 				});
 			} else {
-				node.status({fill:"red", shape:"ring", text:"error: Invalid period"});
+				node.status({fill:"red", shape:"ring", text:"runtime.periodError"});
 				node.error("getchartdata - 期間指定に誤りがあります");
 				node.sendMsg([]);
 			}

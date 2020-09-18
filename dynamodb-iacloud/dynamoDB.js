@@ -56,7 +56,7 @@ module.exports = function(RED) {
 		node.sendMsg = function (data) {
 			var msg;
 			if (!data) {
-				node.status({fill:"red", shape:"ring", text:"error"});
+				node.status({fill:"red", shape:"ring", text:"runtime.error"});
 				node.error("error: sendMeg error");
 				return;
 			} else {
@@ -95,7 +95,7 @@ module.exports = function(RED) {
 		// データ取得処理
 		function dataGet (sdatetime, edatetime) {
 
-			node.status({fill:"blue", shape:"dot", text:"connecting..."});
+			node.status({fill:"blue", shape:"dot", text:"runtime.connect"});
 
 			if (sdatetime == null || sdatetime == "") {
 				sdatetime = undefined
@@ -136,31 +136,31 @@ module.exports = function(RED) {
 								if (node.decimalPoint != "noexe") {
 									resultList = dynamodb.round(resultList, node);
 								}
-								node.status({fill:"green", shape:"dot", text:"completed"});
+								node.status({fill:"green", shape:"dot", text:"runtime.complete"});
 								// Itemsで囲ってから送信
 								node.sendMsg({"Items": resultList});
 								// node.sendMsg(resultList);
 							} catch (e) {
 								// データ取得時に例外発生
 								console.log("データ分解時に例外発生");
-								node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+								node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 								node.sendMsg([]);
 							}
 						} else if (items != undefined && items.length > -1) {
-							node.status({fill:"yellow", shape:"ring", text:"no data"});
+							node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
 							node.sendMsg([]);
 						} else {
-							node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+							node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 							node.sendMsg([]);
 						}
 					} else {
 						// 異常なレスポンス
-						node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+						node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 						node.sendMsg([]);
 					}
 				});
 			} else {
-				node.status({fill:"red", shape:"ring", text:"error: Invalid period"});
+				node.status({fill:"red", shape:"ring", text:"runtime.periodError"});
 				node.error("DynamoDB - 期間指定に誤りがあります");
 				node.sendMsg([]);
 			}

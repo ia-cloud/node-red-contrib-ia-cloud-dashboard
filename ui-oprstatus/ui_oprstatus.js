@@ -62,7 +62,7 @@ module.exports = function(RED) {
 
             var statusObject;
             try {
-                statusObject = JSON.parse(config.statusObject);
+                statusObject = config.params;
             } catch (e) {
                 statusObject = {};
             }

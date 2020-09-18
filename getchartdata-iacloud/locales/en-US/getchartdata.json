@@ -22,7 +22,8 @@
             "delete": "delete"
         },
         "period": {
-            "check": "Allow input from dateset"
+            "inDateset": "Enter from the dataset",
+            "inNodeSetting": "Enter in node settings"
         },
         "repeat": {
             "check": "Repeat the process"
@@ -60,5 +61,14 @@
             "asc": "ascending order",
             "desc": "descending order"
         }
+    },
+    "runtime": {
+        "connect": "connecting",
+        "complete": "completed",
+        "noData": "no data",
+        "noParam": "no series",
+        "faild": "data acquisition failure",
+        "periodError": "invalid period",
+        "error": "error"
     }
 }

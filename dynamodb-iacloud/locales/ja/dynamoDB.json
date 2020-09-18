@@ -21,7 +21,8 @@
             "PutItem": "PutItem"
         },
         "period": {
-            "check": "datesetからの入力を許可する"
+            "inDateset": "datesetから入力する",
+            "inNodeSetting": "ノード設定内で入力する"
         },
         "repeat": {
             "check": "処理を繰り返す"
@@ -59,5 +60,13 @@
             "asc": "昇順",
             "desc": "降順"
         }
+    },
+    "runtime": {
+        "connect": "接続中",
+        "complete": "取得完了",
+        "noData": "取得データなし",
+        "faild": "データ取得失敗",
+        "periodError": "指定期間が無効",
+        "error": "エラー発生"
     }
 }
