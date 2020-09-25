@@ -51,15 +51,13 @@ module.exports = function(RED) {
 		var params;
 		try {
 			// params = JSON.parse(config.params);
-			params = config.params;
+			if (config.params != undefined) {
+				params = config.params;
+			} else {
+				params = [];
+			}
 		} catch (e) {
 			params = [];
-		}
-
-		// no rule found
-        if (params.length === 0) {
-			node.status({fill:"yellow", shape:"ring", text:"runtime.noParam"});
-			node.sendMsg([]);
 		}
 
 		var outSeriesList = [];
@@ -84,19 +82,33 @@ module.exports = function(RED) {
 			node.send(msg);
 		};
 
+		// no rule found
+        if (params.length === 0) {
+			node.status({fill:"yellow", shape:"ring", text:"runtime.noParam"});
+			node.sendMsg([]);
+		} else {
+			node.status({});
+		}
+
 		// 繰り返し設定がされている場合は指定間隔で処理を繰り返す
 		if (node.repeatCheck) {
 			interval = setInterval( function() {
-				dataGet(config.sdatetime, config.edatetime);
+				if (params.length > 0) {
+					dataGet(config.sdatetime, config.edatetime);
+				}
 			}, node.repeat * 1000);
 		}
 
 		// injectされたら実行
         node.on('input', function(msg) {
 			if (node.dateCheck) {
-				dataGet(msg.payload.sdatetime, msg.payload.edatetime);
+				if (params.length > 0) {
+					dataGet(msg.payload.sdatetime, msg.payload.edatetime);
+				}
 			} else {
-				dataGet(config.sdatetime, config.edatetime);
+				if (params.length > 0) {
+					dataGet(config.sdatetime, config.edatetime);
+				}
 			}
 		});
 
@@ -189,7 +201,6 @@ module.exports = function(RED) {
 									var combIndex = -1;
 
 									// 出力項目チェック
-									
 									for (i=0; i < outSeriesList.length; i++) {
 										combIndex = seriesList.indexOf(outSeriesList[i]);
 										if (combIndex >= 0){
@@ -211,7 +222,7 @@ module.exports = function(RED) {
 											seriesCombList.push(combTmp);
 										}
 									}
-									
+
 									// 出力データ：データ部分作成
 									for(i=0;i < seriesCombList.length;i++) {    // 表示対象データでループ
 										var dataTmp = [];
@@ -266,11 +277,11 @@ module.exports = function(RED) {
 										// 変換データ取得
 										try {
 											if (itemList[itemIdx].dataObject.objectContent != undefined) {
-												contentList = itemList[itemIdx].databject.objectContent.contentData;
+												contentList = itemList[itemIdx].dataObject.objectContent.contentData;
 											} else if (itemList[itemIdx].dataObject.ObjectContent != undefined) {
 												contentList = itemList[itemIdx].dataObject.ObjectContent.contentData;
 											} else {
-												node.error("getChartdata：変換対象データがありません。");
+												continue;
 											}
 										} catch (e) {
 											node.error("getChartdata：変換対象データがありません。");
@@ -290,7 +301,6 @@ module.exports = function(RED) {
 									if (noDataNameFlag) {
 										node.error("getChartdata：dataNameが存在しない項目がありました");
 									}
-
 									var seriesCombList = [];
 									var combIndex = -1;
 									// 出力項目チェック
@@ -306,7 +316,7 @@ module.exports = function(RED) {
 											var matchData = params.filter(function(item, index){
 												if (item.dataName == outSeriesList[i]) return true;
 											});
-											
+
 											if (matchData.length > 0 && matchData[0].displayName != "") {
 												tmpObj.series.push(matchData[0].displayName);
 											} else {
@@ -315,7 +325,6 @@ module.exports = function(RED) {
 											seriesCombList.push(combTmp);
 										}
 									}
-
 									// 出力データ：データ部分作成
 									for(i=0;i < seriesCombList.length;i++) {    // 表示対象データでループ
 										var dataTmp = [];
@@ -332,7 +341,14 @@ module.exports = function(RED) {
 												continue;
 											}
 
-											var contentList = itemList[j].dataObject.ObjectContent.contentData;
+											var contentList;
+											if (itemList[j].dataObject.objectContent != undefined) {
+												contentList = itemList[j].dataObject.objectContent.contentData;
+											} else if (itemList[j].dataObject.ObjectContent != undefined) {
+												contentList = itemList[j].dataObject.ObjectContent.contentData;
+											} else {
+												continue;
+											}
 											// x:timestamp, y:dataValue
 											try {
 												var pushTmp = {

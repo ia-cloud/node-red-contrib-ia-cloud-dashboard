@@ -9,7 +9,7 @@ module.exports = function(RED) {
 		RED.nodes.createNode(this,config);
 
 		var node = this;
-		
+
 		// CCS接続用情報の取得
 		const ccsConnectionConfigNode = RED.nodes.getNode(config.ccsConnectionConfig);
 
@@ -36,15 +36,13 @@ module.exports = function(RED) {
 		var params;
 		try {
 			// params = JSON.parse(config.params);
-			params = config.params;
+			if (config.params != undefined) {
+				params = config.params;
+			} else {
+				params = [];
+			}
 		} catch (e) {
 			params = [];
-		}
-
-		// no rule found
-        if (params.length === 0) {
-			node.status({fill:"yellow", shape:"ring", text:"runtime.noParam"});
-			node.sendMsg([]);
 		}
 
 		var outSeriesList = [];
@@ -70,16 +68,28 @@ module.exports = function(RED) {
 			node.send(msg);
 		};
 
+		// no rule found
+        if (params.length === 0) {
+			node.status({fill:"yellow", shape:"ring", text:"runtime.noParam"});
+			node.sendMsg([]);
+		} else {
+			node.status({});
+		}
+
 		// 繰り返し設定がされている場合は指定間隔で処理を繰り返す
 		if (node.repeatCheck) {
 			interval = setInterval( function() {
-				dataGet();
+				if (params.length > 0) {
+					dataGet();
+				}
 			}, node.repeat * 1000);
 		}
 
 		// injectされたら実行
         node.on('input', function() {
-			dataGet();
+			if (params.length > 0) {
+				dataGet();
+			}
 		});
 
 		// 処理終了時にはintervalをクリアする

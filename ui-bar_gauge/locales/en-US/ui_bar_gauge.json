@@ -14,5 +14,9 @@
             "max": "max",
             "color": "Color"
         }
+    },
+    "runtime": {
+        "complete": "complete",
+        "connect": "processing..."
     }
 }

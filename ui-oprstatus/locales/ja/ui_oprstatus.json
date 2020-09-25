@@ -22,5 +22,12 @@
             "statusValue": "指定値",
             "statusLabel": "状態名"
         }
+    },
+    "runtime": {
+        "complete": "表示完了",
+        "connect": "処理中",
+        "noData": "表示データなし",
+        "noParam": "状態設定がありません",
+        "error": "エラー発生"
     }
 }

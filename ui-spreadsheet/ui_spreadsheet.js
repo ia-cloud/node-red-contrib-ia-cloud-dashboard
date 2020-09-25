@@ -38,7 +38,7 @@ module.exports = function(RED) {
             // var confsel = config.confsel;
             this.contype = config.contype;      // 集計対象のcontentType
             this.item = config.item;            // 表示する項目
-            var status = config.status;       // カウントするステータス
+            this.aneStatus = config.aneStatus;       // カウントするステータス
 
             var label = config.label;
             if  (label == undefined) {
@@ -78,6 +78,7 @@ module.exports = function(RED) {
                     forwardInputMessages: config.fwdInMessages,
                     storeFrontEndInputAsState: config.storeOutMessages,
                     beforeEmit: function(msg, value) {
+                        node.status({fill:"blue", shape:"dot", text:"runtime.connect"});
                         itemList = msg.payload.Items;
                         var contentList;                // 取得データ一時保存
                         var resultList = [];            // 集計結果保存    [n][0]:AnEStatus, [n][1]:AnEDescription, [n][2]:カウント
@@ -90,11 +91,11 @@ module.exports = function(RED) {
                                     } else if (itemList[i].dataObject.ObjectContent != undefined) {
                                         contentList = itemList[i].dataObject.ObjectContent.contentData;
                                     } else {
-                                        node.error("ui_spreadsheet：ia-cloudオブジェクトではありません。");
+                                        node.status({fill:"yellow", shape:"ring", text:"runtime.noObjCnt"});
                                         continue;
                                     }
                                 } catch (e) {
-                                    node.error("ui_spreadsheet：ia-cloudオブジェクトではありません。");
+                                    node.status({fill:"yellow", shape:"ring", text:"runtime.noObjCnt"});
                                     continue;
                                 }
 
@@ -106,7 +107,7 @@ module.exports = function(RED) {
                                             var conIdx;
                                             for (conIdx=0; conIdx<contentList.length; conIdx++) {
                                                 if (contentList[conIdx].commonName === "Alarm&Event" && contentList[conIdx].dataValue != undefined) {
-                                                    if (contentList[conIdx].dataValue.AnEStatus === status) {
+                                                    if (contentList[conIdx].dataValue.AnEStatus === node.aneStatus) {
                                                         var rIdx;
                                                         // 初回カウントデータ判定
                                                         for (rIdx=0; rIdx<resultList.length; rIdx++) {
@@ -123,15 +124,13 @@ module.exports = function(RED) {
                                                         }
                                                     }
 
-                                                } else {
-                                                    node.warn("ui_spreadsheet：アラーム＆イベントデータではありません", contentList);
                                                 }
                                             }
                                         }
                                         break;
 
                                     default:
-                                        node.error("集計データタイプ：対象外の集計データです");
+                                        node.status({fill:"yellow", shape:"ring", text:"runtime.noConType"});
                                 }
                             }
                         }
@@ -163,7 +162,7 @@ module.exports = function(RED) {
                             break;
 
                             default:
-                                node.error("項目設定：対象外の集計データです");
+                                node.status({fill:"yellow", shape:"ring", text:"runtime.noConType"});
                         }
 
                         var properties = Object.getOwnPropertyNames(msg).filter(function (p) { return p[0] != '_'; });
@@ -186,6 +185,12 @@ module.exports = function(RED) {
 
                         if (clonedMsg.template) {
                             previousTemplate = clonedMsg.template
+                        }
+
+                        if (msg.payload.length > 0) {
+                            node.status({fill:"green", shape:"dot", text:"runtime.complete"});
+                        } else {
+                            node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
                         }
 
                         return { msg:clonedMsg };

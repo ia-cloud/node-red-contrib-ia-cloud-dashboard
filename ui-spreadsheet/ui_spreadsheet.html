@@ -23,7 +23,7 @@
                 height: {value: 0},
                 contype: {value: "Alarm&Event"},
                 item: {value: "nodesc"},
-                status: {value: "set"},
+                aneStatus: {value: "set"},
                 storeOutMessages: {value: true},
                 fwdInMessages: {value: true},
                 templateScope: {value: 'local'}
@@ -99,12 +99,12 @@
 
     <!-- カウント項目設定 -->
     <div class="form-row">
-        <label for="node-input-status"><i class="fa fa-check"></i> <span data-i18n="spreadsheet.label.status"></span></label>
-        <select type="text" style="width:200px;" id="node-input-status">
-            <option value="set" data-i18n="spreadsheet.status.set"></option>
-            <option value="reset" data-i18n="spreadsheet.status.reset"></option>
-            <option value="on" data-i18n="spreadsheet.status.on"></option>
-            <option value="off" data-i18n="spreadsheet.status.off"></option>
+        <label for="node-input-aneStatus"><i class="fa fa-check"></i> <span data-i18n="spreadsheet.label.aneStatus"></span></label>
+        <select type="text" style="width:200px;" id="node-input-aneStatus">
+            <option value="set" data-i18n="spreadsheet.aneStatus.set"></option>
+            <option value="reset" data-i18n="spreadsheet.aneStatus.reset"></option>
+            <option value="on" data-i18n="spreadsheet.aneStatus.on"></option>
+            <option value="off" data-i18n="spreadsheet.aneStatus.off"></option>
         </select>
     </div>
 

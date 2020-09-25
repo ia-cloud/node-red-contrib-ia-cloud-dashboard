@@ -19,7 +19,7 @@
 		},
         inputs:1,
         outputs:1,
-		icon: "ia-cloud.png", 
+		icon: "ia-cloud.png",
 		paletteLabel: 'getLatestdata',
         label: function() {
             return this.name||this._("getlatestdata.paletteLabel");
@@ -31,7 +31,6 @@
             return this._("getlatestdata.paletteLabel") || "dynamoDB(latest)";
         },
         oneditprepare: function () {
-			
 			// 繰り返し設定
 			$("#node-input-repeatCheck").change(function() {
                 if ($(this).is(":checked")) {

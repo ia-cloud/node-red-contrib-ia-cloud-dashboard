@@ -80,7 +80,7 @@ module.exports = function(RED) {
                     forwardInputMessages: config.fwdInMessages,
                     storeFrontEndInputAsState: config.storeOutMessages,
                     beforeEmit: function(msg, value) {
-
+                        node.status({fill:"blue", shape:"dot", text:"runtime.connect"});
                         // 入力値によって分岐
                         switch (node.confsel) {
                             case "dynamodbSet":
@@ -103,11 +103,11 @@ module.exports = function(RED) {
                                                         } else if (itemList[i].dataObject.ObjectContent != undefined) {
                                                             contentList = itemList[i].dataObject.ObjectContent.contentData;
                                                         } else {
-                                                            node.error("ui_table：ia-cloudオブジェクトではありません。");
+                                                            node.status({fill:"yellow", shape:"ring", text:"runtime.noObjCnt"});
                                                             continue;
                                                         }
                                                     } catch (e) {
-                                                        node.error("ui_table：ia-cloudオブジェクトではありません。");
+                                                        node.status({fill:"yellow", shape:"ring", text:"runtime.noObjCnt"});
                                                         continue;
                                                     }
 
@@ -126,16 +126,17 @@ module.exports = function(RED) {
                                                                     temp = [];
                                                                 }
                                                             } else {
-                                                                node.warn("ui_table：アラーム＆イベントデータではありません", contentList);
+                                                                node.status({fill:"yellow", shape:"ring", text:"runtime.noConType"});
                                                             }
                                                         }
                                                     }
                                                 }
                                             }
-
+                                            node.status({fill:"green", shape:"dot", text:"runtime.complete"});
                                         break;
                                     default:
                                         node.error("contentType：対象外の集計データです");
+                                        node.status({fill:"yellow", shape:"ring", text:"runtime.noConType"});
                                         dataAry = [];
 
                                 }
@@ -164,7 +165,7 @@ module.exports = function(RED) {
                                                 temp = [];
                                             }
                                         } catch (e) {
-                                            node.error("table：表示対象データがありません。");
+                                            node.status({fill:"yellow", shape:"ring", text:"runtime.formatError"});
                                         }
                                 }
                                 msg.payload = dataAry;
@@ -197,6 +198,12 @@ module.exports = function(RED) {
 
                         if (clonedMsg.template) {
                             previousTemplate = clonedMsg.template
+                        }
+
+                        if (msg.payload.length > 0) {
+                            node.status({fill:"green", shape:"dot", text:"runtime.complete"});
+                        } else {
+                            node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
                         }
 
                         return { msg:clonedMsg };

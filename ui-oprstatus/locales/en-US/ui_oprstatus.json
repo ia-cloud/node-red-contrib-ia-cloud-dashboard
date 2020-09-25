@@ -22,5 +22,12 @@
             "statusValue": "statusValue",
             "statusLabel": "statusLabel"
         }
+    },
+    "runtime": {
+        "complete": "complete",
+        "connect": "processing...",
+        "noData": "no data",
+        "noParam": "no itemObject",
+        "error": "error"
     }
 }

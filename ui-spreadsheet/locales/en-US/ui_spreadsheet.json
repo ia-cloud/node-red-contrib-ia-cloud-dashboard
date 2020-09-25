@@ -7,7 +7,7 @@
             "label": "label",
             "contype": "contentType",
             "item": "itemSetting",
-            "status": "status",
+            "aneStatus": "status",
             "name": "name"
         },
         "contype":{
@@ -18,11 +18,19 @@
             "no":"A&E No",
             "desc":"A&E Description"
         },
-        "status": {
+        "aneStatus": {
             "set": "set",
             "reset": "reset",
             "on": "on",
             "off": "off"
         }
+    },
+    "runtime": {
+        "complete": "complete",
+        "connect": "processing...",
+        "noData": "no Data",
+        "noConType": "invalid contentType",
+        "noObjCnt": "invalid objectContent",
+        "error": "error"
     }
 }

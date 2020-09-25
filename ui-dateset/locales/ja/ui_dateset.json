@@ -9,5 +9,9 @@
         "dashboard": {
             "submit": "更新"
         }
+    },
+    "runtime": {
+        "complete": "送信完了",
+        "connect": "処理中"
     }
 }

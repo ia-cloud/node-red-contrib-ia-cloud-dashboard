@@ -13,7 +13,8 @@ module.exports = function(RED) {
 };
 
 /* 使用モジュール定義 */
-var request = require("request");
+// var request = require("request");
+const got = require("got");
 var moment = require("moment");
 
 var reqbody = {};                   // DynamoDBリクエスト用オブジェクト
@@ -24,9 +25,18 @@ function cnctSetting (ccsConnectionConfigNode) {
     var opts = {};                  // 接続情報格納用オブジェクト
 
     // 接続情報のデコード
-    var buffer = new Buffer(ccsConnectionConfigNode.credentials.userId + ":" + ccsConnectionConfigNode.credentials.password);
-    var encodedData = buffer.toString("base64");
+    // var buffer = Buffer(ccsConnectionConfigNode.credentials.userId + ":" + ccsConnectionConfigNode.credentials.password);
+    // var encodedData = buffer.toString("base64");
+    var encodedData = Buffer.from(ccsConnectionConfigNode.credentials.userId + ":" + ccsConnectionConfigNode.credentials.password).toString("base64");
 
+    opts = {
+        url: ccsConnectionConfigNode.url,
+        method: "POST",
+        headers: {"Content-Type": "application/json", "Authorization": "Basic " + encodedData},
+        maxRedirects: 21
+    };
+
+    /*
     // httpリクエストのoptionを設定
     opts.url = ccsConnectionConfigNode.url;
     opts.method = "POST";
@@ -34,6 +44,7 @@ function cnctSetting (ccsConnectionConfigNode) {
     opts.headers["Content-Type"] =  "application/json";
     opts.headers["Authorization"] =  "Basic " + encodedData;
     opts.encoding = null;
+    */
 
     return opts;
 }
@@ -99,8 +110,56 @@ function serviceSetting (opts, node) {
 
 
 /* DynamoDBリクエスト実行関数 */
-function dynamoRequest (opts, node, callback) {
+async function dynamoRequest (opts, node, callback) {
     //  リクエストモジュールを利用して設定APIへリクエスト
+
+    // make sharrow copy of opts
+    let options = {};
+    Object.assign(options, opts);
+    // delete url property from options
+    // The `url` option is mutually exclusive with the `input` argument
+    delete options["url"];
+    // other options for Got package
+    options.responseType = "text";
+
+    var resbody = {};
+    try {
+        const response = await got(opts.url, options);
+        if (response.statusCode === 200){
+            // 結果を返却
+            try {
+                resbody = {
+                    "status": "ok",
+                    "statusCode": 200,
+                    "data": JSON.parse(response.body)
+                };
+            } catch (e) {
+                node.error("response Error");
+            }
+        } else {
+            // その他エラー
+            resbody = {
+                "status": "ng",
+                "statusCode": 400,
+                "errorMassage": "エラーが発生しました"
+            };
+            node.error("DynamoDB：エラー", resbody);
+        }
+    } catch (err) {
+        console.log(err);
+        // その他エラー
+        resbody = {
+            "status": "ng",
+            "statusCode": 500,
+            "errorMassage": "リクエスト時にエラーが発生しました"
+        };
+        node.error("request Error");
+    }
+    callback(resbody);
+
+
+
+    /*
     request (opts, function(err, res, body) {
         var resbody = {};                 // レスポンス設定用オブジェクト
         if (err) {
@@ -148,6 +207,7 @@ function dynamoRequest (opts, node, callback) {
         }
         callback(resbody);
     });
+    */
 }
 
 
@@ -181,7 +241,7 @@ function aggregation (items, node) {
                 } else if (DatObj.timestamp != undefined) {
                     tmpObj.timestamp = DatObj.timestamp;
                 } else {
-                    console.log("timeStamp(timestamp)が無効\n");
+                    console.log("timeStamp(timestamp)が無効");
                     continue;
                 }
 
@@ -189,14 +249,13 @@ function aggregation (items, node) {
                     // contentDataを格納
                     if (DatObj.objectContent != undefined) {
                         tmpObj.contentData = DatObj.objectContent.contentData;
-                    } if (DatObj.ObjectContent != undefined) {
+                    } else if (DatObj.ObjectContent != undefined) {
                         tmpObj.contentData = DatObj.ObjectContent.contentData;
                     } else {
-                        console.log("objectContent(ObjectContent)が無効\n");
                         continue;
                     }
                 } catch (e) {
-                    console.log("objectContent(ObjectContent)が無効\n");
+                    console.log("objectContent(ObjectContent)が無効");
                         continue;
                 }
 
@@ -205,7 +264,7 @@ function aggregation (items, node) {
 
 
             } else {
-                console.log("objectTypeが無効:" + DatObj.objectType + "\n");
+                console.log("objectTypeが無効:" + DatObj.objectType);
             }
 
         }

@@ -56,6 +56,7 @@ module.exports = function(RED) {
                     storeFrontEndInputAsState: false,
                     //convert: function(){},
                     beforeEmit: function(msg, value) {
+                        node.status({fill:"green", shape:"dot", text:"runtime.complete"});
                         return { msg: { payload: value } };
                     },
                     convertBack: function(value){ return value; },

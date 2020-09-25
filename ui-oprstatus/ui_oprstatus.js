@@ -13,7 +13,7 @@ module.exports = function(RED) {
         var html = "<div align='center'>"
             // タイトル表示
             + "<p style='font-size: 16px;'>" + config.label + "</p>"
-            // グラフ表示 
+            // グラフ表示
             + "<table id='statusTitle_table' width='90%'><tbody>"
             + "<tr><td ng-repeat = 'item in msg.series' style='font-size:14px;'>{{item}}</td>"
             + "</tr></tbody></table>"
@@ -22,7 +22,7 @@ module.exports = function(RED) {
             + "</tr>"
             + "</tbody></table>"
             // X軸表示
-            + "<table id='statusAxis_table' width='100%' style='font-size:8px;'><tbody><tr>" 
+            + "<table id='statusAxis_table' width='100%' style='font-size:8px;'><tbody><tr>"
             + "<td ng-repeat = 'item in msg.xaxisData' align='center'>{{item.x}}</td>"
             + "</tr></tbody></table>"
             // 凡例表示
@@ -62,12 +62,21 @@ module.exports = function(RED) {
 
             var statusObject;
             try {
-                statusObject = config.params;
+                if (config.params != undefined) {
+                    statusObject = config.params;
+                } else {
+                    statusObject = [];
+                }
             } catch (e) {
-                statusObject = {};
+                statusObject = [];
             }
-            console.log("statusObject");
-            console.log(statusObject);
+
+            // no rule found
+            if (statusObject.length === 0) {
+                node.status({fill:"yellow", shape:"ring", text:"runtime.noParam"});
+            } else {
+                node.status({});
+            }
 
             var data;                       // 出力データ
             var graphData;                  // グラフ表示部分データ
@@ -93,7 +102,7 @@ module.exports = function(RED) {
             if (config.height === "0") { delete config.height; }
             // number of pixels wide the chart will be... 43 = sizes.sx - sizes.px
             // var pixelsWide = ((config.width || group.config.width || 6) - 1) * 43 - 15;
-                
+
             var previousTemplate = null;
 
             if (checkConfig(node, config)) {
@@ -113,6 +122,13 @@ module.exports = function(RED) {
                     forwardInputMessages: config.fwdInMessages,
                     storeFrontEndInputAsState: config.storeOutMessages,
                     beforeEmit: function(msg, value) {
+
+                        if (statusObject.length === 0) {
+                            node.status({fill:"yellow", shape:"ring", text:"runtime.noParam"});
+                            return { msg:[] };
+                        }
+
+                        node.status({fill:"blue", shape:"dot", text:"runtime.connect"});
                         data = [];              // 出力データ
                         graphData = [];         // グラフ表示部分データ
                         xaxisData = [];         // X軸表示用データ
@@ -125,7 +141,7 @@ module.exports = function(RED) {
                                 if (item != undefined) {
                                     msg.series.push(item);
                                 } else {
-                                    msg.series.push(msg.payload[0].series[0]);                        
+                                    msg.series.push(msg.payload[0].series[0]);
                                 }
 
                                 // 有効データ(一件目)のみを取得、dataへ格納
@@ -144,7 +160,7 @@ module.exports = function(RED) {
                                         "x" : tempData[i][0],
                                         "y" : tempData[i][1]
                                     }
-                                    data.push(tempObj);   
+                                    data.push(tempObj);
                                 }
 
                             }
@@ -195,7 +211,6 @@ module.exports = function(RED) {
 
                             var tempDate;
                             for (var i=0;i<data.length-1;i++) {
-                                
                                 if ( (i % axisRadix) != 0 || i >= (MAX_COUNT_XAXIS*axisRadix)-1) {
                                     // 無効な軸データの場合は未処理
                                 } else {
@@ -226,8 +241,14 @@ module.exports = function(RED) {
 
                             // payloadデータを削除
                             msg.payload = [];
+
+                            // statusObject.lengthが1以上の場合は表示処理完了
+                            if (statusObject.length > 0) {
+                                node.status({fill:"green", shape:"dot", text:"runtime.complete"});
+                            }
                         } catch (e) {
                             node.error("oprstatus：表示対象データがありません。");
+                            node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
                         }
 
                         var properties = Object.getOwnPropertyNames(msg).filter(function (p) { return p[0] != '_'; });
@@ -238,20 +259,20 @@ module.exports = function(RED) {
                             var property = properties[i];
                             clonedMsg[property] = msg[property];
                         }
-        
+
                         // transform to string if msg.template is buffer
                         if (clonedMsg.template !== undefined && Buffer.isBuffer(clonedMsg.template)) {
                             clonedMsg.template = clonedMsg.template.toString();
                         }
-        
+
                         if (clonedMsg.template === undefined && previousTemplate !== null) {
                             clonedMsg.template = previousTemplate;
                         }
-        
+
                         if (clonedMsg.template) {
                             previousTemplate = clonedMsg.template
                         }
-        
+
                         return { msg:clonedMsg };
                     },
                     beforeSend: function (msg, original) {
@@ -263,7 +284,6 @@ module.exports = function(RED) {
         catch (e) {
             console.log(e);
         }
-        
         node.on("close", done);
     }
     RED.nodes.registerType('ui_oprstatus', OprstatusNode);

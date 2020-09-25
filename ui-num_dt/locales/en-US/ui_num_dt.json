@@ -17,5 +17,9 @@
             "off": "off",
             "dtFormat": "Format"
         }
+    },
+    "runtime": {
+        "complete": "complete",
+        "connect": "processing..."
     }
 }

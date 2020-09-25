@@ -52,10 +52,11 @@ module.exports = function(RED) {
                     storeFrontEndInputAsState: false,
                     //convert: function(){},
                     beforeEmit: function(msg, value) {
+                        node.status({fill:"green", shape:"dot", text:"runtime.complete"});
                         return { msg: { payload: value } };
                     },
                     convertBack: function(value){ return value; },
-                    // needs beforeSend to message contents to be sent back to runtime 
+                    // needs beforeSend to message contents to be sent back to runtime
                     beforeSend: function (msg, orig) {
                         if (orig) { return orig.msg; }
                     },

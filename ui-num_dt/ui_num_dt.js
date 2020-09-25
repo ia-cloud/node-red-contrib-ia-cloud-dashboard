@@ -65,6 +65,7 @@ module.exports = function(RED) {
                                 new_value[idx].datetime = moment(value[idx]).format(conf_ds[idx].format) || value[idx];
                             }
                         }
+                        node.status({fill:"green", shape:"dot", text:"runtime.complete"});
                         return { msg: { items: new_value, payload: value } };
                     },
                     convertBack: function(value){ return value; },
