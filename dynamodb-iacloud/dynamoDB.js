@@ -56,7 +56,7 @@ module.exports = function(RED) {
 		node.sendMsg = function (data) {
 			var msg;
 			if (!data) {
-				node.status({fill:"red", shape:"ring", text:"error"});
+				node.status({fill:"red", shape:"ring", text:"runtime.error"});
 				node.error("error: sendMeg error");
 				return;
 			} else {
@@ -69,18 +69,16 @@ module.exports = function(RED) {
 		if (node.repeatCheck) {
 			interval = setInterval( function() {
 				dataGet(config.sdatetime, config.edatetime);
-			}, node.repeat * 1000);	
+			}, node.repeat * 1000);
 		}
-		
+
 		// injectされたら実行
         node.on('input', function(msg) {
-
 			if (node.dateCheck) {
 				dataGet(msg.payload.sdatetime, msg.payload.edatetime);
 			} else {
 				dataGet(config.sdatetime, config.edatetime);
 			}
-			
 		});
 
 		// 処理終了時にはintervalをクリアする
@@ -97,7 +95,7 @@ module.exports = function(RED) {
 		// データ取得処理
 		function dataGet (sdatetime, edatetime) {
 
-			node.status({fill:"blue", shape:"dot", text:"connecting..."});
+			node.status({fill:"blue", shape:"dot", text:"runtime.connect"});
 
 			if (sdatetime == null || sdatetime == "") {
 				sdatetime = undefined
@@ -108,10 +106,10 @@ module.exports = function(RED) {
 
 			node.sdatetime = sdatetime;
 			node.edatetime = edatetime;
-			
+
 			// sdatetime, edatetime共に入力あり かつ sdatetime<=edatetimeの場合に処理続行
 			if (node.sdatetime == undefined || node.edatetime == undefined || moment(node.sdatetime) <= moment(node.edatetime)) {
-				
+
 				// 期間式の設定
 				node = dynamodb.expressionSetting(node);
 
@@ -119,34 +117,50 @@ module.exports = function(RED) {
 				opts = dynamodb.serviceSetting (opts, node);
 
 				// DynamoDBへリクエスト
-				dynamodb.dynamoRequest(opts, node, function(body) {
+				dynamodb.dynamoRequest(opts, node, function(result) {
 
-					if (body.Items != undefined && body.Items.length > 0) {
-						// アグリゲーション処理
-						if (node.aggregationCheck) {
-							resultList = dynamodb.aggregation(body.Items, node);
+
+					if (result.status === "ok") {
+						// 正常なレスポンス
+						var items = result.data.Items;
+						if (items != undefined && items.length > 0) {
+							try {
+								// アグリゲーション処理
+								if (node.aggregationCheck) {
+									resultList = dynamodb.aggregation(items, node);
+								} else {
+									resultList = items;
+								}
+
+								// 桁数変更処理
+								if (node.decimalPoint != "noexe") {
+									resultList = dynamodb.round(resultList, node);
+								}
+								node.status({fill:"green", shape:"dot", text:"runtime.complete"});
+								// Itemsで囲ってから送信
+								node.sendMsg({"Items": resultList});
+								// node.sendMsg(resultList);
+							} catch (e) {
+								// データ取得時に例外発生
+								console.log("データ分解時に例外発生");
+								node.status({fill:"red", shape:"ring", text:"runtime.faild"});
+								node.sendMsg([]);
+							}
+						} else if (items != undefined && items.length > -1) {
+							node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
+							node.sendMsg([]);
 						} else {
-							resultList = body;
+							node.status({fill:"red", shape:"ring", text:"runtime.faild"});
+							node.sendMsg([]);
 						}
-
-						// 桁数変更処理
-						if (node.decimalPoint != "noexe") {
-							resultList = dynamodb.round(resultList, node);
-						}
-						node.status({fill:"green", shape:"dot", text:"completed"});
-						node.sendMsg(resultList);
-						
-					} else if (body.Items != undefined && body.Items.length > -1) {
-						node.status({fill:"yellow", shape:"ring", text:"no data"});
-						node.sendMsg([]);
 					} else {
-						node.status({fill:"red", shape:"ring", text:"error: Data acquisition failure"});
+						// 異常なレスポンス
+						node.status({fill:"red", shape:"ring", text:"runtime.faild"});
 						node.sendMsg([]);
 					}
-
 				});
 			} else {
-				node.status({fill:"red", shape:"ring", text:"error: Invalid period"});
+				node.status({fill:"red", shape:"ring", text:"runtime.periodError"});
 				node.error("DynamoDB - 期間指定に誤りがあります");
 				node.sendMsg([]);
 			}

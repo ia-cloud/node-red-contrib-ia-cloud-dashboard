@@ -1,5 +1,6 @@
 {
     "dateset": {
+        "paletteLabel": "dataSet",
         "label": {
             "group": "group",
             "size": "size",
@@ -8,5 +9,9 @@
         "dashboard": {
             "submit": "update"
         }
+    },
+    "runtime": {
+        "complete": "complete",
+        "connect": "connecting..."
     }
 }

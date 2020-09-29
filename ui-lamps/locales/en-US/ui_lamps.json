@@ -1,5 +1,6 @@
 {
     "uiLamps": {
+        "paletteLabel": "lampGauge",
         "label": {
             "group": "Group",
             "size": "Size",
@@ -21,5 +22,9 @@
             "purple": "Purple",
             "white": "White"
         }
+    },
+    "runtime": {
+        "complete": "complete",
+        "connect": "processing..."
     }
 }

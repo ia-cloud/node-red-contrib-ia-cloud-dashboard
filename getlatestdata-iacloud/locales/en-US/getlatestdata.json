@@ -1,5 +1,6 @@
 {
     "getlatestdata": {
+        "paletteLabel": "DynamoDB(latest)",
         "label":{
             "name": "name",
             "ccs-connection-config": "CCS",
@@ -8,7 +9,7 @@
             "series": "series",
             "repeat": "repeat",
             "round": "round",
-            "item": "item"
+            "item": "outputFormat"
         },
         "series": {
             "number": "No.",
@@ -32,7 +33,15 @@
         },
         "item": {
             "graphData": "graphData",
-            "numericData": "numericData"
+            "numericData": "num_dt Data"
         }
+    },
+    "runtime": {
+        "connect": "connecting",
+        "complete": "completed",
+        "noData": "no data",
+        "noParam": "no series",
+        "faild": "data acquisition failure",
+        "error": "error"
     }
 }

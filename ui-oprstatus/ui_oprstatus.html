@@ -1,12 +1,12 @@
 <script type="text/javascript">
 
 function mk_conf(NAME) {
-        var conf = {
-        category: 'iaCloud dashboard',
+    var conf = {
+        category: 'iaCloud Visuals',
         color: 'rgb(119, 198, 204)',
         defaults: {
             confsel: {value:"inchartSet"},
-            group: {type: 'ui_group', required:false},
+            group: {type: 'ui_group', required:true},
             label: {value: NAME},
             name: {value: ''},
             order: {value: 0},
@@ -25,17 +25,25 @@ function mk_conf(NAME) {
             storeOutMessages: {value: true},
             fwdInMessages: {value: true},
             templateScope: {value: 'local'},
-            statusObject:{value:"", required: true }
+            params: {value:[{}]},
+			// configReady: {value:"", required: true}
         },
         inputs:1,
         outputs:0,
-        align: "right",
+        align: "left",
         icon: "ia-cloud.png",
         paletteLabel: NAME,
-        label: function() { return this.name || NAME; },
+        label: function() {
+            return this.name || this._("oprstatus.paletteLabel");
+        },
+        labelStyle: function () {
+            return this.name?"node_label_italic":"";
+        },
+        paletteLabel: function() {
+            return this._("oprstatus.paletteLabel") || "oprStatus";
+        },
         oneditprepare: function() {
 
-            var that = this;
             $("#node-input-size").elementSizer({
                 width: "#node-input-width",
                 height: "#node-input-height",
@@ -49,7 +57,7 @@ function mk_conf(NAME) {
                     $('#node-input-confsel').val("formatSet");
                 }
             });
-            
+
             if($("#node-input-confsel").val() == "inchartSet"){
                 $('#node-input-configSel1').prop('checked', true);
             } else {
@@ -57,154 +65,123 @@ function mk_conf(NAME) {
             }
             $('input[name="configSel"]:radio').change();
 
-            var frm_cnt = 0;
-            
-            //あれば設定データを取り出して、formに展開する。
-            var conf = $("#node-input-statusObject").val();
-            if (conf) {
-            var dItems = {};
-            try { dItems = JSON.parse(conf); }
-            catch(e) { conf = "";}
-            }
-            if(conf != ""){
-            //設定データがあった
-            var dItems = JSON.parse(conf);
-            //フォームを一つ保存
-            var original = $('#form_block\\[0\\]');
-            //一旦フォームオブジェクトをすべて削除
-            $(".form-block[id^='form_block']")
-                .each(function(index, formObj) {$(formObj).remove();});
-            dItems.forEach(function(value, idx){
-                original
-                .clone()
-                .hide()
-                .appendTo("#blocks")
-                .attr('id', 'form_block[' + idx + ']') // クローンのid属性を変更。
-                .end() // 一度適用する
-                .find('div, input, textarea, select, label').each(function(index, obj) {
-                    if ($(obj).attr('id') != null) {
-                        if($(obj).attr("id").substr(0,5) == "dItem"){
-                            $(obj).val("" + (idx + 1));
+
+
+
+            var node = this;
+
+            const lblColor = node._("oprstatus.itemObject.statusColor");
+            const lblValue = node._("oprstatus.itemObject.statusValue");
+            const lblLabel = node._("oprstatus.itemObject.statusLabel");
+
+			// editableList item のhtml要素
+            const paraForm1 =`
+                <span>${lblColor}:</span>
+                <input type="color" class="statusColor" style="width:80px; display:inline-block; text-align:left; margin-right:20px;">
+                <span>${lblValue}:</span>
+                <input type="text" class="statusValue" style="width:80px; display:inline-block; text-align:left; margin-right:20px;">`;
+            const paraForm2 =`
+                <span style="margin-left:30px;">${lblLabel}:</span>
+                <input type="text" class="statusLabel" style="width:150px; display:inline-block; text-align:left; margin-right:20px;">`;
+
+
+			// Define editableList.
+            $("#node-input-list-container").css('min-height','150px').css('min-width','350px').editableList({
+
+                sortable: true,
+                removable: true,
+                height: 250,
+
+                addItem: function(container,index,param) {
+
+                    var div1 = $('<div></div>').appendTo(container);
+                    var div2 = $('<div></div>',{style:"margin-top:8px;"}).appendTo(container);
+
+                    $('<span></span>',{class:"index",
+                        style:"display:inline-block;text-align:right; width:30px; padding-right:5px;"})
+                        .text((index + 1) + " :")
+                        .appendTo(div1);
+                    $(paraForm1).appendTo(div1);
+
+                    // 2nd row of parameter list
+                    $(paraForm2).appendTo(div2);
+
+                    // 追加ボタンが押されたら、paramは 空{} で呼ばれます。
+                    if(!param.hasOwnProperty("statusColor")) {
+                        param = {
+                            statusColor: "",
+                            statusValue: "",
+                            statusLabel: ""
                         }
-                        $(obj).attr({
-                            id: $(obj).attr('id').replace(/\[[0-9]+\]$/, '[' + idx + ']')
-                        });
-                    }
-                    if ($(obj).attr('name') != null) {
-                        $(obj).attr({
-                            name: $(obj).attr('name').replace(/\[[0-9]+\]$/, '[' + idx + ']')
-                        });
-                    }
-                    if ($(obj).attr('for') != null) {
-                        $(obj).attr({
-                            for: $(obj).attr('for').replace(/\[[0-9]+\]$/, '[' + idx + ']')
-                        });
-                    }
-                });
-
-                $("#statusColor\\[" + idx + "\\]").val(value.statusColor);
-                $("#statusValue\\[" + idx + "\\]").val(value.statusValue);
-                $("#statusLabel\\[" + idx + "\\]").val(value.statusLabel);
-
-                var block = $('#form_block\\[' + idx + '\\]');
-                if (idx != 0) block.find('input[name="del_btn"]').show();
-                block.slideDown('slow');
-                frm_cnt = idx;
-            });
-        }
-
-
-        //追加ボタンが押されたら
-        $("#form_add").off("click");
-        $("#form_add").on("click", function() {
-            var original = $('#form_block\\[' + frm_cnt + '\\]');
-            frm_cnt++;
-            original
-            .clone()
-            .hide()
-            .insertAfter(original)
-            .attr('id', 'form_block[' + frm_cnt + ']'); // クローンのid属性を変更。
-            var clone = $('#form_block\\[' + frm_cnt + '\\]');
-            clone.find('div, input, textarea, select, label').each(function(idx, obj) {
-                if ($(obj).attr('id') != null) {
-                    if($(obj).attr("id").substr(0,5) == "dItem"){
-                        $(obj).val("" + (frm_cnt + 1));
-                    }
-                    $(obj).attr({
-                        id: $(obj).attr('id').replace(/\[[0-9]+\]$/, '[' + frm_cnt + ']')
+                    };
+                    // restore parameters
+					div1.find(".statusColor").val(param.statusColor);
+                    div1.find(".statusValue").val(param.statusValue);
+                    div2.find(".statusLabel").val(param.statusLabel);
+                },
+                sortItems: function(items) {
+                    items.each(function(i, elm){
+                        elm.find(".index").text((i + 1));
                     });
-                }
-                if ($(obj).attr('name') != null) {
-                    $(obj).attr({
-                        name: $(obj).attr('name').replace(/\[[0-9]+\]$/, '[' + frm_cnt + ']')
+                },
+                removeItem: function(dItem){
+                    var items = $('#node-input-list-container').editableList("items");
+                    items.each(function(i, elm){
+                        elm.find(".index").text((i + 1));
                     });
-                }
-                if ($(obj).attr('for') != null) {
-                    $(obj).attr({
-                        for: $(obj).attr('for').replace(/\[[0-9]+\]$/, '[' + frm_cnt + ']')
-                    });
-                }
+                },
             });
-            clone.find('input[name="del_btn"]').show();
-            clone.slideDown('fast');
-        });
 
-        //削除ボタンが押されたら
-        $("#blocks").off('click', 'input[name="del_btn"]');
-        $("#blocks").on('click', 'input[name="del_btn"]', function() {
-            var removeObj = $(this).parents(".form-block");
-            removeObj.fadeOut('fast', function() {
-                removeObj.remove();
-                // 番号振り直し
-                frm_cnt = 0;
-                $(".form-block[id^='form_block']").each(function(index, formObj) {
-                    if ($(formObj).attr('id') != 'form_block[0]') {
-                        frm_cnt++;
-                        $(formObj)
-                        .attr('id', 'form_block[' + frm_cnt + ']') // id属性を変更。
-                        .find('div, input, textarea, select, label').each(function(idx, obj) {
-                            if ($(obj).attr('id') != null) {
-                                if($(obj).attr("id").substr(0,5) == "dItem"){
-                                    $(obj).val("" + (frm_cnt + 1));
-                                }
-                                $(obj).attr({
-                                    id: $(obj).attr('id').replace(/\[[0-9]+\]$/,'['+frm_cnt+']')
-                                });
-                            }
-                            if ($(obj).attr('name') != null) {
-                                $(obj).attr({
-                                    name: $(obj).attr('name').replace(/\[[0-9]+\]$/,'['+frm_cnt+']')
-                                });
-                            }
-                            if ($(obj).attr('for') != null) {
-                                $(obj).attr({
-                                    for: $(obj).attr('for').replace(/\[[0-9]+\]$/,'['+frm_cnt+']')
-                                });
-                            }
-                        });
-                    }
-                });
-            });
-        });
+            for (var i=0;i<node.params.length;i++) {
+                var param = node.params[i];
+                $("#node-input-list-container").editableList('addItem',param);
+            }
+
         },
         oneditsave: function() {
 
-            var dItems = [];
+			var node = this;
+            // var configReady = "ready";
+            var items = $("#node-input-list-container").editableList('items');
+            // paramデータ設定を作成
+            node.params = [];
+            items.each(function(i, elm){
+                var param = {
+                    // reatore parameters
+                    statusColor: elm.find(".statusColor").val(),
+                    statusValue: elm.find(".statusValue").val(),
+                    statusLabel: elm.find(".statusLabel").val()
+                }
+                node.params.push(param);
 
-            $(".form-block[id^='form_block']").each(function(idx, obj){
-                // var item ={commonName: "Alarm&Event", dataValue: {}, options:{}};
-                var item = {};
-                item.statusColor = $("#statusColor\\[" + idx + "\\]").val();
-                item.statusValue = $("#statusValue\\[" + idx + "\\]").val();
-                item.statusLabel = $("#statusLabel\\[" + idx + "\\]").val();
-                dItems[idx]=item;
+                // required properties are not empty
+                // if (!(typeof param.disp === "number")
+                //         || !(param.interval >= 0 && param.interval <= 300)) configReady = "";
+                // configReady = "";
             });
+			// 設定完了フラグをセット
+			// $("#node-input-configReady").val(configReady);
+        },
+        oneditresize: function(size) {
+            // エディタがリサイズされたら
+            var height = size.height;
 
-            //フォームの各要素をobjectに記述し、JSON文字列に変換する。
-            try {$("#node-input-statusObject").val(JSON.stringify(dItems));}
-            catch(e) {$("#node-input-statusObject").val("")}
+            // node name block height
+            height -= $("#name-block").outerHeight(true);
+
+            // editableList以外の行の高さを引く
+            var rows = $("#list-property>*:not(.node-input-statusObject-row)");
+            for (var i=0; i<rows.length; i++) {
+                height -= $(rows[i]).outerHeight(true);
+            }
+            // editableListのマージンを引く
+            const editorRow = $("#list-property>div.node-input-statusObject-row");
+            height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
+
+            // editableListの高さを設定。editableListが非表示の時は正しく動作しない。
+            $("#node-input-statusObject").editableList('height',height);
         }
-    }
+    };
     return conf;
 }
 
@@ -213,96 +190,64 @@ function mk_conf(NAME) {
     RED.nodes.registerType('ui_oprstatus', mk_conf('oprStatus'));
 </script>
 
-<script type="text/x-red" data-template-name="ui_oprstatus">
+<script type="text/html" data-template-name="ui_oprstatus">
 
-    
+    <div id="list-property">
+        <!-- グループ -->
+        <div class="form-row" id="template-row-group">
+            <label for="node-input-group"><i class="fa fa-table"></i> <span data-i18n="oprstatus.label.group"></span></label>
+            <input type="text" id="node-input-group">
+        </div>
 
-    <!-- グループ -->
-	<div class="form-row" id="template-row-group">
-        <label for="node-input-group"><i class="fa fa-table"></i> <span data-i18n="oprstatus.label.group"></span></label>
-        <input type="text" id="node-input-group">
-    </div>
+        <!-- 表示サイズ -->
+        <div class="form-row" id="template-row-size">
+            <label><i class="fa fa-object-group"></i> <span data-i18n="oprstatus.label.size"></span></label>
+            <input type="hidden" id="node-input-width">
+            <input type="hidden" id="node-input-height">
+            <button class="editor-button" id="node-input-size"></button>
+        </div>
 
-    <!-- 表示サイズ -->
-    <div class="form-row" id="template-row-size">
-        <label><i class="fa fa-object-group"></i> <span data-i18n="oprstatus.label.size"></span></label>
-        <input type="hidden" id="node-input-width">
-        <input type="hidden" id="node-input-height">
-        <button class="editor-button" id="node-input-size"></button>
-    </div>
-
-    <!-- ラベル -->
-    <div class="form-row">
-        <label for="node-input-label"><i class="fa fa-i-cursor"></i> <span data-i18n="oprstatus.label.label"></span></label>
-        <input type="text" id="node-input-label">
-    </div>
-
-    <!-- 入力値設定 -->
-    <label style="width: 100%;" for="node-input-setMode" ><i class="fa fa-list"></i> <span data-i18n="oprstatus.label.input"></span></label>
-    <div class="form-row">
-        <input type="text" style="display: none;" id="node-input-confsel" valie="inchartSet">
-        <input type="radio" style="display: inline-block; width: auto; vertical-align: top; margin-left: 30px;"
-              name="configSel" id="node-input-configSel1"
-              value="inchartSet" checked="checked">
-        <label style="width: 40%;" for="node-input-configSel1"> <span data-i18n="oprstatus.input.getchartdata"></span></label>
-        <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
-              name="configSel" id="node-input-configSel2" value="formatSet">
-        <label style="width: 40%;" for="node-input-configSel2"> <span data-i18n="oprstatus.input.formatdata"></span></label>
-    </div>
-
-    <!-- 項目名 -->
-    <div class="form-row" id="node-row-item" style="width:300px;">
+        <!-- ラベル -->
         <div class="form-row">
-            <label for="node-input-item"><i class="fa fa-clone"></i> <span data-i18n="oprstatus.label.item"></span></label>
-            <input type="text" id="node-input-item">
+            <label for="node-input-label"><i class="fa fa-i-cursor"></i> <span data-i18n="oprstatus.label.label"></span></label>
+            <input type="text" id="node-input-label">
+        </div>
+
+        <!-- 入力値設定 -->
+        <label style="width: 100%;" for="node-input-setMode" ><i class="fa fa-list"></i> <span data-i18n="oprstatus.label.input"></span></label>
+        <div class="form-row">
+            <input type="text" style="display: none;" id="node-input-confsel" valie="inchartSet">
+            <input type="radio" style="display: inline-block; width: auto; vertical-align: top; margin-left: 30px;"
+                name="configSel" id="node-input-configSel1"
+                value="inchartSet" checked="checked">
+            <label style="width: 40%;" for="node-input-configSel1"> <span data-i18n="oprstatus.input.getchartdata"></span></label>
+            <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
+                name="configSel" id="node-input-configSel2" value="formatSet">
+            <label style="width: 40%;" for="node-input-configSel2"> <span data-i18n="oprstatus.input.formatdata"></span></label>
+        </div>
+
+        <!-- 項目名 -->
+        <div class="form-row" id="node-row-item" style="width:300px;">
+            <div class="form-row">
+                <label for="node-input-item"><i class="fa fa-clone"></i> <span data-i18n="oprstatus.label.item"></span></label>
+                <input type="text" id="node-input-item">
+            </div>
         </div>
     </div>
-
 
     <!-- 状態詳細設定 -->
-    <hr>
-    <div class="form-row hidden">
-        <input type="text" id="node-input-statusObject">
-    </div>
-    <div class="form-row">
-        <label for="node-input-itemObject"><i class="fa fa-bar-chart"></i> <span data-i18n="oprstatus.label.itemObject"></span></label>
-    </div>
-    <div id="blocks">
-        <div class="form-block" id="form_block[0]">
-            <div class="form-row" style="margin-left: 10px;">
-                <div class="form-inline" id="from_del[0]" >
-                     <span data-i18n="oprstatus.itemObject.number"></span></label></span>
-                    <input type="text" id="dItem[0]" style="width: 30px;" value="1"
-                        disabled="disabled">
-                    <input type="button" name="del_btn" data-i18n="[value]oprstatus.itemObject.delete"
-                        style="margin-left: 30px; width: 70px; display: none;">
-                </div>
-            </div>
-            <div class="form-row" style="margin-left: 30px;">
-                <div class="form-inline" style="vertical-align: middle;">
-                    <label for="node-input-statusColor"><i class="fa fa-angle-right"></i> <span data-i18n="oprstatus.itemObject.statusColor"></span></label>
-                    <input type="color" id="statusColor[0]" style="width: 75px;">
-                </div>
-            </div>
-            <div class="form-row" style="margin-left: 30px;">
-                <label for="node-input-statusValue"><i class="fa fa-angle-right"></i> <span data-i18n="oprstatus.itemObject.statusValue"></span></label>
-                <input type="text" style="width: 75px;" id="statusValue[0]">
-            </div>
-            <div class="form-row" style="margin-left: 30px;">
-                <label for="node-input-statusLabel"><i class="fa fa-angle-right"></i> <span data-i18n="oprstatus.itemObject.statusLabel"></span></label>
-                <input type="text" style="width: 150px;" id="statusLabel[0]">
-            </div>
-            <br>
+	<div id="list-property">
+        <div class="form-row">
+            <label for="node-input-series" style="width:200px; margin-left:8px"><span data-i18n="oprstatus.label.itemObject"></span><span style="color: #ff0000;">*</span></label>
         </div>
-    </div>
-
-    <!-- Addボタン -->
-    <div class="form-block">
-        <input type="button" id="form_add" name="add_btn" data-i18n="[value]oprstatus.itemObject.add" style="width: 70px;">
+        <!-- param propertyの設定 -->
+        <div class="form-row node-input-list-container-row">
+            <ol id="node-input-list-container">
+            </ol>
+        </div>
     </div>
 
     <!-- ノード名 -->
-    <hr>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="oprstatus.label.name"></span></label>
         <input type="text" id="node-input-name">

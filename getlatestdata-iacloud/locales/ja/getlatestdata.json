@@ -1,5 +1,6 @@
 {
     "getlatestdata": {
+        "paletteLabel": "DynamoDB(最新取得用)",
         "label":{
             "name": "名前",
             "ccs-connection-config": "接続先CCS",
@@ -8,7 +9,7 @@
             "series": "項目設定",
             "repeat": "繰り返し",
             "round": "表示桁数",
-            "item": "表示項目"
+            "item": "出力形式"
         },
         "series": {
             "number": "No.",
@@ -31,8 +32,16 @@
             "-3": "100の位"
         },
         "item": {
-            "graphData": "バーグラフ、ランプ、ゲージなど",
-            "numericData": "数値データ"
+            "graphData": "グラフ用データ",
+            "numericData": "数値変換用データ"
         }
+    },
+    "runtime": {
+        "connect": "接続中",
+        "complete": "取得完了",
+        "noData": "取得データなし",
+        "noParam": "項目設定がありません",
+        "faild": "データ取得失敗",
+        "error": "エラー発生"
     }
 }

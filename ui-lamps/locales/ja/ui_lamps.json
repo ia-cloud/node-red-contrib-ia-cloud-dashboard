@@ -1,5 +1,6 @@
 {
     "uiLamps": {
+        "paletteLabel": "ランプ",
         "label": {
             "group": "グループ",
             "size": "サイズ",
@@ -21,5 +22,9 @@
             "purple": "紫",
             "white": "白"
         }
+    },
+    "runtime": {
+        "complete": "表示完了",
+        "connect": "処理中"
     }
 }

@@ -1,5 +1,6 @@
 {
     "uiNumDt": {
+        "paletteLabel": "numDt",
         "label": {
             "group": "Group",
             "size": "Size",
@@ -16,5 +17,9 @@
             "off": "off",
             "dtFormat": "Format"
         }
+    },
+    "runtime": {
+        "complete": "complete",
+        "connect": "processing..."
     }
 }

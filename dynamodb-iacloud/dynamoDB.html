@@ -1,6 +1,6 @@
 <script type="text/javascript">
 	RED.nodes.registerType('dynamoDB',{
-		category: 'iaCloud dashboard',
+		category: 'iaCloud DB acs',
 		color: "#ffd700",
 		defaults: {
 			name: {value: ""},
@@ -8,7 +8,7 @@
 			tableName: {value: "", required:true},
 			operation: {value: "Query" },
 			objectKey: {value: "", required:true},
-			dateCheck: {value:""},
+			dateCheck: {value:"inDateset"},
 			sdatetime: {value: ""},
 			edatetime: {value: ""},
 			repeatCheck: {value: ""},
@@ -28,8 +28,14 @@
 		icon: "ia-cloud.png",
 		align: "right",
 		label: function() {
-			return this.name || "DynamoDB " + this.operation;
-		},
+            return this.name||this._("dynamodb.paletteLabel");
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        paletteLabel: function() {
+            return this._("dynamodb.paletteLabel") || "dynamoDB";
+        },
 		oneditprepare: function () {
 
 			// 機能毎に表示する項目を変更
@@ -58,14 +64,14 @@
 					$("#node-row-PutItemSet").show();
 				}
 			});
-			
-			// 期間入力設定
-			$("#node-input-dateCheck").change(function() {
-                if ($(this).is(":checked")) {
-					$("#node-input-dateCheck").prop("checked", true);
-                } else {
-					$("#node-input-dateCheck").prop("checked", false);
-                }
+
+			// 期間の入力方法毎に表示する項目を変更
+			$('#node-input-dateCheck').change(function() {
+				if ($('#node-input-dateCheck').val() == "inDateset") {
+					$("#node-row-inNodeSettingSet").hide();
+				} else if ($('#node-input-dateCheck').val() == "inNodeSetting") {
+					$("#node-row-inNodeSettingSet").show();
+				}
 			});
 
 			// アグリゲーション設定
@@ -104,7 +110,6 @@
 			if (this.repeat % 1440 === 0) { r = "h"; c = c/60; }
 			$("#node-input-interval").val(c);
 			$("#node-input-interval-units").val(r);
-		
 		},
 		oneditsave: function() {
 			// 繰り返し設定
@@ -123,27 +128,20 @@
 			$("#node-input-repeat").val(repeat);
 
 		}
-	
 	});
 </script>
 
-<script type="text/x-red" data-template-name="dynamoDB">
+<!-- ノード編集画面テンプレート -->
+<script type="text/html" data-template-name="dynamoDB">
 
 <!--	<style scoped>
 				.hiddenAttrs {display:none;}
 				.visibleAttrs {display:block;}
 		</style> -->
 
-	<!-- ノード名 -->
-	<div class="form-row">
-		<label for="node-input-name"><i class="fa fa-user"></i> <span data-i18n="dynamodb.label.name"></span></label>
-		<input type="text" id="node-input-name" placeholder="Name"></input>
-	</div>
-	<hr/>
-
 	<!-- CCS接続情報 -->
 	<div class="form-row">
-		<label for="node-input-ccsConnectionConfig"><i class="fa fa-link"></i> <span data-i18n="dynamodb.label.ccs-connection-config" /></label>
+		<label for="node-input-ccsConnectionConfig"><i class="fa fa-link"></i> <span data-i18n="dynamodb.label.ccs-connection-config"></label>
 		<input type="text" id="node-input-ccsConnectionConfig" data-i18n="[placeholder]dynamodb.label.ccs-connection-config">
 	</div>
 
@@ -152,7 +150,7 @@
 	<!-- テーブル名 -->
 	<div class="form-row">
 		<label for="node-input-tableName"><i class="fa fa-tag"></i> <span data-i18n="dynamodb.label.tableName"></span><span style="color: #ff0000;">*</span></label>
-		<input type="text" id="node-input-tableName" placeholder="tableName"></input>
+		<input type="text" id="node-input-tableName">
 	</div>
 
 	<!-- 機能 -->
@@ -168,7 +166,7 @@
 	<!-- オブジェクトキー -->
 	<div class="form-row">
 		<label for="node-input-objectKey"><i class="fa fa-key"></i> <span data-i18n="dynamodb.label.objectKey"></span><span style="color: #ff0000;">*</span></label>
-		<input type="text" id="node-input-objectKey" placeholder="objectKey"></input>
+		<input type="text" id="node-input-objectKey">
 	</div>
 
 	<!-- Queryで使用可能 -->
@@ -176,13 +174,17 @@
 		<!-- 期間 -->
 		<div class="form-row" style="width:450px;">
 			<label for="node-input-format" ><i class="fa fa-calendar"></i> <span data-i18n="dynamodb.label.period"></span></label>
-			<input type="checkbox" id="node-input-dateCheck" style="display: inline-block; width: 20px; vertical-align: middle;>
-			<label for="node-input-dateCheck" style="width: 40%; vertical-align: middle;"><span data-i18n="dynamodb.period.check"></label>
+			<select type="text" id="node-input-dateCheck">
+				<option value="inDateset" data-i18n="dynamodb.period.inDateset"></option>
+				<option value="inNodeSetting" data-i18n="dynamodb.period.inNodeSetting"></option>
+			</select>
 		</div>
-		<div style="margin-left: 110px" class="node-input-manualInput-row">
-			<input type="datetime-local" step="1" style="width:200px;" id="node-input-sdatetime" placeholder="2000-01-01"></input>
-			 ～ 
-			<input type="datetime-local" step="1" style="width:200px;" id="node-input-edatetime" placeholder="2000-01-03"></input>
+		<!-- inNodeSettingで使用可能 -->
+		<div class="form-group hide" id="node-row-inNodeSettingSet">
+			<div style="margin-left: 110px" class="node-input-manualInput-row">
+				<input type="datetime-local" step="1" style="width:200px; margin-bottom:3px;" id="node-input-sdatetime"><br>
+				&ensp;&ensp;&ensp;&ensp;～&ensp;&ensp;<input type="datetime-local" step="1" style="width:200px;" id="node-input-edatetime">
+			</div>
 		</div>
 	</div>
 	<!-- Scan・Queryで使用可能 -->
@@ -190,14 +192,14 @@
 
 		<!-- 繰り返しON/OFF -->
 		<div class="form-row">
-			<label for="node-input-interval"<i class="fa fa-repeat"></i> <span data-i18n="dynamodb.label.repeat"></span></label>
-			<input type="checkbox" id="node-input-repeatCheck" style="display: inline-block; width: 20px; vertical-align: middle;>
-			<label for="node-input-repeatCheck" style="width: 40%; vertical-align: middle;"><span data-i18n="dynamodb.repeat.check"></label>
-		</div>	
-		
+			<label for="node-input-interval"><i class="fa fa-repeat"></i> <span data-i18n="dynamodb.label.repeat"></span></label>
+			<input type="checkbox" id="node-input-repeatCheck" style="display: inline-block; width: 20px; vertical-align: middle;">
+			<label for="node-input-repeatCheck" style="width: 40%; margin-top:15px;"><span data-i18n="dynamodb.repeat.check"></label>
+		</div>
+
 		<!-- 繰り返し秒数 -->
 		<div class="form-row interval-row hide" id="dynamodb-interval-row" style="margin-left: 105px">
-			<input id="node-input-interval" value="1" class="interval-time-count"></input>
+			<input id="node-input-interval" value="1" class="interval-time-count">
 			<select style="width: 150px" id="node-input-interval-units">
 				<option value="s" data-i18n="inject.seconds">Seconds</option>
 				<option value="m" data-i18n="inject.minutes">Minutes</option>
@@ -209,9 +211,9 @@
 		<!-- アグリゲーション -->
 		<div class="form-row" style="width:450px;">
 			<label for="node-input-aggregation"><i class="fa fa-calculator"></i> <span data-i18n="dynamodb.label.aggregation"></span></label>
-			<input type="checkbox" id="node-input-aggregationCheck" style="display: inline-block; width: 20px; vertical-align: middle;>
-			<label for="node-input-aggregationCheck" style="width: 40%; vertical-align: middle;">設定</label>
-			
+			<input type="checkbox" id="node-input-aggregationCheck" style="display: inline-block; width: 20px; vertical-align: middle;">
+			<label for="node-input-aggregationCheck" style="width: 40%; margin-top:15px;">設定</label>
+
 			<!-- アグリゲーション設定ONで表示 -->
 			<div style="margin-left: 20px" class="node-input-aggregation-row hide">
 				<div class="form-row" style="margin-left: 100px">
@@ -259,7 +261,7 @@
 		<!-- データ件数 -->
 		<div class="form-row">
 			<label for="node-input-limit"><i class="fa fa-clone"></i> <span data-i18n="dynamodb.label.limit"></span></label>
-			<input type="text" style="width:130px;" id="node-input-limit" placeholder="100"></input>
+			<input type="text" style="width:130px;" id="node-input-limit">
 		</div>
 	</div>
 
@@ -280,10 +282,16 @@
 	<div class="form-group hide"  id="node-row-PutItemSet">
 		<div class="form-row">
 			<label for="node-input-item"><i class="fa fa-tag"></i> <span data-i18n="dynamodb.label.item"></span></label>
-			<input type="text" id="node-input-item" placeholder="item"></input>
-		</div> 
+			<input type="text" id="node-input-item">
+		</div>
 	</div>
-	
+
+	<!-- ノード名 -->
+	<hr/>
+	<div class="form-row">
+		<label for="node-input-name"><i class="fa fa-tag"></i> <span data-i18n="dynamodb.label.name"></span></label>
+		<input type="text" id="node-input-name">
+	</div>
 
 	<script>
 		var nodeOps={

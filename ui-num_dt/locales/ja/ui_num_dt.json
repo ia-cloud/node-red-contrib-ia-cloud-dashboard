@@ -1,5 +1,6 @@
 {
     "uiNumDt": {
+        "paletteLabel": "数値変換",
         "label": {
             "group": "グループ",
             "size": "サイズ",
@@ -16,5 +17,9 @@
             "off": "非表示",
             "dtFormat": "表示形式"
         }
+    },
+    "runtime": {
+        "complete": "表示完了",
+        "connect": "処理中"
     }
 }

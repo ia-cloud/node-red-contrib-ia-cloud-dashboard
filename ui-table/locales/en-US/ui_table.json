@@ -1,11 +1,12 @@
 {
     "table": {
+        "paletteLabel": "table",
         "label": {
             "group": "group",
             "size": "size",
             "label": "label",
             "input": "input",
-            "contype": "contentType",
+            "contype": "集計データタイプ",
             "statuscheck": "disypay Satus",
             "name": "name"
         },
@@ -25,5 +26,14 @@
             "on": "on",
             "off": "off"
         }
+    },
+    "runtime": {
+        "complete": "complete",
+        "connect": "processing...",
+        "noData": "no Data",
+        "noConType": "invalid contentType",
+        "noObjCnt": "invalid objectContent",
+        "formatError": "invaild inputData",
+        "error": "error"
     }
 }

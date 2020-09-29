@@ -2,7 +2,7 @@
 
     function mk_conf(NAME) {
         var conf = {
-            category: 'iaCloud dashboard',
+            category: 'iaCloud Visuals',
             color: 'rgb(119, 198, 204)',
             defaults: {
                 confsel: {value:"inchartSet"},
@@ -23,7 +23,7 @@
                 height: {value: 0},
                 contype: {value: "Alarm&Event"},
                 item: {value: "nodesc"},
-                status: {value: "set"},
+                aneStatus: {value: "set"},
                 storeOutMessages: {value: true},
                 fwdInMessages: {value: true},
                 templateScope: {value: 'local'}
@@ -33,7 +33,15 @@
             align: "right",
             icon: "ia-cloud.png",
             paletteLabel: NAME,
-            label: function() { return this.name || NAME; },
+            label: function() {
+            return this.name||this._("spreadsheet.paletteLabel");
+            },
+            labelStyle: function() {
+                return this.name?"node_label_italic":"";
+            },
+            paletteLabel: function() {
+                return this._("spreadsheet.paletteLabel") || "ui_spreadsheet";
+            },
             oneditprepare: function() {
                 var that = this;
                 $("#node-input-size").elementSizer({
@@ -49,7 +57,7 @@
     RED.nodes.registerType('ui_spreadsheet', mk_conf('spreadsheet'));
 </script>
 
-<script type="text/x-red" data-template-name="ui_spreadsheet">
+<script type="text/html" data-template-name="ui_spreadsheet">
 
     <!-- グループ -->
 	<div class="form-row" id="template-row-group">
@@ -91,12 +99,12 @@
 
     <!-- カウント項目設定 -->
     <div class="form-row">
-        <label for="node-input-status"><i class="fa fa-check"></i> <span data-i18n="spreadsheet.label.status"></span></label>
-        <select type="text" style="width:200px;" id="node-input-status">
-            <option value="set" data-i18n="spreadsheet.status.set"></option>
-            <option value="reset" data-i18n="spreadsheet.status.reset"></option>
-            <option value="on" data-i18n="spreadsheet.status.on"></option>
-            <option value="off" data-i18n="spreadsheet.status.off"></option>
+        <label for="node-input-aneStatus"><i class="fa fa-check"></i> <span data-i18n="spreadsheet.label.aneStatus"></span></label>
+        <select type="text" style="width:200px;" id="node-input-aneStatus">
+            <option value="set" data-i18n="spreadsheet.aneStatus.set"></option>
+            <option value="reset" data-i18n="spreadsheet.aneStatus.reset"></option>
+            <option value="on" data-i18n="spreadsheet.aneStatus.on"></option>
+            <option value="off" data-i18n="spreadsheet.aneStatus.off"></option>
         </select>
     </div>
 

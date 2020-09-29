@@ -36,7 +36,7 @@
             return item;
         };
         var conf = {
-            category: 'iaCloud dashboard',
+            category: 'iaCloud Visuals',
             color: 'rgb(119, 198, 204)',
             defaults: {
                 group: {type: 'ui_group', required:true},
@@ -59,9 +59,15 @@
             inputs:1,
             outputs:0,
             align: 'right',
-            icon: 'ui_template.png',
+            icon: 'ia-cloud.png',
             paletteLabel: NAME,
-            label: function() { return this.name || (~this.label.indexOf('{{') ? null : this.label) || NAME; },
+            label: function() { return this._("uiNumDt.paletteLabel")||this.name || (~this.label.indexOf('{{') ? null : this.label) || NAME; },
+            labelStyle: function() {
+                return this.name?"node_label_italic":"";
+            },
+            paletteLabel: function() {
+                return this._("uiNumDt.paletteLabel") || "ui_num_dt";
+            },
             oneditprepare: function() {
                 var conf = $('#node-input-display_settings').val();
                 if (conf) {

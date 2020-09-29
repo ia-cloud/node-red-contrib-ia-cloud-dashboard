@@ -52,7 +52,7 @@ module.exports = function(RED) {
             // サイズ調整
             if (config.width === "0") { delete config.width; }
             if (config.height === "0") { delete config.height; }
-            
+
             if (checkConfig(node, config)) {
                 var html = HTML();
                 done = ui.addWidget({
@@ -66,6 +66,9 @@ module.exports = function(RED) {
                     emitOnlyNewValues: false,
                     forwardInputMessages: false,
                     storeFrontEndInputAsState: false,
+                    beforeEmit: function(msg, value) {
+                        return { msg: { payload: value } };
+                    },
                     beforeSend: function (msg, orig) {
                         if (orig) { return orig.msg; }
                     },
@@ -73,7 +76,7 @@ module.exports = function(RED) {
                         $scope.value1 = false;
                         // 更新ボタンが押されたら実行
                         $scope.click = function (sdatetime, edatetime) {
-
+                            var node = this;
                             if (sdatetime != undefined && sdatetime != null) {
                                 sdatetime = moment(sdatetime).format("YYYY-MM-DDTHH:mm:ss");
                             } else {
