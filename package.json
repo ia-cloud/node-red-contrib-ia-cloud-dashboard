@@ -63,7 +63,7 @@
   "description": "ia-cloud Node-RED nodes",
   "devDependencies": {},
   "gitHead": "9a393f07060d79f00a990670ddc456adbf4d0e89",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "main": "dynamodb-iacloud/dynamoDB.js",
   "name": "@ia-cloud/node-red-contrib-ia-cloud-dashboard",
   "keywords": [
