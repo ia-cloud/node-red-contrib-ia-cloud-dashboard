@@ -103,17 +103,17 @@
 
 			// Define editableList.
             $("#node-input-list-container").css('min-height','150px').css('min-width','450px').editableList({
-                
+
                 sortable: true,
                 removable: true,
                 height: 250,
-                
+
                 addItem: function(container,index,param) {
 
                     var div1 = $('<div></div>').appendTo(container);
                     // var div2 = $('<div></div>',{style:"margin-top:8px;"}).appendTo(container);
 
-                    $('<span></span>',{class:"index", 
+                    $('<span></span>',{class:"index",
                         style:"display:inline-block;text-align:right; width:30px; padding-right:5px;"})
                         .text((index + 1) + " :")
                         .appendTo(div1);
@@ -182,10 +182,17 @@
                 }
                 node.params.push(param);
 
-                // required properties are not empty
-                if (!(typeof param.disp === "number") 
-                        || !(param.interval >= 0 && param.interval <= 300)) configReady = "";
+				// 必須propertyが揃っているか？
+				if (!param.dataName) {
+					configReady = "";
+				}
             });
+
+			// データ設定が一つはある？
+			if (!node.params.length) {
+				configReady = "";
+			}
+
 			// 設定完了フラグをセット
 			$("#node-input-configReady").val(configReady);
 		}
@@ -194,6 +201,11 @@
 
 <!-- ノード編集画面テンプレート -->
 <script type="text/html" data-template-name="getchartdata">
+
+	<!-- 隠しのNodeプロパティ -->
+	<div class="form-row" hidden>
+		<input type="text" id="node-input-configReady">
+	</div>
 
 	<!-- CCS接続情報 -->
 	<div class="form-row">
