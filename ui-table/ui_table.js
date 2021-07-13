@@ -87,7 +87,7 @@ module.exports = function(RED) {
                                 // contentTypeを基にデータ作成
                                 switch(node.contype1) {
                                     case "Alarm&Event":
-                                            msg.series = ["timeStamp", "No", "エラー詳細", "ステータス"];
+                                            msg.series = ["timestamp", "No", "エラー詳細", "ステータス"];
                                             itemList = msg.payload.Items;
 
                                             dataAry = [];       // 出力用データ一時保存用
@@ -117,7 +117,11 @@ module.exports = function(RED) {
                                                             if (contentList[conIdx].commonName === "Alarm&Event" && contentList[conIdx].dataValue != undefined) {
                                                                 if (statusList.indexOf(contentList[conIdx].dataValue.AnEStatus) != -1) {
                                                                     // 情報をdataAryに格納
-                                                                    temp.push(itemList[i].timestamp);
+                                                                    if (itemList[i].timestamp != undefined) {
+                                                                        temp.push(itemList[i].timestamp);
+                                                                    } else {
+                                                                        temp.push(itemList[i].timeStamp);
+                                                                    }
                                                                     temp.push(contentList[conIdx].dataValue.AnECode);
                                                                     temp.push(contentList[conIdx].dataValue.AnEDescription);
                                                                     temp.push(contentList[conIdx].dataValue.AnEStatus);
@@ -154,7 +158,7 @@ module.exports = function(RED) {
                                             msg.series = msg.payload[0].series;
                                             data = msg.payload[0].data;
 
-                                            msg.series.unshift("timeStamp");
+                                            msg.series.unshift("timestamp");
 
                                             for (var i=0;i<data[0].length;i++) {
                                                 temp.push(data[0][i].x, data[0][i].y);
