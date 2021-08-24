@@ -26,7 +26,7 @@ function mk_conf(NAME) {
             fwdInMessages: {value: true},
             templateScope: {value: 'local'},
             params: {value:[{}]},
-			// configReady: {value:"", required: true}
+			configReady: {value:"", required: true}
         },
         inputs:1,
         outputs:0,
@@ -141,7 +141,7 @@ function mk_conf(NAME) {
         oneditsave: function() {
 
 			var node = this;
-            // var configReady = "ready";
+            var configReady = "ready";
             var items = $("#node-input-list-container").editableList('items');
             // paramデータ設定を作成
             node.params = [];
@@ -154,13 +154,21 @@ function mk_conf(NAME) {
                 }
                 node.params.push(param);
 
-                // required properties are not empty
-                // if (!(typeof param.disp === "number")
-                //         || !(param.interval >= 0 && param.interval <= 300)) configReady = "";
-                // configReady = "";
+                // 必須propertyが揃っているか？
+                if (!param.statusColor) {
+					configReady = "";
+				}
+                if (!param.statusValue) {
+					configReady = "";
+				}
             });
+
+			// データ設定が一つはある？
+			if (!node.params.length) {
+				configReady = "";
+			}
 			// 設定完了フラグをセット
-			// $("#node-input-configReady").val(configReady);
+			$("#node-input-configReady").val(configReady);
         },
         oneditresize: function(size) {
             // エディタがリサイズされたら
@@ -170,16 +178,16 @@ function mk_conf(NAME) {
             height -= $("#name-block").outerHeight(true);
 
             // editableList以外の行の高さを引く
-            var rows = $("#list-property>*:not(.node-input-statusObject-row)");
+            var rows = $("#list-property>*:not(.node-input-list-container-row)");
             for (var i=0; i<rows.length; i++) {
                 height -= $(rows[i]).outerHeight(true);
             }
             // editableListのマージンを引く
-            const editorRow = $("#list-property>div.node-input-statusObject-row");
+            const editorRow = $("#list-property>div.node-input-list-container-row");
             height -= (parseInt(editorRow.css("marginTop"))+parseInt(editorRow.css("marginBottom")));
 
             // editableListの高さを設定。editableListが非表示の時は正しく動作しない。
-            $("#node-input-statusObject").editableList('height',height);
+            $("#node-input-list-container").editableList('height',height);
         }
     };
     return conf;
@@ -193,6 +201,12 @@ function mk_conf(NAME) {
 <script type="text/html" data-template-name="ui_oprstatus">
 
     <div id="list-property">
+
+        <!-- 隠しのNodeプロパティ -->
+        <div class="form-row" hidden>
+            <input type="text" id="node-input-configReady">
+        </div>
+
         <!-- グループ -->
         <div class="form-row" id="template-row-group">
             <label for="node-input-group"><i class="fa fa-table"></i> <span data-i18n="oprstatus.label.group"></span></label>

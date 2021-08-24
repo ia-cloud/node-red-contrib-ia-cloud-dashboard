@@ -11,7 +11,7 @@
             "name": "名前"
         },
         "input": {
-            "getchartdata": "getChartdata",
+            "getchartdata": "DynamoDB(chart用)",
             "formatdata": "フォーマットデータ"
         },
         "itemObject": {
