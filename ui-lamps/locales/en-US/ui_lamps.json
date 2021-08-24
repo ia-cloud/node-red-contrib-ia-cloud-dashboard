@@ -5,10 +5,16 @@
             "group": "Group",
             "size": "Size",
             "direction": "Direction",
+            "input": "input",
+            "getchartdata": "getChartdata",
+            "getlatestdata": "getLatestdata",
+            "formatdata": "formatdata",
             "vertical": "Vertical",
             "horizontal": "Horizontal",
             "label": "Label",
-            "index": "Index No.",
+            "itemObject": "itemObject",
+            "number": "No.",
+            "add": "追加",
             "delete": "Delete",
             "phase": "Phase",
             "square": "Square",
@@ -20,7 +26,9 @@
             "yellow": "Yellow",
             "orange": "Orange",
             "purple": "Purple",
-            "white": "White"
+            "white": "White",
+            "name": "displayName",
+            "truelist": "truelist"
         }
     },
     "runtime": {

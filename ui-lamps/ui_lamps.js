@@ -11,11 +11,11 @@ module.exports = function(RED) {
         var configAsJson = JSON.stringify(config);
         var html = String.raw`
         <div id="{{conf.nodeid}}" ng-init='init(` + configAsJson + `)' hidden></div>
-        <canvas width="90" height="90" style={{conf.cvs_padding}} ng-repeat="item in conf.ds"></canvas>
+        <canvas width="90" height="120" style={{conf.cvs_padding}} ng-repeat="item in conf.ds"></canvas>
         `;
         return html;
     }
-    
+
     var ui = undefined;
 
     function LampsNode(config) {
@@ -24,9 +24,8 @@ module.exports = function(RED) {
             if(ui === undefined) {
                 ui = RED.require("node-red-dashboard")(RED);
             }
-
             var width, height;
-            var conf_ds = JSON.parse(config.display_settings);
+            var conf_ds = config.params;
             if(config.direction == "Vertical") {
                 width = 2;
                 height = conf_ds.length * 2;
@@ -34,6 +33,8 @@ module.exports = function(RED) {
                 width = conf_ds.length * 2;
                 height = 2;
             }
+
+            console.log(config.confsel);
 
             RED.nodes.createNode(this, config);
             var done = null;
@@ -61,13 +62,15 @@ module.exports = function(RED) {
                         if (orig) { return orig.msg; }
                     },
                     initController: function ($scope, events) {
-                        function Lamp(canvas, phase, color) {
+                        function Lamp(canvas, phase, color, name) {
                             this.ctx = canvas.getContext('2d');
                             this.phase = phase;
+                            this.name = name;
                             this.frame_color = "rgb(50, 50, 50)";
                             this.onoff_color = this.getOnOffColor(color);
                             this.createFrame();
                             this.off();
+                            this.createName();
                         }
                         Lamp.prototype.getOnOffColor = function(color){
                             var onoff_color = {};
@@ -122,11 +125,26 @@ module.exports = function(RED) {
                             this.ctx.fillStyle = this.onoff_color.off;
                             this.createInner();
                         };
+                        Lamp.prototype.createName = function() {
+                            this.ctx.font = "15px bold";
+                            this.ctx.fillStyle = "rgb(0, 0, 0)";
+                            this.ctx.textAlign = "center";
+                            this.ctx.fillText(this.name, (90/2)+5, 110, 90);
+                        };
+                        Lamp.prototype.setName = function(name) {
+                            this.name = name;
+                        };
+
                         var lamps = [];
+                        var confsel;
+                        var truelist = [];
+
                         $scope.init = function(config){
                             var conf = {};
+                            confsel = config.confsel;
+                            truelist = config.truelist.split(",");
                             conf.nodeid = "lamps_" + config.id.replace('.', '_');
-                            conf.ds = JSON.parse(config.display_settings);
+                            conf.ds = config.params;
                             if(config.direction == "Vertical") {
                                 conf.direction = "column";
                                 conf.cvs_padding = 'padding: 3px 0px;';
@@ -134,6 +152,7 @@ module.exports = function(RED) {
                                 conf.direction = "row";
                                 conf.cvs_padding = 'padding: 0px 3px;';
                             }
+
                             $scope.conf = conf;
                             $(function() {
                                 var this_node = document.getElementById(conf.nodeid);
@@ -142,21 +161,40 @@ module.exports = function(RED) {
                                 var canvases = $(this_node).siblings('canvas');
                                 var phases = Object.values(conf.ds).map(function (item) {return item.phase;});
                                 var colors = Object.values(conf.ds).map(function (item) {return item.color;});
+                                var names = Object.values(conf.ds).map(function (item) {return item.name;});
                                 for(var idx=0; idx<canvases.length; idx++){
-                                    lamps[idx] = new Lamp(canvases[idx], phases[idx], colors[idx]);
+                                    lamps[idx] = new Lamp(canvases[idx], phases[idx], colors[idx], names[idx]);
                                 }
                             });
                         }
                         $scope.$watch('msg', function(msg) {
                             if(!msg){ return; }
                             $(function() {
-                                var value = msg.payload;
-                                for(idx in value){
-                                    console.log(value[idx]);
-                                    if((value[idx] == false && value[idx] != "") || value[idx] == "false" || value[idx] == "0"){
-                                        lamps[idx].off();
-                                    }else if(value[idx] == true || value[idx] == "true" || value[idx] == "1"){
-                                        lamps[idx].on();
+                               if (confsel == "inlatestSet"|| confsel == "formatSet"){
+                                    var value = msg.payload;
+                                    for(idx in value){
+                                        console.log(value[idx]);
+                                        if((value[idx] == false && value[idx] != "") || value[idx] == "false" || value[idx] == "0"){
+                                            lamps[idx].off();
+                                        }else if(value[idx] == true || value[idx] == "true" || value[idx] == "1"){
+                                            lamps[idx].on();
+                                        }
+                                    }
+                                } else {
+                                    var data = msg.payload;
+                                    var nameList = data[0].series;
+                                    var valueList = data[0].data;
+                                    for(idx in valueList){
+                                        console.log(valueList[idx][0].y);
+                                        if((valueList[idx][0].y == false && valueList[idx][0].y != "") || valueList[idx][0].y == "false" || valueList[idx][0].y == "0"){
+                                            lamps[idx].off();
+                                        }else if(valueList[idx][0].y == true || valueList[idx][0].y == "true" || valueList[idx][0].y == "1" || truelist.indexOf(valueList[idx][0].y) > -1){
+                                            lamps[idx].on();
+                                        }
+                                        if (lamps[idx].name == "") {
+                                            lamps[idx].setName(nameList[idx]);
+                                            lamps[idx].createName();
+                                        }
                                     }
                                 }
                             });
