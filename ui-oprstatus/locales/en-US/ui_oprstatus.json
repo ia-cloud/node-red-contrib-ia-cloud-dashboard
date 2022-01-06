@@ -8,7 +8,9 @@
             "input": "input",
             "item": "subtitle",
             "itemObject": "itemObject",
-            "name": "name"
+            "name": "name",
+            "sort": "sort",
+            "guide": "itemObject guide"
         },
         "input": {
             "getchartdata": "getChartdata",
@@ -21,6 +23,14 @@
             "statusColor": "statusColor",
             "statusValue": "statusValue",
             "statusLabel": "statusLabel"
+        },
+        "sort": {
+            "asc": "ascending order",
+            "desc": "descending order"
+        },
+        "guide": {
+            "display": "display",
+            "hide": "hide"
         }
     },
     "runtime": {

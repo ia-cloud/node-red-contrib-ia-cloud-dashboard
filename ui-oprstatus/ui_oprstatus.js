@@ -12,27 +12,33 @@ module.exports = function(RED) {
     function HTML(config) {
         var html = "<div align='center'>"
             // タイトル表示
-            + "<p style='font-size: 16px;'>" + config.label + "</p>"
+            + "<p style='font-size: 14px;'>" + config.label + "</p>"
             // グラフ表示
             + "<table id='statusTitle_table' width='90%'><tbody>"
             + "<tr><td ng-repeat = 'item in msg.series' style='font-size:14px;'>{{item}}</td>"
             + "</tr></tbody></table>"
             + "<table id='statusBar_table' width='90%'><tbody><tr>"
-            + "<td ng-repeat = 'item in msg.graphData' bgcolor='{{item.statusColor}}' width='{{item.intervalPer}}%' height='20px'></td>"
+            + "<td ng-repeat = 'item in msg.graphData' bgcolor='{{item.statusColor}}' width='{{item.intervalPer}}%' height='15px'></td>"
             + "</tr>"
             + "</tbody></table>"
             // X軸表示
             + "<table id='statusAxis_table' width='100%' style='font-size:8px;'><tbody><tr>"
             + "<td ng-repeat = 'item in msg.xaxisData' align='center'>{{item.x}}</td>"
-            + "</tr></tbody></table>"
-            // 凡例表示
-            + "<table id='statusList_table' style='font-size:12px;'>"
-            + "<tbody> <tr>"
-            + "<td ng-repeat = 'item in msg.statusObject' style='padding:15px;'>"
-            + "<span style='color:{{item.statusColor}}; font-size:20px;'>■</span>{{item.statusLabel}}"
-            + "</td>"
-            + "</tr> </tbody> </table>"
-            + "</div>";
+            + "</tr></tbody></table>";
+
+        // 凡例表示
+        if (config.guide == "display") {
+            html = html + "<table id='statusList_table' style='font-size:12px;'>"
+                + "<tbody> <tr>"
+                + "<td ng-repeat = 'item in msg.statusObject' style='padding:15px;'>"
+                + "<span style='color:{{item.statusColor}}; font-size:20px;'>■</span>{{item.statusLabel}}"
+                + "</td>"
+                + "</tr> </tbody> </table>"
+                + "</div>";
+        } else {
+            html = html + "</div>";
+        }
+
         return html;
     };
 
@@ -53,6 +59,7 @@ module.exports = function(RED) {
             var confsel = config.confsel;
             var item = config.item;
             var label = config.label;
+            var sort = config.sort;				// 並び順
 
             if  (label == undefined) {
                 label = "";
@@ -234,6 +241,13 @@ module.exports = function(RED) {
 
                             // 稼働状況の設定情報を取得、msgへ格納
                             msg.statusObject = statusObject;
+
+                            // 入力値がDynamoDB（chart用） かつ データが降順だったらデータの前後をひっくり返す
+                            if (confsel == "inchartSet" && sort == "false") {
+                                graphData = graphData.reverse();
+                                xaxisData = xaxisData.reverse();
+                            }
+
 
                             // 作成したデータをmsg.payloadへ格納
                             msg.graphData = graphData;

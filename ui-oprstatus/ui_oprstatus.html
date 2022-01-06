@@ -26,7 +26,9 @@ function mk_conf(NAME) {
             fwdInMessages: {value: true},
             templateScope: {value: 'local'},
             params: {value:[{}]},
-			configReady: {value:"", required: true}
+			configReady: {value:"", required: true},
+            sort: {value: "true"},
+            guide: {value: "display"}
         },
         inputs:1,
         outputs:0,
@@ -65,6 +67,21 @@ function mk_conf(NAME) {
             }
             $('input[name="configSel"]:radio').change();
 
+
+            $('input[name="configGuide"]:radio').change(function() {
+                if ($("#node-input-configGuide1").is(":checked")) {
+                    $('#node-input-guide').val("display");
+                } else {
+                    $('#node-input-guide').val("hide");
+                }
+            });
+
+            if($("#node-input-guide").val() == "display"){
+                $('#node-input-configGuide1').prop('checked', true);
+            } else {
+                $('#node-input-configGuide2').prop('checked', true);
+            }
+            $('input[name="configGuide"]:radio').change();
 
 
 
@@ -230,7 +247,7 @@ function mk_conf(NAME) {
         <!-- 入力値設定 -->
         <label style="width: 100%;" for="node-input-setMode" ><i class="fa fa-list"></i> <span data-i18n="oprstatus.label.input"></span></label>
         <div class="form-row">
-            <input type="text" style="display: none;" id="node-input-confsel" valie="inchartSet">
+            <input type="text" style="display: none;" id="node-input-confsel" value="inchartSet">
             <input type="radio" style="display: inline-block; width: auto; vertical-align: top; margin-left: 30px;"
                 name="configSel" id="node-input-configSel1"
                 value="inchartSet" checked="checked">
@@ -239,6 +256,28 @@ function mk_conf(NAME) {
                 name="configSel" id="node-input-configSel2" value="formatSet">
             <label style="width: 40%;" for="node-input-configSel2"> <span data-i18n="oprstatus.input.formatdata"></span></label>
         </div>
+
+    <!-- 凡例表示 -->
+    <label style="width: 100%;" for="node-input-guide" ><i class="fa fa-list"></i> <span data-i18n="oprstatus.label.guide"></span></label>
+    <div class="form-row">
+        <input type="text" style="display: none;" id="node-input-guide" value="display">
+        <input type="radio" style="display: inline-block; width: auto; vertical-align: top; margin-left: 30px;"
+            name="configGuide" id="node-input-configGuide1"
+            value="display" checked="checked">
+        <label style="width: 40%;" for="node-input-configGuide1"> <span data-i18n="oprstatus.guide.display"></span></label>
+        <input type="radio" style="display: inline-block; width: auto; vertical-align: top;"
+            name="configGuide" id="node-input-configGuide2" value="hide">
+        <label style="width: 40%;" for="node-input-configGuide2"> <span data-i18n="oprstatus.guide.hide"></span></label>
+    </div>
+
+    <!-- ソート -->
+    <div class="form-row">
+        <label for="node-input-sort"><i class="fa fa-sort"></i> <span data-i18n="oprstatus.label.sort"></span></label>
+        <select type="text" style="width:80px;" id="node-input-sort">
+            <option value="true" data-i18n="oprstatus.sort.asc"></option>
+            <option value="false" data-i18n="oprstatus.sort.desc"></option>
+        </select>
+    </div>
 
         <!-- 項目名 -->
         <div class="form-row" id="node-row-item" style="width:300px;">
