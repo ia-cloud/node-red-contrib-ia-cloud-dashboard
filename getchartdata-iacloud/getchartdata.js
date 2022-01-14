@@ -174,6 +174,8 @@ module.exports = function(RED) {
 									itemList = resultList;
 									delete items;
 									var noDataNameFlag = false;
+									var seriesList = [];
+
 									for (var itemIdx=0;itemIdx<itemList.length;itemIdx++) {
 										// 変換データ取得
 										try {
@@ -181,13 +183,15 @@ module.exports = function(RED) {
 										} catch (e) {
 											node.error("getChartdata：変換対象データがありません。");
 										}
-										var seriesList = [];
+
 										for(i=0;i < contentList.length;i++) {
-											if (contentList[i].dataName != undefined) {
+											if (contentList[i].dataName != undefined && seriesList.indexOf(contentList[i].dataName) < 0) {
+												// 現在見ているデータにdataNameがある かつ seriesListに今回のdataNameがまだ格納されていない場合、seriesListに格納
 												seriesList.push(contentList[i].dataName);
-											} else if (contentList[i].dataname != undefined) {
+											} else if (contentList[i].dataname != undefined && seriesList.indexOf(contentList[i].dataname) < 0) {
+												// 現在見ているデータにdatanameがある かつ seriesListに今回のdatanameがまだ格納されていない場合、seriesListに格納
 												seriesList.push(contentList[i].dataname);
-											} else {
+											} else if (contentList[i].dataName != undefined && contentList[i].dataname != undefined) {
 												noDataNameFlag = true;
 											}
 										}
@@ -240,19 +244,35 @@ module.exports = function(RED) {
 											}
 
 											var contentList = itemList[j].contentData;
-											// x:timestamp, y:dataValue
-											try {
-												var pushTmp = {
-													"x" : timestamp,
-													"y" : contentList[seriesCombList[i].index].dataValue
-												};
-											}catch (e) {
-												var pushTmp = {
-													"x" : timestamp,
-													"y" : null
-												};
+
+											var matchData;
+											// 格納対象のdataNameがあるデータのみをpushする
+											matchData = contentList.filter(function(item, index){
+												if (item.dataName == seriesCombList[i].dataName) return true;
+											});
+											// datanameの可能性もあるのでマッチデータがない場合は再度フィルター
+											if (matchData.length == 0) {
+												matchData = contentList.filter(function(item, index){
+													if (item.dataname == seriesCombList[i].dataName) return true;
+												});
 											}
-											dataTmp.push(pushTmp);
+
+											if (matchData.length > 0) {
+												// x:timestamp, y:dataValue
+												try {
+													var pushTmp = {
+														"x" : timestamp,
+														"y" : matchData[0].dataValue
+													};
+												}catch (e) {
+													var pushTmp = {
+														"x" : timestamp,
+														"y" : null
+													};
+												}
+												dataTmp.push(pushTmp);
+
+											}
 										}
 										tmpObj.data.push(dataTmp);
 									}
@@ -272,6 +292,7 @@ module.exports = function(RED) {
 									itemList = resultList.Items;
 									delete resultList.Items;
 									var noDataNameFlag = false;
+									var seriesList = [];
 
 									for (var itemIdx=0;itemIdx<itemList.length;itemIdx++) {
 										// 変換データ取得
@@ -287,13 +308,14 @@ module.exports = function(RED) {
 											node.error("getChartdata：変換対象データがありません。");
 										}
 
-										var seriesList = [];
 										for(i=0;i < contentList.length;i++) {
-											if (contentList[i].dataName != undefined) {
+											if (contentList[i].dataName != undefined && seriesList.indexOf(contentList[i].dataName) < 0) {
+												// 現在見ているデータにdataNameがある かつ seriesListに今回のdataNameがまだ格納されていない場合、seriesListに格納
 												seriesList.push(contentList[i].dataName);
-											} else if (contentList[i].dataname != undefined) {
+											} else if (contentList[i].dataname != undefined && seriesList.indexOf(contentList[i].dataname) < 0) {
+												// 現在見ているデータにdatanameがある かつ seriesListに今回のdatanameがまだ格納されていない場合、seriesListに格納
 												seriesList.push(contentList[i].dataname);
-											} else {
+											} else if (contentList[i].dataName != undefined && contentList[i].dataname != undefined) {
 												noDataNameFlag = true;
 											}
 										}
@@ -303,6 +325,7 @@ module.exports = function(RED) {
 									}
 									var seriesCombList = [];
 									var combIndex = -1;
+
 									// 出力項目チェック
 									for (i=0; i < outSeriesList.length; i++) {
 										combIndex = seriesList.indexOf(outSeriesList[i]);
@@ -325,6 +348,7 @@ module.exports = function(RED) {
 											seriesCombList.push(combTmp);
 										}
 									}
+
 									// 出力データ：データ部分作成
 									for(i=0;i < seriesCombList.length;i++) {    // 表示対象データでループ
 										var dataTmp = [];
@@ -349,19 +373,34 @@ module.exports = function(RED) {
 											} else {
 												continue;
 											}
-											// x:timestamp, y:dataValue
-											try {
-												var pushTmp = {
-													"x" : timestamp,
-													"y" : contentList[seriesCombList[i].index].dataValue
-												};
-											}catch (e) {
-												var pushTmp = {
-													"x" : timestamp,
-													"y" : null
-												};
+											var matchData;
+											// 格納対象のdataNameがあるデータのみをpushする
+											matchData = contentList.filter(function(item, index){
+												if (item.dataName == seriesCombList[i].dataName) return true;
+											});
+											// datanameの可能性もあるのでマッチデータがない場合は再度フィルター
+											if (matchData.length == 0) {
+												matchData = contentList.filter(function(item, index){
+													if (item.dataname == seriesCombList[i].dataName) return true;
+												});
 											}
-											dataTmp.push(pushTmp);
+
+											if (matchData.length > 0) {
+												// x:timestamp, y:dataValue
+												try {
+													var pushTmp = {
+														"x" : timestamp,
+														"y" : matchData[0].dataValue
+													};
+												}catch (e) {
+													var pushTmp = {
+														"x" : timestamp,
+														"y" : null
+													};
+												}
+												dataTmp.push(pushTmp);
+
+											}
 										}
 										tmpObj.data.push(dataTmp);
 									}
