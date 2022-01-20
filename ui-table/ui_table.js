@@ -99,7 +99,7 @@ module.exports = function(RED) {
                                                 for(i=0;i < itemList.length; i++) {  //データ件数でループ
                                                     try {
                                                         if (itemList[i].dataObject.objectContent != undefined) {
-                                                            contentList = itemList[i].dataobject.objectContent.contentData;
+                                                            contentList = itemList[i].dataObject.objectContent.contentData;
                                                         } else if (itemList[i].dataObject.ObjectContent != undefined) {
                                                             contentList = itemList[i].dataObject.ObjectContent.contentData;
                                                         } else {

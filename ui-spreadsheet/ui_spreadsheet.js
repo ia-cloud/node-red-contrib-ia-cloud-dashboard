@@ -87,7 +87,7 @@ module.exports = function(RED) {
                             for(i=0;i < itemList.length; i++) {  //データ件数でループ
                                 try {
                                     if (itemList[i].dataObject.objectContent != undefined) {
-                                        contentList = itemList[i].dataobject.objectContent.contentData;
+                                        contentList = itemList[i].dataObject.objectContent.contentData;
                                     } else if (itemList[i].dataObject.ObjectContent != undefined) {
                                         contentList = itemList[i].dataObject.ObjectContent.contentData;
                                     } else {
@@ -98,7 +98,6 @@ module.exports = function(RED) {
                                     node.status({fill:"yellow", shape:"ring", text:"runtime.noObjCnt"});
                                     continue;
                                 }
-
                                 // 集計データごとに集計処理を実施
                                 switch (node.contype) {
                                     case "Alarm&Event":
