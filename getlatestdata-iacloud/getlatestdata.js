@@ -58,7 +58,7 @@ module.exports = function(RED) {
 		// sendメッセージ関数作成
 		node.sendMsg = function (data) {
 			var msg;
-			if (!data) {
+			if (data == []) {
 				node.status({fill:"red", shape:"ring", text:"runtime.error"});
 				node.error("error: sendMeg error");
 				return;

@@ -7,6 +7,9 @@ module.exports = function(RED) {
 	var dynamodb = require("../dynamodb")(RED);
 	var moment = require("moment");
 
+	// ダミーデータ
+	var dummy = {Items: []};
+
 	function dynamodbNode(config) {
 
 		RED.nodes.createNode(this,config);
@@ -55,7 +58,7 @@ module.exports = function(RED) {
 		// sendメッセージ関数作成
 		node.sendMsg = function (data) {
 			var msg;
-			if (!data) {
+			if (data == []) {
 				node.status({fill:"red", shape:"ring", text:"runtime.error"});
 				node.error("error: sendMeg error");
 				return;
@@ -144,25 +147,25 @@ module.exports = function(RED) {
 								// データ取得時に例外発生
 								console.log("データ分解時に例外発生");
 								node.status({fill:"red", shape:"ring", text:"runtime.faild"});
-								node.sendMsg([]);
+								node.sendMsg(dummy);
 							}
 						} else if (items != undefined && items.length > -1) {
 							node.status({fill:"yellow", shape:"ring", text:"runtime.noData"});
-							node.sendMsg([]);
+							node.sendMsg(dummy);
 						} else {
 							node.status({fill:"red", shape:"ring", text:"runtime.faild"});
-							node.sendMsg([]);
+							node.sendMsg(dummy);
 						}
 					} else {
 						// 異常なレスポンス
 						node.status({fill:"red", shape:"ring", text:"runtime.faild"});
-						node.sendMsg([]);
+						node.sendMsg(dummy);
 					}
 				});
 			} else {
 				node.status({fill:"red", shape:"ring", text:"runtime.periodError"});
 				node.error("DynamoDB - 期間指定に誤りがあります");
-				node.sendMsg([]);
+				node.sendMsg(dummy);
 			}
 		}
 
