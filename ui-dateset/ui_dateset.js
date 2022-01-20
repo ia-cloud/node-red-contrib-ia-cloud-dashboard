@@ -11,14 +11,14 @@ module.exports = function(RED) {
     function HTML() {
         // define HTML code
         var html = String.raw`
-        <div style="width:350px; text-align:center">
-            <input type="datetime-local" step="1" id="sdatetime" style="width:160px; height:10px; font-size: 60%;"
+        <div style="margin-top:20px; width:350px; text-align:center">
+            <input type="datetime-local" step="1" id="sdatetime" style="width:160px; height:25px; font-size: 80%;"
                 ng-model="sdatetime">
-             ~ <input type="datetime-local" step="1" id="edatetime" style="width:160px; height:10px; font-size: 60%;"
+             ~ <input type="datetime-local" step="1" id="edatetime" style="width:160px; height:25px; font-size: 80%;"
                 ng-model="edatetime">
         </div>
-        <div style="width:350px; text-align:center">
-            <input type="button" id="send" style="width:300px; height:18px; font-size: 60%;" value="更新" ng-click="click(sdatetime ,edatetime)">
+        <div style="margin-top:5px; width:350px; text-align:center">
+            <input type="button" id="send" style="width:300px; height:30px; font-size: 80%;" value="更新" ng-click="click(sdatetime ,edatetime)">
         </div>
         `;
 
